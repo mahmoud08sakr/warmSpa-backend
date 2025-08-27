@@ -1,0 +1,143 @@
+{
+  "Branch": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "example": "Downtown Branch"
+      },
+      "address": {
+        "type": "string",
+        "required": true,
+        "example": "123 Main St, City Center"
+      },
+      "phone": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "required": true,
+        "example": ["+201234567890"]
+      },
+      "email": {
+        "type": "string",
+        "format": "email",
+        "required": true,
+        "example": "downtown@warmsa.com"
+      },
+      "city": {
+        "type": "string",
+        "required": true,
+        "example": "Cairo"
+      },
+      "state": {
+        "type": "string",
+        "required": true,
+        "example": "Cairo"
+      },
+      "country": {
+        "type": "string",
+        "required": true,
+        "example": "Egypt"
+      },
+      "location": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["Point"],
+            "default": "Point"
+          },
+          "coordinates": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "example": [31.2357, 30.0444]
+          }
+        },
+        "required": ["type", "coordinates"]
+      },
+      "isActive": {
+        "type": "boolean",
+        "default": true
+      }
+    }
+  },
+  "Product": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "example": "Swedish Massage"
+      },
+      "description": {
+        "type": "string",
+        "required": true,
+        "example": "A relaxing full-body massage that uses long, flowing strokes."
+      },
+      "price": {
+        "type": "number",
+        "required": true,
+        "minimum": 0,
+        "example": 120
+      },
+      "discountPrice": {
+        "type": "number",
+        "minimum": 0,
+        "example": 100
+      },
+      "category": {
+        "type": "string",
+        "required": true,
+        "example": "Massage"
+      },
+      "duration": {
+        "type": "number",
+        "required": true,
+        "minimum": 1,
+        "example": 60
+      },
+      "images": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "format": "uri"
+        },
+        "example": ["https://example.com/images/swedish-massage.jpg"]
+      },
+      "branch": {
+        "type": "string",
+        "required": true,
+        "description": "Reference to Branch _id",
+        "example": "5f8d0d55b54764421b7156c3"
+      },
+      "isActive": {
+        "type": "boolean",
+        "default": true
+      },
+      "rating": {
+        "type": "number",
+        "default": 0,
+        "minimum": 0,
+        "maximum": 5
+      },
+      "features": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "example": ["Relieves muscle tension", "Improves circulation"]
+      },
+      "benefits": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "example": ["Reduces stress", "Improves flexibility"]
+      }
+    }
+  }
+}

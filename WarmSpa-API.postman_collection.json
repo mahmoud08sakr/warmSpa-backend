@@ -1,0 +1,665 @@
+{
+	"info": {
+		"_postman_id": "warmspa-api-collection",
+		"name": "WarmSpa API",
+		"description": "Complete API collection for WarmSpa application including Users, Branches, and Products management. Uses role-based bearer tokens (Admin, User, SAdmin, etc.)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "warmspa-api"
+	},
+	"item": [
+		{
+			"name": "Welcome",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Welcome endpoint to check if the API is running"
+			},
+			"response": []
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "User Signup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+1234567890\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"signup"
+							]
+						},
+						"description": "Create a new user account. Returns a User bearer token."
+					},
+					"response": []
+				},
+				{
+					"name": "User Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"login"
+							]
+						},
+						"description": "Login user and get role-based bearer token (User, Admin, SAdmin, etc.)"
+					},
+					"response": []
+				},
+				{
+					"name": "Send OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/send-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"send-otp"
+							]
+						},
+						"description": "Send OTP to user's email for password reset"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP and Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"OTP\": \"123456\",\n  \"email\": \"john@example.com\",\n  \"password\": \"newpassword123\",\n  \"confirmPassword\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/verify-otp",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"verify-otp"
+							]
+						},
+						"description": "Verify OTP and reset user password"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password (Authenticated)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{user_role}} {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"oldPassword\": \"password123\",\n  \"password\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/reset-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"reset-password"
+							]
+						},
+						"description": "Reset password for authenticated user (requires old password). Use role-based bearer token."
+					},
+					"response": []
+				}
+			],
+			"description": "User management endpoints including authentication and password reset. Uses role-based bearer tokens."
+		},
+		{
+			"name": "Branches",
+			"item": [
+				{
+					"name": "Get All Branches",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/branches",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"branches"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "city",
+									"value": "Cairo",
+									"description": "Filter by city (optional)"
+								},
+								{
+									"key": "country",
+									"value": "Egypt",
+									"description": "Filter by country (optional)"
+								}
+							]
+						},
+						"description": "Get all branches with pagination and filtering (public endpoint)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Branch by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/branches/{{branch_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"branches",
+								"{{branch_id}}"
+							]
+						},
+						"description": "Get a specific branch by ID (public endpoint)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Branches Within Distance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/branches/within/distance?distance=10&latlng=30.0444,31.2357&unit=mi",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"branches",
+								"within",
+								"distance"
+							],
+							"query": [
+								{
+									"key": "distance",
+									"value": "10",
+									"description": "Distance radius (positive number)"
+								},
+								{
+									"key": "latlng",
+									"value": "30.0444,31.2357",
+									"description": "Latitude and longitude (format: lat,lng)"
+								},
+								{
+									"key": "unit",
+									"value": "mi",
+									"description": "Distance unit (mi for miles, km for kilometers)"
+								}
+							]
+						},
+						"description": "Get branches within a specific distance from coordinates (public endpoint)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Branch (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_role}} {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Downtown Branch\",\n  \"address\": \"123 Main St, Downtown\",\n  \"phone\": \"+1234567890\",\n  \"email\": \"downtown@warmspa.com\",\n  \"city\": \"Cairo\",\n  \"state\": \"Cairo\",\n  \"country\": \"Egypt\",\n  \"location\": {\n    \"type\": \"Point\",\n    \"coordinates\": [31.2357, 30.0444]\n  },\n  \"workingHours\": {\n    \"monday\": \"9:00 AM - 6:00 PM\",\n    \"tuesday\": \"9:00 AM - 6:00 PM\",\n    \"wednesday\": \"9:00 AM - 6:00 PM\",\n    \"thursday\": \"9:00 AM - 6:00 PM\",\n    \"friday\": \"9:00 AM - 6:00 PM\",\n    \"saturday\": \"10:00 AM - 4:00 PM\",\n    \"sunday\": \"Closed\"\n  },\n  \"services\": [\"Massage\", \"Facial\", \"Body Treatment\"],\n  \"description\": \"Premium spa services in downtown area\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/branches",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"branches"
+							]
+						},
+						"description": "Create a new branch (Admin/SAdmin only). Use Admin or SAdmin bearer token."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Branch (Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_role}} {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Downtown Branch\",\n  \"workingHours\": {\n    \"monday\": \"8:00 AM - 7:00 PM\",\n    \"tuesday\": \"8:00 AM - 7:00 PM\",\n    \"wednesday\": \"8:00 AM - 7:00 PM\",\n    \"thursday\": \"8:00 AM - 7:00 PM\",\n    \"friday\": \"8:00 AM - 7:00 PM\",\n    \"saturday\": \"9:00 AM - 5:00 PM\",\n    \"sunday\": \"Closed\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/branches/{{branch_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"branches",
+								"{{branch_id}}"
+							]
+						},
+						"description": "Update an existing branch (Admin/SAdmin only). Use Admin or SAdmin bearer token."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Branch (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_role}} {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/branches/{{branch_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"branches",
+								"{{branch_id}}"
+							]
+						},
+						"description": "Soft delete a branch (Admin/SAdmin only). Use Admin or SAdmin bearer token."
+					},
+					"response": []
+				}
+			],
+			"description": "Branch management endpoints for spa locations. Admin operations require Admin/SAdmin bearer tokens."
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								},
+								{
+									"key": "category",
+									"value": "Massage",
+									"description": "Filter by product category"
+								},
+								{
+									"key": "price[gte]",
+									"value": "50",
+									"description": "Filter by minimum price"
+								},
+								{
+									"key": "price[lte]",
+									"value": "200",
+									"description": "Filter by maximum price"
+								},
+								{
+									"key": "sort",
+									"value": "-createdAt",
+									"description": "Sort by field (prefix with - for descending)"
+								}
+							]
+						},
+						"description": "Get all products with filtering, sorting, and pagination (public endpoint)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products",
+								"{{product_id}}"
+							]
+						},
+						"description": "Get a specific product by ID (public endpoint)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Products by Branch",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/branch/{{branch_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products",
+								"branch",
+								"{{branch_id}}"
+							]
+						},
+						"description": "Get all products available at a specific branch (public endpoint)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_role}} {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Swedish Massage\",\n  \"description\": \"Relaxing full body massage using long strokes and kneading techniques\",\n  \"category\": \"Massage\",\n  \"price\": 120,\n  \"duration\": 60,\n  \"branch\": \"{{branch_id}}\",\n  \"images\": [\"https://example.com/swedish-massage.jpg\"],\n  \"features\": [\"Relaxation\", \"Stress Relief\", \"Muscle Tension\"],\n  \"benefits\": [\"Reduces stress\", \"Improves circulation\", \"Relieves muscle tension\"]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/products",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products"
+							]
+						},
+						"description": "Create a new product/service (Admin/SAdmin only). Use Admin or SAdmin bearer token."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product (Admin)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_role}} {{auth_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"price\": 130,\n  \"description\": \"Updated description for Swedish Massage\",\n  \"discountPrice\": 110\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products",
+								"{{product_id}}"
+							]
+						},
+						"description": "Update an existing product (Admin/SAdmin only). Use Admin or SAdmin bearer token."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product (Admin)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_role}} {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/{{product_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products",
+								"{{product_id}}"
+							]
+						},
+						"description": "Soft delete a product (Admin/SAdmin only). Use Admin or SAdmin bearer token."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product Statistics (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{admin_role}} {{auth_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/products/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"products",
+								"stats"
+							]
+						},
+						"description": "Get product statistics and analytics (Admin/SAdmin only). Use Admin or SAdmin bearer token."
+					},
+					"response": []
+				}
+			],
+			"description": "Product and service management endpoints. Admin operations require Admin/SAdmin bearer tokens."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-save auth token and role from login response",
+					"if (pm.response.code === 200 && pm.request.url.path.includes('login')) {",
+					"    try {",
+					"        const response = pm.response.json();",
+					"        if (response.user && response.user.role && response.token) {",
+					"            pm.environment.set('auth_token', response.token);",
+					"            pm.environment.set('user_role', response.user.role);",
+					"            pm.environment.set('admin_role', response.user.role);",
+					"        }",
+					"    } catch (e) {",
+					"        console.log('Error parsing login response:', e);",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_role",
+			"value": "User",
+			"type": "string"
+		},
+		{
+			"key": "admin_role",
+			"value": "Admin",
+			"type": "string"
+		},
+		{
+			"key": "branch_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "product_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
