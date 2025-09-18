@@ -124,21 +124,30 @@ export const resetpassword = async (req, res) => {
 
 export const sendOTP = async (req, res) => {
     const { email } = req.body;
-    const user = await userModel.findOne({ email });
-    if (!user) {
-        throw new AppError(translations.sendOTP.emailNotFound.en, 404);
+    try {
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            throw new AppError(translations.sendOTP.emailNotFound.en, 404);
+        }
+
+        const OTP = Math.floor(100000 + Math.random() * 900000).toString();
+        user.OTP = OTP;
+        await user.save();
+
+        let html = resetpasswordTemplate(user, OTP);
+        await sendEmail(user.email, html, "undefined", "Verify OTP"); 
+
+        res.status(200).json({
+            status: 'success',
+            message: translations.sendOTP.success.en,
+        });
+    } catch (error) {
+        console.error('Error in sendOTP:', error);
+        res.status(error.statusCode || 500).json({
+            status: 'error',
+            message: error.message || 'Failed to send OTP',
+        });
     }
-    const OTP = Math.floor(100000 + Math.random() * 900000).toString();
-    user.OTP = OTP;
-    await user.save();
-
-    let html = resetpasswordTemplate(user, OTP);
-    sendEmail(user.email, html, "undefined", "Verify OTP");
-
-    res.status(200).json({
-        status: 'success',
-        message: translations.sendOTP.success.en
-    });
 };
 
 export const verifyOTP = async (req, res) => {
