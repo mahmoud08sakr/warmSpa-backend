@@ -2,6 +2,7 @@ import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
 import Branch from "../../database/model/branch.model.js";
 import Stripe from 'stripe';
 import Order from "../../database/model/order.model.js";
+import { AppError } from "../../errorHandling/AppError.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
