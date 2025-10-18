@@ -12,22 +12,13 @@ const generateToken = (userId, role) => {
     let signature;
     switch (role) {
         case 'Admin':
-            signature = process.env.adminSignature;
+            signature = process.env.ADMIN_SECRET || 'admin-secret';
             break;
         case 'User':
-            signature = process.env.userSignature;
+            signature = process.env.USER_SECRET || 'user-secret';
             break;
-        case 'SAdmin':
-            signature = process.env.sadminSignature;
-            break;
-        case 'Agent':
-            signature = process.env.agentSignature;
-            break;
-        case 'MC':
-            signature = process.env.mcSignature;
-            break;
-        case 'Support':
-            signature = process.env.supportSignature;
+        case 'Branch':
+            signature = process.env.BRANCH_SECRET || 'branch-secret';
             break;
         default:
             signature = process.env.userSignature;
@@ -73,54 +64,38 @@ export const signup = async (req, res) => {
     });
 };
 
-export const login = async (req, res) => {
-    const { email, password } = req.body;
+// Using the existing generateToken function that's already defined at the top of the file
 
-    const user = await userModel.findOne({ email }).select('+password');
-    if (!user) {
-        throw new AppError(translations.login.emailNotFound.en, 401);
-    }
+export const login = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-        throw new AppError(translations.login.invalidCredentials.en, 401);
-    }
-    let signature;
-    switch (user.role) {
-        case 'Admin':
-            signature = process.env.adminSignature;
-            break;
-        case 'User':
-            signature = process.env.userSignature;
-            break;
-        case 'MC':
-            signature = process.env.mcSignature;
-            break;
-        case 'Branch':
-            signature = process.env.branchSignature;
-            break;
-        case 'Support':
-            signature = process.env.supportSignature;
-            break;
-        case 'SAdmin':
-            signature = process.env.sadminSignature;
-            break;
-        default:
-            return next(new AppError('Unauthorized: Invalid bearer type', 403));
-    }
-    console.log(user.role);
-
-    const token = generateToken(user._id, signature);
-    user.password = undefined;
-
-    res.status(200).json({
-        status: 'success',
-        message: "login successfully",
-        data: {
-            user,
-            token
+        const user = await userModel.findOne({ email }).select('+password');
+        if (!user) {
+            return next(new AppError(translations.login.emailNotFound.en, 401));
         }
-    });
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return next(new AppError(translations.login.invalidCredentials.en, 401));
+        }
+
+        // Generate token using the updated generateToken function
+        const token = generateToken(user._id, user.role);
+        user.password = undefined;
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Login successful',
+            data: {
+                user,
+                token: `${token}` // Prefix token with role for auth middleware
+            }
+        });
+    } catch (error) {
+        console.error('Login error:', error);
+        next(new AppError('An error occurred during login', 500));
+    }
 };
 export const resetpassword = async (req, res) => {
     const { currentPassword, newPassword } = req.body;

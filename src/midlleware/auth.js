@@ -18,37 +18,34 @@ export const auth = async (req, res, next) => {
         let signature;
         switch (bearer) {
             case 'Admin':
-                signature = process.env.adminSignature;
+                signature = process.env.ADMIN_SECRET || 'admin-secret';
                 break;
             case 'User':
-                signature = process.env.userSignature;
-                break;
-            case 'MC':
-                signature = process.env.mcSignature;
+                signature = process.env.USER_SECRET || 'user-secret';
                 break;
             case 'Branch':
-                signature = process.env.branchSignature;
+                signature = process.env.BRANCH_SECRET || 'branch-secret';
                 break;
             case 'Support':
-                signature = process.env.supportSignature;
+                signature = process.env.SUPPORT_SECRET || 'support-secret';
                 break;
-            case 'SAdmin':
-                signature = process.env.sadminSignature;
+            case 'Moderator':
+                signature = process.env.MODERATOR_SECRET || 'moderator-secret';
                 break;
             default:
                 return next(new AppError('Unauthorized: Invalid bearer type', 403));
         }
-        console.log(signature , "test test ");
-        console.log(bearer , "from bearer");
-        
-        
+        console.log(signature, "test test ");
+        console.log(bearer, "from bearer");
+
+
 
         let decoded;
         try {
             decoded = jwt.verify(token, signature);
-            console.log(decoded , "from decoded");
-            
-        } catch (jwtError) {
+            console.log(decoded, "from decoded");
+        } catch (error) {
+            console.error('JWT verification error:', error);
             return next(new AppError('Unauthorized: Invalid or expired token', 403));
         }
 

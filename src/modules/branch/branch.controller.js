@@ -8,9 +8,11 @@ import Branch from '../../database/model/branch.model.js';
 
 export const getUserDetails = async (req, res, next) => {
     let { id } = req.user
+    console.log(id, 'from iddddddddddddddd');
+
     let branchData = await Branch.findOne({ userAccountId: id })
     if (!branchData) {
-        return next(new AppError(`No branch found with ID: ${productsIds[i]}`, 404));
+        return next(new AppError(`No branch found with ID: ${userAccountId[i]}`, 404));
     }
     res.json({
         message: "branchData",
