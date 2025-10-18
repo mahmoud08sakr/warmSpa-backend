@@ -46,6 +46,8 @@ export const auth = async (req, res, next) => {
         let decoded;
         try {
             decoded = jwt.verify(token, signature);
+            console.log(decoded , "from decoded");
+            
         } catch (jwtError) {
             return next(new AppError('Unauthorized: Invalid or expired token', 403));
         }
