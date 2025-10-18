@@ -69,29 +69,29 @@ const branchSchema = new mongoose.Schema({
         }
     },
     workingHours: {
-        monday: { type: String, default: '9:00 AM - 6:00 PM' },
-        tuesday: { type: String, default: '9:00 AM - 6:00 PM' },
-        wednesday: { type: String, default: '9:00 AM - 6:00 PM' },
-        thursday: { type: String, default: '9:00 AM - 6:00 PM' },
-        friday: { type: String, default: '9:00 AM - 6:00 PM' },
-        saturday: { type: String, default: '10:00 AM - 4:00 PM' },
+        monday: { type: String, default: '2:00 AM - 1:00 AM' },
+        tuesday: { type: String, default: '2:00 AM - 1:00 AM' },
+        wednesday: { type: String, default: '2:00 AM - 1:00 AM' },
+        thursday: { type: String, default: '2:00 AM - 1:00 AM' },
+        friday: { type: String, default: '2:00 AM - 1:00 AM' },
+        saturday: { type: String, default: '2:00 AM - 1:00 AM' },
         sunday: { type: String, default: 'Closed' }
     },
     services: [{
-        serviceSname: {
-            type: String,
-            enum: ['Massage', 'Facial', 'Body Treatment', 'Spa Package', 'Other'],
-            trim: true
+        serviceId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Product',
+            required: [true, 'Service reference is required']
         },
-        price: {
-            type: Number,
-            min: [0, 'Service price cannot be negative']
-        }
+        _id: false
     }],
     description: {
         type: String,
         trim: true,
         maxlength: [500, 'Description cannot exceed 500 characters']
+    },
+    spaRooms:{
+        type:Number
     }
 }, {
     timestamps: true,

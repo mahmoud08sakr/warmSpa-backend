@@ -1,11 +1,35 @@
 import { createBranch, getAllBranches, getBranchById, updateBranch, deleteBranch, getBranchesWithin } from './branch.service.js';
 import { handleAsyncError } from '../../errorHandling/handelAsyncError.js';
 import { AppError } from '../../errorHandling/AppError.js';
-
-export const createBranchHandler = handleAsyncError(async (req, res) => {
+import Product from '../../database/model/product.model.js';
+import Room from '../../database/model/room.model.js';
+import Branch from '../../database/model/branch.model.js';
+export const createBranchHandler = handleAsyncError(async (req, res, next) => {
+    let { services, roomNumber } = req.body
+    console.log(roomNumber);
+    req.body.spaRooms = roomNumber
+    let productsIds = []
+    if (services && services.length > 0) {
+        productsIds = services.map(service => service.serviceId);
+    }
+    for (let i = 0; i < productsIds.length; i++) {
+        let branch = await Product.findById(productsIds[i]);
+        console.log();
+        if (!branch) {
+            return next(new AppError(`No branch found with ID: ${productsIds[i]}`, 404));
+        }
+    }
     const branch = await createBranch(req.body);
-console.log(branch , 'branch');
-
+    for (let i = 1; i <= roomNumber; i++) {
+        let createdRooms = await Room.create({
+            roomNumber: i,
+            branchId: branch._id
+        });
+        console.log(createdRooms);
+        if (!createdRooms) {
+            return next(new AppError(`No branch found with ID: ${roomNumber[i]}`, 404));
+        }
+    }
     res.status(201).json({
         status: 'success',
         data: {
@@ -14,9 +38,32 @@ console.log(branch , 'branch');
     });
 });
 
+
+export const addService = handleAsyncError(async (req, res, next) => {
+    let { serviceId } = req.body
+    let { branchId } = req.params
+    let exsistServide = await Product.findById(serviceId)
+    if (!exsistServide) {
+        return next(new AppError(`No service found with ID: ${serviceId}`, 404));
+    }
+    let branch = await Branch.findById(branchId)
+    if (!branch) {
+        return next(new AppError(`no branch found with ID: ${branchId}`))
+    }
+    console.log(branch);
+
+    branch.services.push({ serviceId })
+    await branch.save()
+    res.status(200).json({
+        status: 'success',
+        data: {
+            branch
+        }
+    })
+})
 export const getAllBranchesHandler = handleAsyncError(async (req, res) => {
     try {
-        const branches = await getAllBranches(req.query);
+        const branches = await getAllBranches(req.query)
 
         res.status(200).json({
             status: 'success',
@@ -49,7 +96,7 @@ export const getBranchHandler = handleAsyncError(async (req, res) => {
 });
 
 export const updateBranchHandler = handleAsyncError(async (req, res) => {
-    const branch = await updateBranch(req.params.id, req.body );
+    const branch = await updateBranch(req.params.id, req.body);
     res.status(200).json({
         status: 'success',
         data: {

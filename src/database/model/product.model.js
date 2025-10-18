@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema({
     discountPrice: {
         type: Number,
         validate: {
-            validator: function(value) {
+            validator: function (value) {
                 return !value || value < this.price;
             },
             message: 'Discount price must be less than the regular price'
@@ -44,7 +44,7 @@ const productSchema = new mongoose.Schema({
     images: [{
         type: String,
         validate: {
-            validator: function(v) {
+            validator: function (v) {
                 return /^https?:\/\//.test(v);
             },
             message: props => `${props.value} is not a valid URL!`
@@ -53,11 +53,6 @@ const productSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
-    },
-    branch: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Branch',
-        required: [true, 'Branch reference is required']
     },
     rating: {
         average: {
@@ -101,15 +96,15 @@ productSchema.index({ price: 1 });
 productSchema.index({ duration: 1 });
 
 // Virtual for formatted price
-productSchema.virtual('formattedPrice').get(function() {
+productSchema.virtual('formattedPrice').get(function () {
     return `$${this.price.toFixed(2)}`;
 });
 
 // Virtual for formatted duration
-productSchema.virtual('formattedDuration').get(function() {
+productSchema.virtual('formattedDuration').get(function () {
     const hours = Math.floor(this.duration / 60);
     const minutes = this.duration % 60;
-    
+
     if (hours > 0) {
         return `${hours}h ${minutes}m`;
     }
@@ -117,7 +112,7 @@ productSchema.virtual('formattedDuration').get(function() {
 });
 
 // Virtual for discount percentage
-productSchema.virtual('discountPercentage').get(function() {
+productSchema.virtual('discountPercentage').get(function () {
     if (this.discountPrice && this.price > 0) {
         return Math.round(((this.price - this.discountPrice) / this.price) * 100);
     }
@@ -125,7 +120,7 @@ productSchema.virtual('discountPercentage').get(function() {
 });
 
 // Pre-save hook to ensure discount price is not greater than regular price
-productSchema.pre('save', function(next) {
+productSchema.pre('save', function (next) {
     if (this.discountPrice && this.discountPrice >= this.price) {
         this.discountPrice = undefined;
     }
@@ -133,7 +128,7 @@ productSchema.pre('save', function(next) {
 });
 
 // Pre-save hook to ensure rating average is within bounds
-productSchema.pre('save', function(next) {
+productSchema.pre('save', function (next) {
     if (this.rating && this.rating.average) {
         this.rating.average = Math.max(0, Math.min(5, this.rating.average));
     }

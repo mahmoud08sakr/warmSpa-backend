@@ -7,7 +7,8 @@ import {
     getBranchHandler,
     updateBranchHandler,
     deleteBranchHandler,
-    getBranchesWithinHandler
+    getBranchesWithinHandler,
+    addService
 } from './branch.controller.js';
 
 const router = express.Router();
@@ -18,6 +19,7 @@ router.get('/:id', getBranchHandler);
 router.use(auth);
 router.use(checkRole('Admin', 'SAdmin'));
 router.post('/', createBranchHandler);
+router.patch('/add-service/:branchId',addService)
 router.patch('/:id', updateBranchHandler);
 router.delete('/:id', deleteBranchHandler);
 
