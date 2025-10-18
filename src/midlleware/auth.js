@@ -26,8 +26,8 @@ export const auth = async (req, res, next) => {
             case 'MC':
                 signature = process.env.mcSignature;
                 break;
-            case 'Agent':
-                signature = process.env.agentSignature;
+            case 'Branch':
+                signature = process.env.branchSignature;
                 break;
             case 'Support':
                 signature = process.env.supportSignature;
