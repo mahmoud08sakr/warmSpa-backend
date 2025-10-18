@@ -85,6 +85,30 @@ export const login = async (req, res) => {
     if (!isPasswordValid) {
         throw new AppError(translations.login.invalidCredentials.en, 401);
     }
+    let signature;
+    switch (user.role) {
+        case 'Admin':
+            signature = process.env.adminSignature;
+            break;
+        case 'User':
+            signature = process.env.userSignature;
+            break;
+        case 'MC':
+            signature = process.env.mcSignature;
+            break;
+        case 'Branch':
+            signature = process.env.branchSignature;
+            break;
+        case 'Support':
+            signature = process.env.supportSignature;
+            break;
+        case 'SAdmin':
+            signature = process.env.sadminSignature;
+            break;
+        default:
+            return next(new AppError('Unauthorized: Invalid bearer type', 403));
+    }
+
     const token = generateToken(user._id, user.role);
     user.password = undefined;
 
@@ -135,7 +159,7 @@ export const sendOTP = async (req, res) => {
         await user.save();
 
         let html = resetpasswordTemplate(user, OTP);
-        await sendEmail(user.email, html, "undefined", "Verify OTP"); 
+        await sendEmail(user.email, html, "undefined", "Verify OTP");
 
         res.status(200).json({
             status: 'success',
