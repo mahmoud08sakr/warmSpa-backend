@@ -90,8 +90,12 @@ const branchSchema = new mongoose.Schema({
         trim: true,
         maxlength: [500, 'Description cannot exceed 500 characters']
     },
-    spaRooms:{
-        type:Number
+    spaRooms: {
+        type: Number
+    },
+    userAccountId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     }
 }, {
     timestamps: true,

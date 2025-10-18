@@ -4,9 +4,22 @@ import { AppError } from '../../errorHandling/AppError.js';
 import Product from '../../database/model/product.model.js';
 import Room from '../../database/model/room.model.js';
 import Branch from '../../database/model/branch.model.js';
+
+
+export const getUserDetails = async (req, res, next) => {
+    let { id } = req.user
+    let branchData = await Branch.findOne({ userAccountId: id })
+    if (!branchData) {
+        return next(new AppError(`No branch found with ID: ${productsIds[i]}`, 404));
+    }
+    res.json({
+        message: "branchData",
+        branchData
+    })
+}
+
 export const createBranchHandler = handleAsyncError(async (req, res, next) => {
     let { services, roomNumber } = req.body
-    console.log(roomNumber);
     req.body.spaRooms = roomNumber
     let productsIds = []
     if (services && services.length > 0) {

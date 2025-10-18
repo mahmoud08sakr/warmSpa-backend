@@ -8,18 +8,20 @@ import {
     updateBranchHandler,
     deleteBranchHandler,
     getBranchesWithinHandler,
-    addService
+    addService,
+    getUserDetails
 } from './branch.controller.js';
 
 const router = express.Router();
 
 router.get('/within/distance', getBranchesWithinHandler);
 router.get('/', getAllBranchesHandler);
-router.get('/:id', getBranchHandler);
+router.get('/get-branch-by-id/:id', getBranchHandler);
 router.use(auth);
+router.get('/get-branch-details-by-userId', checkRole("Admin", "Branch"), getUserDetails)
 router.use(checkRole('Admin', 'SAdmin'));
 router.post('/', createBranchHandler);
-router.patch('/add-service/:branchId',addService)
+router.patch('/add-service/:branchId', addService)
 router.patch('/:id', updateBranchHandler);
 router.delete('/:id', deleteBranchHandler);
 
