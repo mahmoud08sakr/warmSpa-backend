@@ -38,6 +38,10 @@ export const auth = async (req, res, next) => {
             default:
                 return next(new AppError('Unauthorized: Invalid bearer type', 403));
         }
+        console.log(signature , "test test ");
+        console.log(bearer , "from bearer");
+        
+        
 
         let decoded;
         try {
