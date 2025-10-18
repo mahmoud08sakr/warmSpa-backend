@@ -108,6 +108,7 @@ export const login = async (req, res) => {
         default:
             return next(new AppError('Unauthorized: Invalid bearer type', 403));
     }
+    console.log(user.role);
 
     const token = generateToken(user._id, signature);
     user.password = undefined;
