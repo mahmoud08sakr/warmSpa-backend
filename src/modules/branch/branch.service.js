@@ -6,35 +6,31 @@ export const createBranch = async (branchData) => {
     return newBranch;
 };
 export const getAllBranches = async (query = {}) => {
-  try {
-    const { city, country, isActive = true, page = 1, limit = 10 } = query;
-    const filter = { isActive };
-    if (city) filter.city = new RegExp(city, 'i');
-    if (country) filter.country = new RegExp(country, 'i');
-    const skip = (page - 1) * limit;
-
-    // Log the filter to ensure it's correct
-    console.log('Filter:', filter);
-
-    const branches = await Branch.find(filter)
-      .populate({
-        path: 'services.serviceId',
-        model: 'Product',
-        select: 'name price duration description'
-      })
-      .select('-__v')
-      .skip(skip)
-      .limit(parseInt(limit))
-      .sort({ createdAt: -1 });
-
-    // Log the raw branches data to inspect the population
-    console.log('Branches before return:', JSON.stringify(branches, null, 2));
-
-    return branches || [];
-  } catch (error) {
-    console.error('Error in getAllBranches:', error);
-    return [];
-  }
+    try {
+        const { city, country, isActive = true, page = 1, limit = 10 } = query;
+        const filter = { isActive: true };
+        if (city) filter.city = new RegExp(city, 'i');
+        if (country) filter.country = new RegExp(country, 'i');
+        const skip = (page - 1) * limit;
+        // Log the filter to ensure it's correct
+        console.log('Filter:', filter);
+        const branches = await Branch.find(filter)
+            .populate({
+                path: 'services.serviceId',
+                model: 'Product',
+                select: 'name price duration description'
+            })
+            .select('-__v')
+            .skip(skip)
+            .limit(parseInt(limit))
+            .sort({ createdAt: -1 });
+        // Log the raw branches data to inspect the population
+        console.log('Branches before return:', JSON.stringify(branches, null, 2));
+        return branches || [];
+    } catch (error) {
+        console.error('Error in getAllBranches:', error);
+        return [];
+    }
 };
 
 export const getBranchById = async (id) => {

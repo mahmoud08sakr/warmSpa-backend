@@ -18,6 +18,11 @@ const productSchema = new mongoose.Schema({
         required: [true, 'Product price is required'],
         min: [0, 'Price must be a positive number']
     },
+    branch: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Branch',
+        required: [true, 'Associated branch is required']
+    },
     discountPrice: {
         type: Number,
         validate: {
