@@ -8,6 +8,8 @@ import cors from "cors"
 import mongoose from 'mongoose';
 import { handleStripeWebhook } from "./modules/order/order.service.js";
 import orderRouter from "./modules/order/order.controller.js";
+import reservationRouter from "./modules/reservation/reservation.router.js";
+import roomsRouter from "./modules/rooms/room.router.js";
 dotenv.config();
 
 export const bootstrap = async (app, express) => {
@@ -47,6 +49,8 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/branches', branchRouter);
         app.use('/api/v1/products', productRouter);
         app.use('/api/v1/orders', orderRouter);
+        app.use('/api/v1/reservations', reservationRouter);
+        app.use('/api/v1/rooms', roomsRouter)
         app.use(globalErrorHandling);
 
         console.log("✅ API routes configured successfully");
