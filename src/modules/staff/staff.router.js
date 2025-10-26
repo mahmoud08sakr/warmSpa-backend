@@ -47,6 +47,9 @@ router.put('/fire-staff/:staffId', async (req, res) => {
     if (!staff) {
         return res.status(400).json({ message: "Staff member not found" });
     }
+    if (staff.isFired) {
+        return res.status(400).json({ message: "Staff member is already fired" });
+    }
     staff.isFired = true;
     await staff.save();
     res.status(200).json({ message: "Staff member fired successfully" });

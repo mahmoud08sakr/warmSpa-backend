@@ -47,12 +47,10 @@ export const getBranchById = async (id) => {
     if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
         throw new AppError('Invalid branch ID format', 400);
     }
-
     const branch = await Branch.findById(id).select('-__v');
     if (!branch) {
         throw new AppError('No branch found with that ID', 404);
     }
-
     return branch;
 };
 
