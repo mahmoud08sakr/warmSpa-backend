@@ -1,30 +1,26 @@
 import Branch from '../../database/model/branch.model.js';
 import { AppError } from '../../errorHandling/AppError.js';
+import { cityModel } from '../../database/model/city.model.js';
 export const createBranch = async (branchData) => {
-
+    const { city } = branchData
     const newBranch = await Branch.create(branchData);
+
+    let addedCity = await cityModel.findOne({ name: city });
+    if (!addedCity) {
+        addedCity = await cityModel.create({ name: city, branches: [newBranch._id] });
+        return newBranch;
+    };
+    addedCity.branches.push(newBranch._id);
+    await addedCity.save();
     return newBranch;
-};
+}
 export const getAllBranches = async (query = {}) => {
     try {
-        const { city, country, isActive = true, page = 1, limit = 10 } = query;
-        const filter = { isActive: true };
-        if (city) filter.city = new RegExp(city, 'i');
-        if (country) filter.country = new RegExp(country, 'i');
-        const skip = (page - 1) * limit;
-        // Log the filter to ensure it's correct
-        console.log('Filter:', filter);
-        const branches = await Branch.find(filter)
-            .populate({
-                path: 'services.serviceId',
-                model: 'Product',
-                select: 'name price duration description'
-            })
+        const branches = await cityModel.find({}).populate({
+            path: 'branches',
+        })
             .select('-__v')
-            .skip(skip)
-            .limit(parseInt(limit))
-            .sort({ createdAt: -1 });
-        // Log the raw branches data to inspect the population
+            console.log(branches);
         console.log('Branches before return:', JSON.stringify(branches, null, 2));
         return branches || [];
     } catch (error) {

@@ -10,6 +10,7 @@ import { handleStripeWebhook } from "./modules/order/order.service.js";
 import orderRouter from "./modules/order/order.controller.js";
 import reservationRouter from "./modules/reservation/reservation.router.js";
 import roomsRouter from "./modules/rooms/room.router.js";
+import staffRouter from "./modules/staff/staff.router.js";
 dotenv.config();
 
 export const bootstrap = async (app, express) => {
@@ -51,6 +52,7 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/orders', orderRouter);
         app.use('/api/v1/reservations', reservationRouter);
         app.use('/api/v1/rooms', roomsRouter)
+        app.use('/api/v1/staff', staffRouter);
         app.use(globalErrorHandling);
 
         console.log("✅ API routes configured successfully");

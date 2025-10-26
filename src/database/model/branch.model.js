@@ -96,7 +96,18 @@ const branchSchema = new mongoose.Schema({
     userAccountId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
+    },
+    helper: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        }
     }
+    ]
 }, {
     timestamps: true,
     toJSON: { virtuals: true },
