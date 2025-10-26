@@ -10,7 +10,6 @@ const router = Router();
 router.use(auth);
 router.use(checkRole('Admin', 'SAdmin'));
 router.post('/create-staff', async (req, res) => {
-
     let { name, branchId, role, phone, nationalId, attachments } = req.body;
     let exsistStaff = await StaffModel.findOne({ nationalId: nationalId });
     if (exsistStaff) {
@@ -30,7 +29,6 @@ router.post('/create-staff', async (req, res) => {
             return res.status(400).json({ message: "Failed to create staff member" });
         }
     }
-
 })
 
 router.get('/get-staff-by-branchId/:branchId', async (req, res) => {
@@ -42,5 +40,15 @@ router.get('/get-staff-by-branchId/:branchId', async (req, res) => {
 router.get('/get-all-staff', async (req, res) => {
     let staff = await StaffModel.find();
     res.status(200).json({ staff });
+})
+router.put('/fire-staff/:staffId', async (req, res) => {
+    let { staffId } = req.params;
+    let staff = await StaffModel.findById(staffId);
+    if (!staff) {
+        return res.status(400).json({ message: "Staff member not found" });
+    }
+    staff.isFired = true;
+    await staff.save();
+    res.status(200).json({ message: "Staff member fired successfully" });
 })
 export default router;

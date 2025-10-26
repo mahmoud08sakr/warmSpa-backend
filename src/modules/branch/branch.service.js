@@ -16,11 +16,9 @@ export const createBranch = async (branchData) => {
 }
 export const getAllBranches = async (query = {}) => {
     try {
-        const branches = await cityModel.find({}).populate({
-            path: 'branches',
-        })
+        const branches = await Branch.find({})
             .select('-__v')
-            console.log(branches);
+        console.log(branches);
         console.log('Branches before return:', JSON.stringify(branches, null, 2));
         return branches || [];
     } catch (error) {
@@ -28,6 +26,22 @@ export const getAllBranches = async (query = {}) => {
         return [];
     }
 };
+
+export const getAllBranchesByCity = async (query = {}) => {
+    try {
+        const branches = await cityModel.find({}).populate({
+            path: 'branches',
+        })
+            .select('-__v')
+        console.log(branches);
+        console.log('Branches before return:', JSON.stringify(branches, null, 2));
+        return branches || [];
+    } catch (error) {
+        console.error('Error in getAllBranches:', error);
+        return [];
+    }
+};
+
 
 export const getBranchById = async (id) => {
     if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {

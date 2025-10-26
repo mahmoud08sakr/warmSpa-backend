@@ -9,13 +9,16 @@ import {
     deleteBranchHandler,
     getBranchesWithinHandler,
     addService,
-    getUserDetails
+    getUserDetails,
+    getAllBranchesCityHandler
 } from './branch.controller.js';
+import { getAllBranchesByCity } from './branch.service.js';
 
 const router = express.Router();
 
 router.get('/within/distance', getBranchesWithinHandler);
 router.get('/', getAllBranchesHandler);
+router.get('/city' ,getAllBranchesCityHandler)
 router.get('/get-branch-by-id/:id', getBranchHandler);
 router.use(auth);
 router.get('/get-branch-details-by-userId', checkRole("Admin", "Branch"), getUserDetails)

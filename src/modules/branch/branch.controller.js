@@ -1,4 +1,4 @@
-import { createBranch, getAllBranches, getBranchById, updateBranch, deleteBranch, getBranchesWithin } from './branch.service.js';
+import { createBranch, getAllBranches, getBranchById, updateBranch, deleteBranch, getBranchesWithin, getAllBranchesByCity } from './branch.service.js';
 import { handleAsyncError } from '../../errorHandling/handelAsyncError.js';
 import { AppError } from '../../errorHandling/AppError.js';
 import Product from '../../database/model/product.model.js';
@@ -103,6 +103,31 @@ export const getAllBranchesHandler = handleAsyncError(async (req, res) => {
         });
     }
 });
+
+export const getAllBranchesCityHandler = handleAsyncError(async (req, res) => {
+    try {
+        const branches = await getAllBranchesByCity(req.query)
+
+        res.status(200).json({
+            status: 'success',
+            results: branches ? branches.length : 0,
+            data: {
+                branches: branches || []
+            }
+        });
+    } catch (error) {
+        console.error('Error in getAllBranchesHandler:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to fetch branches',
+            error: {
+                en: 'Failed to fetch branches. Please try again later.',
+                ar: 'فشل في جلب الفروع. يرجى المحاولة مرة أخرى لاحقًا.'
+            }
+        });
+    }
+});
+
 
 export const getBranchHandler = handleAsyncError(async (req, res) => {
     const branch = await getBranchById(req.params.id);
