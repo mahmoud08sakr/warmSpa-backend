@@ -21,7 +21,6 @@ const productSchema = new mongoose.Schema({
     branch: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch',
-        required: [true, 'Associated branch is required']
     },
     discountPrice: {
         type: Number,
