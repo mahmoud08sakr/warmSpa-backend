@@ -29,6 +29,12 @@ const staffSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    reasonOfFire: {
+        type: String
+    },
+    reasonOfRehire: {
+        type: String
+    },
     phone: {
         type: String,
         required: [true, 'Phone number is required'],

@@ -6,7 +6,6 @@ import { StaffModel } from "../../database/model/staff.model.js";
 const router = Router();
 
 
-
 router.use(auth);
 router.use(checkRole('Admin', 'SAdmin'));
 router.post('/create-staff', async (req, res) => {
@@ -43,6 +42,7 @@ router.get('/get-all-staff', async (req, res) => {
 })
 router.put('/fire-staff/:staffId', async (req, res) => {
     let { staffId } = req.params;
+    let { reasonOfFire } = req.body
     let staff = await StaffModel.findById(staffId);
     if (!staff) {
         return res.status(400).json({ message: "Staff member not found" });
@@ -51,7 +51,34 @@ router.put('/fire-staff/:staffId', async (req, res) => {
         return res.status(400).json({ message: "Staff member is already fired" });
     }
     staff.isFired = true;
+    staff.reasonOfFire = reasonOfFire
+    staff.reasonOfRehire = ""
+
     await staff.save();
     res.status(200).json({ message: "Staff member fired successfully" });
+})
+
+router.put('/reinstate-staff/:staffId', async (req, res) => {
+    let { staffId } = req.params;
+    let { reasonOfRehire } = req.body
+    let staff = await StaffModel.findById(staffId);
+    if (!staff) {
+        return res.status(400).json({ message: "Staff member not found" });
+    }
+    if (!staff.isFired) {
+        return res.status(400).json({ message: "Staff member is not fired" });
+    }
+    staff.isFired = false;
+    staff.reasonOfFire = ""
+    staff.reasonOfRehire = reasonOfRehire
+    await staff.save();
+    res.status(200).json({ message: "Staff member reinstated successfully" });
+})
+
+
+router.get('/get-staff-by-id/:staffId', async (req, res) => {
+    let { staffId } = req.params;
+    let staff = await StaffModel.findById(staffId);
+    res.status(200).json({ staff });
 })
 export default router;

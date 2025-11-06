@@ -175,3 +175,34 @@ export const verifyOTP = async (req, res) => {
         message: 'Password reset successfully'
     });
 };
+
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await userModel.find({}).select('-password -OTP -__v');
+        res.status(200).json({
+            status: 'success',
+            results: users.length,
+            data: {
+                users: users || []
+            }
+        });
+    }
+    catch (error) {
+        console.error('Error in getAllUsers:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to fetch users',
+        });
+    }
+}
+
+
+export const getUserById = async () => {
+    let { id } = req.params
+    const userData = await userModel.findById(id).select('-password')
+    if (!userData) {
+        throw new AppError('user not found', 404)
+    }
+    res.json({ message: "user found successfully", userData })
+}
