@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        required: true,
         enum: ["Admin", "User", "branch", "Agent", "MC", "Support", "Moderator"],
         default: "User"
     },
@@ -34,6 +33,15 @@ const userSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    city: {
+        type: String,
+        trim: true
+    },
+    gender: {
+        type: String,
+        enum: ["Male", "Female", "Other"],
+        default: "Male"
     }
 }, {
     timestamps: true

@@ -24,11 +24,9 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
     if (!serviceData) {
         return next(new AppError('No service found with that ID', 404));
     }
-    console.log(serviceData, "from service data ");
     const serviceMainData = await Product.findById(serviceId)
 
 
-    console.log(serviceMainData, "from service main data");
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -66,6 +64,7 @@ export const handleStripeWebhook = async (req, res) => {
     const sig = req.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
     let event;
+    console.log("from the stripe data");
 
     try {
         event = stripe.webhooks.constructEvent(

@@ -32,7 +32,7 @@ const generateToken = (userId, role) => {
 };
 
 export const signup = async (req, res) => {
-    const { name, email, password, phone, role = 'User' } = req.body;
+    const { name, email, password, phone, city, gender } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
         throw new AppError(translations.signup.emailExists.en, 409);
@@ -45,7 +45,7 @@ export const signup = async (req, res) => {
         email,
         password: hashedPassword,
         phone,
-        role
+        city, gender
     });
 
     await user.save();
