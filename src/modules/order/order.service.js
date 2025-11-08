@@ -3,6 +3,7 @@ import Branch from "../../database/model/branch.model.js";
 import Stripe from 'stripe';
 import Order from "../../database/model/order.model.js";
 import { AppError } from "../../errorHandling/AppError.js";
+import Product from "../../database/model/product.model.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -16,11 +17,18 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
     }
 
     const serviceData = branch.services.find(
-        (item) => item._id.toString() === serviceId
+
+        (service) => service.serviceId.toString() === serviceId
+
     );
     if (!serviceData) {
         return next(new AppError('No service found with that ID', 404));
     }
+    console.log(serviceData, "from service data ");
+    const serviceMainData = await Product.findById(serviceId)
+
+
+    console.log(serviceMainData, "from service main data");
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -29,9 +37,9 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
                 price_data: {
                     currency: 'EGP',
                     product_data: {
-                        name: serviceData.name || 'Service Payment',
+                        name: serviceMainData.name || 'Service Payment',
                     },
-                    unit_amount: Math.round(serviceData.price * 100),
+                    unit_amount: Math.round(serviceMainData.price * 100),
                 },
                 quantity: 1,
             },
@@ -39,7 +47,7 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
         mode: 'payment',
         success_url: `${req.protocol}://${req.get('host')}/stripe-webhook?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.protocol}://${req.get('host')}/payment/cancel`,
-        
+
         metadata: {
             userId: userId.toString(),
             branchId,

@@ -14,7 +14,7 @@ export const getUserDetails = async (req, res, next) => {
         path: 'services.serviceId',
         model: 'Product',
         select: 'name price duration description'
-      })
+    })
     if (!branchData) {
         return next(new AppError(`No branch found with ID: ${userAccountId[i]}`, 404));
     }
@@ -73,6 +73,15 @@ export const addService = handleAsyncError(async (req, res, next) => {
 
     branch.services.push({ serviceId })
     await branch.save()
+
+
+    let addedProduct = await Product.findById(serviceId)
+    if (!addedProduct) {
+        return next(new AppError(`No service found with ID: ${serviceId}`, 404));
+    }
+    addedProduct.branch.push(branchId)
+    addedProduct.save()
+
     res.status(200).json({
         status: 'success',
         data: {
