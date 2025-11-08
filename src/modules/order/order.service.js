@@ -76,6 +76,7 @@ export const handleStripeWebhook = async (req, res) => {
         console.error(`Webhook Error: ${err.message}`);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
+    console.log(event.type, "from the event.type");
 
     // Handle the event
     switch (event.type) {
