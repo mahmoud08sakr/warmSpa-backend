@@ -92,6 +92,9 @@ export const handleStripeWebhook = async (req, res) => {
                 service: paymentIntent.metadata.serviceId,
                 orderType: paymentIntent.metadata.orderType,
             });
+
+            console.log(createdOrder, "created ORder");
+
             await handlePaymentIntentSucceeded(paymentIntent);
             break;
         case 'payment_intent.payment_failed':
