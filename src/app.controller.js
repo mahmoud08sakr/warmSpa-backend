@@ -11,6 +11,8 @@ import orderRouter from "./modules/order/order.controller.js";
 import reservationRouter from "./modules/reservation/reservation.router.js";
 import roomsRouter from "./modules/rooms/room.router.js";
 import staffRouter from "./modules/staff/staff.router.js";
+import bodyParser from "body-parser";
+
 dotenv.config();
 
 export const bootstrap = async (app, express) => {
@@ -22,9 +24,12 @@ export const bootstrap = async (app, express) => {
             methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
             credentials: true, // Allow cookies or auth headers
         }));
+        app.post(
+            "/stripe-webhook",
+            bodyParser.raw({ type: "application/json" }),
+            handleStripeWebhook
+        );
         app.use(express.json());
-        app.post('/stripe-webhook', handleStripeWebhook);
-
         app.get("/health", (req, res) => {
             const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
             res.json({
