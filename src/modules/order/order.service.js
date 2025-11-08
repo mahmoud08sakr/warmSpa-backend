@@ -87,6 +87,12 @@ export const handleStripeWebhook = async (req, res) => {
                 paymentIntentId: paymentIntent.id,
                 status: 'pending',
                 paymentStatus: 'pending',
+                totalAmount: paymentIntent.amount_received / 100,
+                items: [{
+                    service: paymentIntent.metadata.serviceId,
+                    quantity: 1,
+                    price: paymentIntent.amount_received / 100,
+                }],
                 paymentDetails: paymentIntent,
                 user: paymentIntent.metadata.userId,
                 branch: paymentIntent.metadata.branchId,
@@ -98,6 +104,30 @@ export const handleStripeWebhook = async (req, res) => {
 
             await handlePaymentIntentSucceeded(paymentIntent);
             break;
+        case 'payment_intent.created':
+            const paymentIntentCreated = event.data.object;
+            const createdOrderIntent = await Order.create({
+                paymentIntentId: paymentIntent.id,
+                status: 'pending',
+                paymentStatus: 'pending',
+                totalAmount: paymentIntent.amount_received / 100,
+                items: [{
+                    service: paymentIntent.metadata.serviceId,
+                    quantity: 1,
+                    price: paymentIntent.amount_received / 100,
+                }],
+                paymentDetails: paymentIntent,
+                user: paymentIntent.metadata.userId,
+                branch: paymentIntent.metadata.branchId,
+                service: paymentIntent.metadata.serviceId,
+                orderType: paymentIntent.metadata.orderType,
+            });
+
+            console.log(createdOrderIntent, "created createdOrderIntent");
+
+            await handlePaymentIntentSucceeded(paymentIntent);
+            break;
+
         case 'payment_intent.payment_failed':
             const failedPaymentIntent = event.data.object;
             await handlePaymentIntentFailed(failedPaymentIntent);
