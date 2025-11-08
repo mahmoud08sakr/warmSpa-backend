@@ -81,6 +81,17 @@ export const handleStripeWebhook = async (req, res) => {
     switch (event.type) {
         case 'payment_intent.succeeded':
             const paymentIntent = event.data.object;
+
+            const createdOrder = await Order.create({
+                paymentIntentId: paymentIntent.id,
+                status: 'pending',
+                paymentStatus: 'pending',
+                paymentDetails: paymentIntent,
+                user: paymentIntent.metadata.userId,
+                branch: paymentIntent.metadata.branchId,
+                service: paymentIntent.metadata.serviceId,
+                orderType: paymentIntent.metadata.orderType,
+            });
             await handlePaymentIntentSucceeded(paymentIntent);
             break;
         case 'payment_intent.payment_failed':
