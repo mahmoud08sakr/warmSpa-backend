@@ -49,8 +49,14 @@ router.post('/end-reservation/:branchId/:roomId', auth, async (req, res) => {
 
 router.get('/active/:branchId', auth, async (req, res) => {
     let { branchId } = req.params;
-    let activeReservations = await Room.find({ branchId: branchId, isReserved: true });
+    let activeReservations = await Room.find({ branchId: branchId, isReserved });
     res.status(200).json({ activeReservations });
 });
 
+
+router.get('/reports-for-branch/:branchId', auth, async (req, res) => {
+    let { branchId } = req.params;
+    let reservations = await ReservationModel.find({ branchId: branchId });
+    res.status(200).json({ reservations });
+});
 export default router;

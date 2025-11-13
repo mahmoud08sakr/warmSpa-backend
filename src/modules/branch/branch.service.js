@@ -11,6 +11,7 @@ export const createBranch = async (branchData) => {
         return newBranch;
     };
     addedCity.branches.push(newBranch._id);
+    
     await addedCity.save();
     return newBranch;
 }

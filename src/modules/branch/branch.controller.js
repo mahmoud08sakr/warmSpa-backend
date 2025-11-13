@@ -25,7 +25,7 @@ export const getUserDetails = async (req, res, next) => {
 }
 
 export const createBranchHandler = handleAsyncError(async (req, res, next) => {
-    let { services, roomNumber } = req.body
+    let { services, roomNumber , branchAdminAccountId} = req.body
     req.body.spaRooms = roomNumber
     let productsIds = []
     if (services && services.length > 0) {

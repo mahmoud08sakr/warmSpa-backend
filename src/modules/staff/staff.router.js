@@ -8,10 +8,10 @@ const router = Router();
 
 
 router.use(auth);
-router.use(checkRole('Admin', 'SAdmin' , "Branch"));
+router.use(checkRole('Admin', 'SAdmin', "Branch"));
 router.post('/create-staff', upload.fields([{ name: 'attachments', maxCount: 10 }]), uploadToCloudinary(false, "array"), async (req, res) => {
     let { name, branchId, role, phone, nationalId } = req.body;
-    
+
     let exsistStaff = await StaffModel.findOne({ nationalId: nationalId });
     if (exsistStaff) {
         if (exsistStaff.isFired) {
@@ -23,24 +23,24 @@ router.post('/create-staff', upload.fields([{ name: 'attachments', maxCount: 10 
         if (!exsistBranch) {
             return res.status(400).json({ message: "The specified branch does not exist" });
         }
-        
+
         // Extract Cloudinary URLs from uploaded files
         let files = [];
         if (req.files && req.files.attachments && req.files.attachments.length > 0) {
             files = req.files.attachments.map(file => file.cloudinaryResult.secure_url);
         }
-        
-        let newStaff = await StaffModel.create({ 
-            name, 
-            branchId, 
-            role, 
-            phone, 
-            nationalId, 
-            files 
+
+        let newStaff = await StaffModel.create({
+            name,
+            branchId,
+            role,
+            phone,
+            nationalId,
+            files
         });
-        
+
         if (newStaff) {
-            return res.status(201).json({ 
+            return res.status(201).json({
                 message: "Staff member created successfully",
                 staff: newStaff
             });

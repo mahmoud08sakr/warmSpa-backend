@@ -97,6 +97,10 @@ const branchSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
+    branchAdminAccountId:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    }],
     helper: [{
         user: {
             type: mongoose.Schema.Types.ObjectId,
