@@ -165,6 +165,25 @@ export const uploadToCloudinary = (isRequired = true, type = "array") => async (
                     return next(new Error("Cloudinary multiple upload failed"));
                 }
             }
+            // Process attachments if they exist (for staff files)
+            if (req.files.attachments) {
+                try {
+                    // Validate max 10 files
+                    if (req.files.attachments.length > 10) {
+                        return next(new Error("Maximum 10 files allowed per request"));
+                    }
+                    
+                    const uploadedFiles = await Promise.all(
+                        req.files.attachments.map(async (file) => {
+                            const result = await uploadSingleFile(file);
+                            return { ...file, cloudinaryResult: result };
+                        })
+                    );
+                    req.files.attachments = uploadedFiles;
+                } catch (error) {
+                    return next(new Error("Cloudinary multiple upload failed"));
+                }
+            }
 
             return next();
         }

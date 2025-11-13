@@ -39,6 +39,10 @@ const staffSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Phone number is required'],
     }
+    ,
+    files: [{
+        type: String,
+    }],
 })
 
 

@@ -3,13 +3,15 @@ import Branch from "../../database/model/branch.model.js";
 import { auth } from "../../midlleware/auth.js";
 import { checkRole } from "../../midlleware/role.js";
 import { StaffModel } from "../../database/model/staff.model.js";
+import { upload, uploadToCloudinary } from "../../utilts/multer.js";
 const router = Router();
 
 
 router.use(auth);
-router.use(checkRole('Admin', 'SAdmin'));
-router.post('/create-staff', async (req, res) => {
-    let { name, branchId, role, phone, nationalId, attachments } = req.body;
+router.use(checkRole('Admin', 'SAdmin' , "Branch"));
+router.post('/create-staff', upload.fields([{ name: 'attachments', maxCount: 10 }]), uploadToCloudinary(false, "array"), async (req, res) => {
+    let { name, branchId, role, phone, nationalId } = req.body;
+    
     let exsistStaff = await StaffModel.findOne({ nationalId: nationalId });
     if (exsistStaff) {
         if (exsistStaff.isFired) {
@@ -21,9 +23,27 @@ router.post('/create-staff', async (req, res) => {
         if (!exsistBranch) {
             return res.status(400).json({ message: "The specified branch does not exist" });
         }
-        let newStaff = await StaffModel.create({ name, branchId, role, phone, nationalId, attachments });
+        
+        // Extract Cloudinary URLs from uploaded files
+        let files = [];
+        if (req.files && req.files.attachments && req.files.attachments.length > 0) {
+            files = req.files.attachments.map(file => file.cloudinaryResult.secure_url);
+        }
+        
+        let newStaff = await StaffModel.create({ 
+            name, 
+            branchId, 
+            role, 
+            phone, 
+            nationalId, 
+            files 
+        });
+        
         if (newStaff) {
-            return res.status(201).json({ message: "Staff member created successfully" });
+            return res.status(201).json({ 
+                message: "Staff member created successfully",
+                staff: newStaff
+            });
         } else {
             return res.status(400).json({ message: "Failed to create staff member" });
         }
