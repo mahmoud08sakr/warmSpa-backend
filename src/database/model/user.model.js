@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["Admin", "User", "branch", "Agent", "MC", "Support", "Moderator"],
+        enum: ["Admin", "User", "branch", "reception", "MC", "Support", "Moderator"],
         default: "User"
     },
     OTP: {
