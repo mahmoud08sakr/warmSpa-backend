@@ -150,7 +150,10 @@ export const handleStripeWebhook = async (req, res) => {
 
             await handlePaymentIntentSucceeded(paymentIntent);
             break;
-
+        case 'charge.updated':
+            const charge = event.data.object;
+            console.log("Charge updated:", charge.id, charge.status);
+            break;
         case 'payment_intent.payment_failed':
             const failedPaymentIntent = event.data.object;
             await handlePaymentIntentFailed(failedPaymentIntent);
