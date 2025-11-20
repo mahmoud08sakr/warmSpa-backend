@@ -83,7 +83,7 @@ export const handleStripeWebhook = async (req, res) => {
             case 'checkout.session.completed':
                 const session = event.data.object;
                 console.log('Checkout session completed:', session.id);
-                
+
                 const createdOrder = await Order.create({
                     paymentIntentId: session.payment_intent || session.id,
                     status: 'completed',
@@ -106,12 +106,12 @@ export const handleStripeWebhook = async (req, res) => {
             case 'payment_intent.succeeded':
                 const paymentIntentUpdate = event.data.object;
                 console.log('Payment intent succeeded:', paymentIntentUpdate.id);
-                
+
                 // Check if order already exists
-                const existingOrder = await Order.findOne({ 
-                    paymentIntentId: paymentIntentUpdate.id 
+                const existingOrder = await Order.findOne({
+                    paymentIntentId: paymentIntentUpdate.id
                 });
-                
+
                 if (existingOrder) {
                     await Order.findOneAndUpdate(
                         { paymentIntentId: paymentIntentUpdate.id },
@@ -145,7 +145,7 @@ export const handleStripeWebhook = async (req, res) => {
             case 'payment_intent.created':
                 const paymentIntentCreated = event.data.object;
                 console.log('Payment intent created:', paymentIntentCreated.id);
-                
+
                 await Order.create({
                     paymentIntentId: paymentIntentCreated.id,
                     status: 'pending',
@@ -230,7 +230,9 @@ export const getOrder = handleAsyncError(async (req, res, next) => {
 
 // Get user's orders
 export const getUserOrders = handleAsyncError(async (req, res) => {
-    const orders = await Order.find({ user: req.user._id })
+    console.log(req.user);
+
+    const orders = await Order.find({ user: req.user.id })
         .sort('-createdAt')
         .populate('branch', 'name')
         .populate('items.service', 'name price');
@@ -241,3 +243,17 @@ export const getUserOrders = handleAsyncError(async (req, res) => {
         data: orders
     });
 });
+
+export const getAllOrderForAdmin = handleAsyncError(async (req, res) => {
+    const orders = await Order.find()
+        .sort('-createdAt')
+        .populate('branch', 'name')
+        .populate('user', 'name email')
+        .populate('items.service', 'name price')
+
+    res.status(200).json({
+        status: 'success',
+        results: orders.length,
+        data: orders
+    });
+})
