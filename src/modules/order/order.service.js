@@ -80,7 +80,12 @@ export const handleStripeWebhook = async (req, res) => {
 
     // Handle the event
     switch (event.type) {
-        case 'payment_intent.succeeded':
+        case 'charge.updated':
+
+            if (event.type === "charge.updated") {
+                const charge = event.data.object;
+                console.log("Charge updated:", charge.id, charge.status);
+            }
             const paymentIntent = event.data.object;
 
             const createdOrder = await Order.create({
