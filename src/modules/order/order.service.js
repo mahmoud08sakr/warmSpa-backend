@@ -80,14 +80,12 @@ export const handleStripeWebhook = async (req, res) => {
 
     // Handle the event
     switch (event.type) {
-        case 'charge.updated':
-
+        case 'checkout.session.completed':
             if (event.type === "charge.updated") {
                 const charge = event.data.object;
                 console.log("Charge updated:", charge.id, charge.status);
             }
             const paymentIntent = event.data.object;
-
             const createdOrder = await Order.create({
                 paymentIntentId: paymentIntent.id,
                 status: 'pending',
@@ -104,10 +102,33 @@ export const handleStripeWebhook = async (req, res) => {
                 service: paymentIntent.metadata.serviceId,
                 orderType: paymentIntent.metadata.orderType,
             });
-
             console.log(createdOrder, "created ORder");
-
             await handlePaymentIntentSucceeded(paymentIntent);
+            break;
+        case 'charge.updated':
+            if (event.type === "charge.updated") {
+                const charge = event.data.object;
+                console.log("Charge updated:", charge.id, charge.status);
+            }
+            const paymentIntentUpdate = event.data.object;
+            const createdOrderUpdate = await Order.create({
+                paymentIntentId: paymentIntent.id,
+                status: 'pending',
+                paymentStatus: 'pending',
+                totalAmount: paymentIntentUpdate.amount_received / 100,
+                items: [{
+                    service: paymentIntentUpdate.metadata.serviceId,
+                    quantity: 1,
+                    price: paymentIntentUpdate.amount_received / 100,
+                }],
+                paymentDetails: paymentIntentUpdate,
+                user: paymentIntentUpdate.metadata.userId,
+                branch: paymentIntentUpdate.metadata.branchId,
+                service: paymentIntentUpdate.metadata.serviceId,
+                orderType: paymentIntentUpdate.metadata.orderType,
+            });
+            console.log(createdOrderUpdate, "created ORder");
+            await handlePaymentIntentSucceeded(paymentIntentUpdate);
             break;
         case 'payment_intent.created':
             const paymentIntentCreated = event.data.object;
