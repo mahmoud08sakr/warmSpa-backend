@@ -42,7 +42,7 @@ export const createExpenseHandler = handleAsyncError(async (req, res) => {
 
     throw new AppError('Failed to create expense', 500);
 });
-export const getAllExpenseHandler = handleAsyncError (async (req, res) => {
+export const getAllExpenseHandler = handleAsyncError(async (req, res) => {
     const expenses = await expenseModel.find().populate('branch', 'name');
     if (expenses) {
         res.status(200).json({ message: "All Expenses", expenses });
@@ -71,3 +71,29 @@ export const getExpenceRequistForBranch = handleAsyncError(async (req, res) => {
     }
     throw new AppError('Failed to get all expenses', 500);
 })
+
+
+export const approveRequest = handleAsyncError(async (req, res) => {
+    const { id } = req.params;
+    const expense = await expenseRequestModel.findById(id);
+    if (!expense) {
+        return res.status(404).json({ message: "Expense request not found" });
+    }
+    expense.isApproved = true;
+    const { nameExpense, description, amount, branch } = expense;
+    const Createexpense = await expenseModel.create({
+        nameExpense,
+        description,
+        amount,
+        branch
+    });
+    if (expense) {
+        return res.status(201).json({ message: "Expense created successfully", expense });
+    }
+    await expense.save();
+    res.status(200).json({ message: "Expense request approved successfully" });
+})
+
+
+
+
