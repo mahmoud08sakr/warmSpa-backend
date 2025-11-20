@@ -64,7 +64,6 @@ export const handleStripeWebhook = async (req, res) => {
     const sig = req.headers['stripe-signature'];
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
     let event;
-    console.log("from the stripe data");
 
     try {
         event = stripe.webhooks.constructEvent(
@@ -76,97 +75,116 @@ export const handleStripeWebhook = async (req, res) => {
         console.error(`Webhook Error: ${err.message}`);
         return res.status(400).send(`Webhook Error: ${err.message}`);
     }
-    console.log(event.type, "from the event.type");
 
-    // Handle the event
-    switch (event.type) {
-        case 'checkout.session.completed':
-            if (event.type === "charge.updated") {
+    console.log('Event type:', event.type);
+
+    try {
+        switch (event.type) {
+            case 'checkout.session.completed':
+                const session = event.data.object;
+                console.log('Checkout session completed:', session.id);
+                
+                const createdOrder = await Order.create({
+                    paymentIntentId: session.payment_intent || session.id,
+                    status: 'completed',
+                    paymentStatus: 'paid',
+                    totalAmount: session.amount_total / 100,
+                    items: [{
+                        service: session.metadata.serviceId,
+                        quantity: 1,
+                        price: session.amount_total / 100,
+                    }],
+                    paymentDetails: session,
+                    user: session.metadata.userId,
+                    branch: session.metadata.branchId,
+                    service: session.metadata.serviceId,
+                    orderType: session.metadata.orderType,
+                });
+                console.log('Order created:', createdOrder._id);
+                break;
+
+            case 'payment_intent.succeeded':
+                const paymentIntentUpdate = event.data.object;
+                console.log('Payment intent succeeded:', paymentIntentUpdate.id);
+                
+                // Check if order already exists
+                const existingOrder = await Order.findOne({ 
+                    paymentIntentId: paymentIntentUpdate.id 
+                });
+                
+                if (existingOrder) {
+                    await Order.findOneAndUpdate(
+                        { paymentIntentId: paymentIntentUpdate.id },
+                        {
+                            status: 'completed',
+                            paymentStatus: 'paid',
+                            $set: { 'paymentDetails': paymentIntentUpdate }
+                        },
+                        { new: true }
+                    );
+                } else {
+                    await Order.create({
+                        paymentIntentId: paymentIntentUpdate.id,
+                        status: 'completed',
+                        paymentStatus: 'paid',
+                        totalAmount: paymentIntentUpdate.amount_received / 100,
+                        items: [{
+                            service: paymentIntentUpdate.metadata.serviceId,
+                            quantity: 1,
+                            price: paymentIntentUpdate.amount_received / 100,
+                        }],
+                        paymentDetails: paymentIntentUpdate,
+                        user: paymentIntentUpdate.metadata.userId,
+                        branch: paymentIntentUpdate.metadata.branchId,
+                        service: paymentIntentUpdate.metadata.serviceId,
+                        orderType: paymentIntentUpdate.metadata.orderType,
+                    });
+                }
+                break;
+
+            case 'payment_intent.created':
+                const paymentIntentCreated = event.data.object;
+                console.log('Payment intent created:', paymentIntentCreated.id);
+                
+                await Order.create({
+                    paymentIntentId: paymentIntentCreated.id,
+                    status: 'pending',
+                    paymentStatus: 'pending',
+                    totalAmount: paymentIntentCreated.amount / 100,
+                    items: [{
+                        service: paymentIntentCreated.metadata.serviceId,
+                        quantity: 1,
+                        price: paymentIntentCreated.amount / 100,
+                    }],
+                    paymentDetails: paymentIntentCreated,
+                    user: paymentIntentCreated.metadata.userId,
+                    branch: paymentIntentCreated.metadata.branchId,
+                    service: paymentIntentCreated.metadata.serviceId,
+                    orderType: paymentIntentCreated.metadata.orderType,
+                });
+                break;
+
+            case 'charge.updated':
                 const charge = event.data.object;
                 console.log("Charge updated:", charge.id, charge.status);
-            }
-            const paymentIntent = event.data.object;
-            const createdOrder = await Order.create({
-                paymentIntentId: paymentIntent.id,
-                status: 'pending',
-                paymentStatus: 'pending',
-                totalAmount: paymentIntent.amount_received / 100,
-                items: [{
-                    service: paymentIntent.metadata.serviceId,
-                    quantity: 1,
-                    price: paymentIntent.amount_received / 100,
-                }],
-                paymentDetails: paymentIntent,
-                user: paymentIntent.metadata.userId,
-                branch: paymentIntent.metadata.branchId,
-                service: paymentIntent.metadata.serviceId,
-                orderType: paymentIntent.metadata.orderType,
-            });
-            console.log(createdOrder, "created ORder");
-            await handlePaymentIntentSucceeded(paymentIntent);
-            break;
-        case 'payment_intent.succeeded':
+                break;
 
-            const paymentIntentUpdate = event.data.object;
-            const createdOrderUpdate = await Order.create({
-                paymentIntentId: paymentIntent.id,
-                status: 'pending',
-                paymentStatus: 'pending',
-                totalAmount: paymentIntentUpdate.amount_received / 100,
-                items: [{
-                    service: paymentIntentUpdate.metadata.serviceId,
-                    quantity: 1,
-                    price: paymentIntentUpdate.amount_received / 100,
-                }],
-                paymentDetails: paymentIntentUpdate,
-                user: paymentIntentUpdate.metadata.userId,
-                branch: paymentIntentUpdate.metadata.branchId,
-                service: paymentIntentUpdate.metadata.serviceId,
-                orderType: paymentIntentUpdate.metadata.orderType,
-            });
-            console.log(createdOrderUpdate, "created ORder");
-            await handlePaymentIntentSucceeded(paymentIntentUpdate);
-            break;
-        case 'payment_intent.created':
-            const paymentIntentCreated = event.data.object;
-            const createdOrderIntent = await Order.create({
-                paymentIntentId: paymentIntent.id,
-                status: 'pending',
-                paymentStatus: 'pending',
-                totalAmount: paymentIntent.amount_received / 100,
-                items: [{
-                    service: paymentIntent.metadata.serviceId,
-                    quantity: 1,
-                    price: paymentIntent.amount_received / 100,
-                }],
-                paymentDetails: paymentIntent,
-                user: paymentIntent.metadata.userId,
-                branch: paymentIntent.metadata.branchId,
-                service: paymentIntent.metadata.serviceId,
-                orderType: paymentIntent.metadata.orderType,
-            });
+            case 'payment_intent.payment_failed':
+                const failedPaymentIntent = event.data.object;
+                await handlePaymentIntentFailed(failedPaymentIntent);
+                break;
 
-            console.log(createdOrderIntent, "created createdOrderIntent");
+            default:
+                console.log(`Unhandled event type ${event.type}`);
+        }
 
-            await handlePaymentIntentSucceeded(paymentIntent);
-            break;
-        case 'charge.updated':
-            const charge = event.data.object;
-            console.log("Charge updated:", charge.id, charge.status);
-            break;
-        case 'payment_intent.payment_failed':
-            const failedPaymentIntent = event.data.object;
-            await handlePaymentIntentFailed(failedPaymentIntent);
-            break;
-        // ... handle other event types
-        default:
-            console.log(`Unhandled event type ${event.type}`);
+        res.status(200).json({ received: true });
+    } catch (error) {
+        console.error('Error processing webhook:', error);
+        // Still return 200 to acknowledge receipt
+        res.status(200).json({ received: true, error: error.message });
     }
-
-    // Return a 200 response to acknowledge receipt of the event
-    res.status(200).json({ received: true });
 };
-
 // Helper function to handle successful payment
 const handlePaymentIntentSucceeded = async (paymentIntent) => {
     await Order.findOneAndUpdate(
