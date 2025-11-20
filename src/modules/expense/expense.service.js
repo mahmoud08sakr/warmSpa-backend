@@ -26,21 +26,21 @@ export const createExpenseHandler = handleAsyncError(async (req, res) => {
         }
 
         throw new AppError('Failed to create expense request', 500);
+    } else {
+        const expense = await expenseModel.create({
+            nameExpense,
+            description,
+            amount,
+            date,
+            branch
+        });
+        if (expense) {
+
+            res.status(201).json({ message: "Expense created successfully", expense });
+        }
+
+        throw new AppError('Failed to create expense', 500);
     }
-
-    const expense = await expenseModel.create({
-        nameExpense,
-        description,
-        amount,
-        date,
-        branch
-    });
-    if (expense) {
-
-        res.status(201).json({ message: "Expense created successfully", expense });
-    }
-
-    throw new AppError('Failed to create expense', 500);
 });
 export const getAllExpenseHandler = handleAsyncError(async (req, res) => {
     const expenses = await expenseModel.find().populate('branch', 'name');
