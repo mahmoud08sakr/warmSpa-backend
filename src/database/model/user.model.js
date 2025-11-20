@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ["Male", "Female", "Other"],
         default: "Male"
+    },
+    points: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true
