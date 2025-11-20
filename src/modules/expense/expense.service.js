@@ -94,6 +94,15 @@ export const approveRequest = handleAsyncError(async (req, res) => {
     res.status(200).json({ message: "Expense request approved successfully" });
 })
 
-
+export const cancelRequest = handleAsyncError(async (req, res) => {
+    const { id } = req.params;
+    const expense = await expenseRequestModel.findById(id);
+    if (!expense) {
+        return res.status(404).json({ message: "Expense request not found" });
+    }
+    expense.isApproved = false;
+    await expense.save();
+    res.status(200).json({ message: "Expense request canceled successfully" });
+})
 
 
