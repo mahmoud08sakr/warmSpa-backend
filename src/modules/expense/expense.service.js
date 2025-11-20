@@ -80,6 +80,7 @@ export const approveRequest = handleAsyncError(async (req, res) => {
         return res.status(404).json({ message: "Expense request not found" });
     }
     expense.isApproved = true;
+    expense.approvedBy = req.user.id;
     const { nameExpense, description, amount, branch } = expense;
     const Createexpense = await expenseModel.create({
         nameExpense,
