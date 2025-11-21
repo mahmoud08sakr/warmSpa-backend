@@ -57,7 +57,8 @@ export const getAllExpenceForBranch = handleAsyncError(async (req, res) => {
     throw new AppError('Failed to get all expenses', 500);
 })
 export const getExpenceRequist = handleAsyncError(async (req, res) => {
-    const expenses = await expenseRequestModel.find().populate('branch', 'name');
+    const expenses = await expenseRequestModel.find().sort('-createdAt')
+        .populate('branch', 'name');
     if (expenses) {
         res.status(200).json({ message: "All Expenses", expenses });
     }
