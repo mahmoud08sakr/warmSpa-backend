@@ -1,0 +1,191 @@
+{
+  "info": {
+    "_postman_id": "7d2f8b15-7b78-4c2d-9d67-6d9a7f0b3f10",
+    "name": "WarmSpa - Feedback API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for Feedback endpoints in WarmSpa API."
+  },
+  "item": [
+    {
+      "name": "List Feedback",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/feedback?branch={{branchId}}&user={{userId}}&page=1&limit=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "feedback"
+          ],
+          "query": [
+            { "key": "branch", "value": "{{branchId}}", "disabled": false },
+            { "key": "user", "value": "{{userId}}", "disabled": true },
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "List Feedback by Branch",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/feedback/branch/{{branchId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "feedback",
+            "branch",
+            "{{branchId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Feedback by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/feedback/{{feedbackId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "feedback",
+            "{{feedbackId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Feedback",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user\": \"{{userId}}\",\n  \"branch\": \"{{branchId}}\",\n  \"rating\": 5,\n  \"message\": \"Great service!\",\n  \"orderId\": \"{{orderId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/feedback",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "feedback"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Feedback",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"rating\": 4,\n  \"message\": \"Updated comment\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/feedback/{{feedbackId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "feedback",
+            "{{feedbackId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Feedback",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/feedback/{{feedbackId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "feedback",
+            "{{feedbackId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// If a token is present, ensure Authorization header is set",
+          "if (pm.environment.get('token')) {",
+          "  pm.request.headers.add({ key: 'Authorization', value: 'Bearer ' + pm.environment.get('token') });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "branchId", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" },
+    { "key": "orderId", "value": "", "type": "string" },
+    { "key": "feedbackId", "value": "", "type": "string" }
+  ]
+}
