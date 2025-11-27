@@ -60,6 +60,10 @@ const orderSchema = new mongoose.Schema({
     notes: {
         type: String,
         trim: true
+    },
+    date: {
+        type: Date,
+        default: Date.now
     }
 }, {
     timestamps: true

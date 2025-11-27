@@ -9,6 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
     const { branchId, serviceId } = req.params;
+
     const userId = req.user.id;
 
     const branch = await Branch.findById(branchId);
@@ -51,6 +52,7 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
             branchId,
             serviceId,
             orderType: 'service',
+            date: req.body.date ? req.body.date: Date.now()
         },
     });
 
@@ -99,6 +101,7 @@ export const handleStripeWebhook = async (req, res) => {
                     branch: session.metadata.branchId,
                     service: session.metadata.serviceId,
                     orderType: session.metadata.orderType,
+                    date: session.metadata.date
                 });
                 console.log('Order created:', createdOrder._id);
                 break;
