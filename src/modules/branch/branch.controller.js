@@ -38,6 +38,13 @@ export const createBranchHandler = handleAsyncError(async (req, res, next) => {
             return next(new AppError(`No branch found with ID: ${productsIds[i]}`, 404));
         }
     }
+    if (req.body.target !== undefined) {
+        const t = Number(req.body.target);
+        if (Number.isNaN(t) || t < 0) {
+            return next(new AppError('Invalid target: must be a non-negative number', 400));
+        }
+        req.body.target = t;
+    }
     const branch = await createBranch(req.body);
     for (let i = 1; i <= roomNumber; i++) {
         let createdRooms = await Room.create({
@@ -149,6 +156,13 @@ export const getBranchHandler = handleAsyncError(async (req, res) => {
 });
 
 export const updateBranchHandler = handleAsyncError(async (req, res) => {
+    if (req.body.target !== undefined) {
+        const t = Number(req.body.target);
+        if (Number.isNaN(t) || t < 0) {
+            throw new AppError('Invalid target: must be a non-negative number', 400);
+        }
+        req.body.target = t;
+    }
     const branch = await updateBranch(req.params.id, req.body);
     res.status(200).json({
         status: 'success',

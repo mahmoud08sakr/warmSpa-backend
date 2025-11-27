@@ -111,7 +111,11 @@ const branchSchema = new mongoose.Schema({
             default: Date.now
         }
     }
-    ]
+    ],
+    target:{
+        type:Number,
+        default:0
+    }
 }, {
     timestamps: true,
     toJSON: { virtuals: true },
