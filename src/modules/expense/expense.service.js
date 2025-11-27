@@ -80,6 +80,9 @@ export const approveRequest = handleAsyncError(async (req, res) => {
     if (!expense) {
         return res.status(404).json({ message: "Expense request not found" });
     }
+    if (expense.isApproved) {
+        return res.status(400).json({ message: "Expense request already approved" });
+    }
     expense.isApproved = true;
     expense.approvedBy = req.user.id;
     const { nameExpense, description, amount, branch } = expense;
@@ -102,9 +105,14 @@ export const cancelRequest = handleAsyncError(async (req, res) => {
     if (!expense) {
         return res.status(404).json({ message: "Expense request not found" });
     }
+    if (expense.isApproved) {
+        return res.status(400).json({ message: "Expense request already approved" });
+    }
     expense.isApproved = false;
     await expense.save();
     res.status(200).json({ message: "Expense request canceled successfully" });
 })
+
+
 
 
