@@ -14,9 +14,6 @@ export const createFeedback = async (feedbackData, userId) => {
     if (rating && (rating < 1 || rating > 5)) {
         throw new AppError('Rating must be between 1 and 5', 400);
     }
-
-    console.log(userId.id, "from user id ");
-
     const payload = {
         user: new mongoose.Types.ObjectId(userId.id),
         branch: new mongoose.Types.ObjectId(branch),

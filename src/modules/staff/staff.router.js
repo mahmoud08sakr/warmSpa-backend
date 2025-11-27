@@ -101,4 +101,24 @@ router.get('/get-staff-by-id/:staffId', async (req, res) => {
     let staff = await StaffModel.findById(staffId);
     res.status(200).json({ staff });
 })
+
+
+router.put('/update-staff/:staffId', auth, checkRole('Admin', 'SAdmin', 'Branch'), upload.fields([{ name: 'attachments', maxCount: 10 }]), uploadToCloudinary(false, "array"), async (req, res) => {
+    let { staffId } = req.params;
+    let { name, branchId, role, phone, nationalId } = req.body
+    let staff = await StaffModel.findById(staffId);
+    if (!staff) {
+        return res.status(400).json({ message: "Staff member not found" });
+    }
+    staff.name = name;
+    staff.branchId = branchId;
+    staff.role = role;
+    staff.phone = phone;
+    staff.nationalId = nationalId;
+    if (req.files && req.files.attachments && req.files.attachments.length > 0) {
+        staff.attachments = req.files.attachments.map(file => file.cloudinaryResult.secure_url);
+    }
+    await staff.save();
+    res.status(200).json({ message: "Staff member updated successfully" });
+})
 export default router;
