@@ -216,3 +216,13 @@ export const getDiscountRequestHandler = handleAsyncError(async (req, res) => {
         }
     })
 })
+
+export const getDiscountRequestHandlerForBranch = handleAsyncError(async (req, res) => {
+    const requestDiscount = await RequestDiscountModel.find({ branchId: req.params.branchId });
+    res.status(200).json({
+        status: 'success',
+        data: {
+            requestDiscount
+        }
+    })
+})

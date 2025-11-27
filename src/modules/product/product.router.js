@@ -13,7 +13,8 @@ import {
     approveDiscountHandler,
     rejectDiscountHandler,
     makeTheOrderAfterApproveDiscountHandler,
-    getDiscountRequestHandler
+    getDiscountRequestHandler,
+    getDiscountRequestHandlerForBranch,
 } from './product.controller.js';
 
 const router = express.Router();
@@ -33,4 +34,5 @@ router.patch('/update-product/:id', updateProductHandler);
 router.delete('/delete-product/:id', deleteProductHandler);
 router.put('/approve-discount/:id', approveDiscountHandler);
 router.put('/reject-discount/:id', rejectDiscountHandler);
+router.get('/get-discount-request-for-branch/:branchId', getDiscountRequestHandlerForBranch);
 export default router;
