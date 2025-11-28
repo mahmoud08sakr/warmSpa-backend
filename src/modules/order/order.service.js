@@ -52,7 +52,7 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
             branchId,
             serviceId,
             orderType: 'service',
-            date: req.body.date ? req.body.date: Date.now()
+            date: req.body.date ? req.body.date : Date.now()
         },
     });
 
@@ -230,6 +230,9 @@ export const getOrder = handleAsyncError(async (req, res, next) => {
         data: order
     });
 });
+
+
+
 
 // Get user's orders
 export const getUserOrders = handleAsyncError(async (req, res) => {
