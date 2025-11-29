@@ -26,7 +26,7 @@ router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
     roomData.paymentMethod = paymentMethod;
     roomData.currency = currency;
     await roomData.save();
-    const addOrder = await Order.create({userId: mongoose.Types.ObjectId(req.user.id) , branchId: branchId , items: [{service: roomData._id , quantity: 1 , price: roomData.priceAfterDiscount}], totalAmount: roomData.priceAfterDiscount , status:'processing', paymentStatus: 'paid'})
+    // const addOrder = await Order.create({userId: mongoose.Types.ObjectId(req.user.id) , branchId: branchId , items: [{service: roomData._id , quantity: 1 , price: roomData.priceAfterDiscount}], totalAmount: roomData.priceAfterDiscount , status:'processing', paymentStatus: 'paid'})
     const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, branchId: branchId, gender: gender, reservationDate: new Date(), price, priceAfterDiscount, responsiblePerson, captain });
     res.status(201).json({ message: 'Reservation created successfully' });
 });
