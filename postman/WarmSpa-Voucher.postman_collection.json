@@ -1,0 +1,114 @@
+{
+  "info": {
+    "name": "WarmSpa - Voucher APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "b1c3f8c5-1e42-4e4e-9f41-6f2b7a0a0b9d"
+  },
+  "item": [
+    {
+      "name": "Vouchers",
+      "item": [
+        {
+          "name": "Create Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vouchers/create-voucher",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vouchers", "create-voucher"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME10\",\n  \"discountType\": \"percentage\",\n  \"discountValue\": 10,\n  \"branchId\": \"<branchObjectId>\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Vouchers By Branch",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vouchers/get-voucher-by-branchId/{{branchId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vouchers", "get-voucher-by-branchId", "{{branchId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get All Vouchers",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vouchers/get-all-voucher",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vouchers", "get-all-voucher"]
+            }
+          }
+        },
+        {
+          "name": "Update Voucher",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vouchers/update-voucher/{{voucherId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vouchers", "update-voucher", "{{voucherId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME15\",\n  \"discountType\": \"fixed\",\n  \"discountValue\": 50,\n  \"branchId\": \"<branchObjectId>\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Activate Voucher",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vouchers/active-voucher/{{voucherId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vouchers", "active-voucher", "{{voucherId}}"]
+            }
+          }
+        },
+        {
+          "name": "Deactivate Voucher",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vouchers/deactive-voucher/{{voucherId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vouchers", "deactive-voucher", "{{voucherId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" },
+    { "key": "branchId", "value": "" },
+    { "key": "voucherId", "value": "" }
+  ]
+}

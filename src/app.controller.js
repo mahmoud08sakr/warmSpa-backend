@@ -13,6 +13,7 @@ import roomsRouter from "./modules/rooms/room.router.js";
 import expenseRouter from "./modules/expense/expense.controller.js";
 import staffRouter from "./modules/staff/staff.router.js";
 import feedbackRouter from "./modules/feedback/feedback.router.js";
+import voucherRouter from "./modules/voucher/voucher.controller.js";
 import bodyParser from "body-parser";
 
 dotenv.config();
@@ -61,6 +62,7 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/rooms', roomsRouter)
         app.use('/api/v1/staff', staffRouter);
         app.use('/api/v1/feedback', feedbackRouter);
+        app.use('/api/v1/vouchers', voucherRouter);
         app.use('/api/v1/expense',expenseRouter );
         app.use(globalErrorHandling);
 

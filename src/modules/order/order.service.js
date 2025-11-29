@@ -19,19 +19,13 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
     if (!branch.isActive) {
         return next(new AppError('This branch is not active', 400));
     }
-
     const serviceData = branch.services.find(
-
         (service) => service.serviceId.toString() === serviceId
-
     );
     if (!serviceData) {
         return next(new AppError('No service found with that ID', 404));
     }
     const serviceMainData = await Product.findById(serviceId)
-
-
-
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [
