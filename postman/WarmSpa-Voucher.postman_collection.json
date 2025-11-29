@@ -101,6 +101,39 @@
               "path": ["api", "v1", "vouchers", "deactive-voucher", "{{voucherId}}"]
             }
           }
+        },
+        {
+          "name": "Apply Voucher",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vouchers/apply-voucher/{{serviceId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vouchers", "apply-voucher", "{{serviceId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"WELCOME10\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Voucher",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vouchers/delete-voucher/{{voucherId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vouchers", "delete-voucher", "{{voucherId}}"]
+            }
+          }
         }
       ]
     }
@@ -109,6 +142,7 @@
     { "key": "base_url", "value": "http://localhost:3000" },
     { "key": "token", "value": "" },
     { "key": "branchId", "value": "" },
-    { "key": "voucherId", "value": "" }
+    { "key": "voucherId", "value": "" },
+    { "key": "serviceId", "value": "" }
   ]
 }
