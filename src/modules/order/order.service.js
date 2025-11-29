@@ -36,6 +36,7 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
                         name: name || 'Service Payment',
                     },
                     unit_amount: Math.round(price * 100),
+                    
                 },
                 quantity: 1,
             },
