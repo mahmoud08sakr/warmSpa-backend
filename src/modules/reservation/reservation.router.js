@@ -16,6 +16,8 @@ router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
     if (roomData.isReserved) {
         return res.status(400).json({ message: "Room is already reserved" });
     }
+    console.log(roomData.isReserved);
+    
     roomData.priceAfterDiscount = priceAfterDiscount ? priceAfterDiscount : price;
     roomData.isReserved = true;
     roomData.customerName = customerName;
