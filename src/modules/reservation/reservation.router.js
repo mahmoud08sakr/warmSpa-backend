@@ -8,7 +8,6 @@ const router = Router();
 
 router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
     let { branchId, roomId } = req.params;
-
     let { customerName, customerPhone, gender, paymentMethod, currency, price, responsiblePerson, captain, priceAfterDiscount } = req.body
     let roomData = await Room.findOne({ _id: roomId, branchId: branchId });
     if (!roomData) {
