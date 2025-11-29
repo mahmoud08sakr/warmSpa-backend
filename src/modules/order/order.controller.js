@@ -8,6 +8,6 @@ const router = Router()
 router.post('/create-payment-intent/:branchId/:serviceId', auth, createPaymentIntent);
 router.get('get-order-by-id/:id', getOrder);
 router.get('/user/:userId', auth,getUserOrders);
-router.get('/get-all-orders-by-admin' , auth , checkRole("Admin", "SAdmin" , "branch"), getAllOrderForAdmin);
+router.get('/get-all-orders-by-admin' , auth , checkRole("Admin", "SAdmin" , "Branch"), getAllOrderForAdmin);
 
 export default router
