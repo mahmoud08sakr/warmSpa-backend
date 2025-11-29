@@ -1,10 +1,18 @@
 import express from "express";
 import { auth } from "../../midlleware/auth.js";
 import { checkRole } from "../../midlleware/role.js";
-import { createVoucher, getVoucherByBranchId, getAllVouchers, updateVoucher, activateVoucher, deactivateVoucher } from "./voucher.service.js";
+import { createVoucher, getVoucherByBranchId, getAllVouchers, updateVoucher, activateVoucher, deactivateVoucher, applyVoucher } from "./voucher.service.js";
 const router = express.Router();
 
 router.use(auth);
+
+router.post('/apply-voucher/:serviceId' , auth , async (req , res) => {
+    const { serviceId } = req.params;
+    const {code} = req.body
+    const result = await applyVoucher(serviceId , code);
+    return res.status(result.status).json(result.body);
+})
+
 router.use(checkRole('Admin', 'SAdmin', "Branch"));
 
 router.post('/create-voucher', async (req, res) => {

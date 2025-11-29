@@ -1,4 +1,5 @@
 import Branch from "../../database/model/branch.model.js";
+import Product from "../../database/model/product.model.js";
 import { voucherModel } from "../../database/model/voucher.model.js";
 
 export const createVoucher = async ({ code, discountType, discountValue, branchId }) => {
@@ -70,3 +71,26 @@ export const deactivateVoucher = async (voucherId) => {
     return { status: 200, body: { message: "Voucher deactivated successfully" } };
 };
 
+export const applyVoucher = async (serviceId , code) => {
+    const voucher = await voucherModel.findOne({code});
+    if (!voucher) {
+        return { status: 400, body: { message: "Voucher not found" } };
+    }
+    if (!voucher.isActive) {
+        return { status: 400, body: { message: "Voucher is not active" } };
+    }
+    let serviceDate = await Product.findById(serviceId); 
+    if (!serviceDate) {
+        return { status: 400, body: { message: "Service not found" } };
+    }
+    let totalAmount = serviceDate.price;
+    let discountAmount = 0;
+    if (voucher.discountType === "percentage") {
+        discountAmount = (totalAmount * voucher.discountValue) / 100;
+    } else {
+        discountAmount = voucher.discountValue;
+    }
+    let finalAmount = totalAmount - discountAmount;
+    serviceDate.price = finalAmount;
+    return { status: 200, body: { message: "Voucher applied successfully", serviceDate } };
+};

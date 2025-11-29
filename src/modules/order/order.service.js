@@ -9,7 +9,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
     const { branchId, serviceId } = req.params;
-
+    let { name, price, date } = req.body
     const userId = req.user.id;
 
     const branch = await Branch.findById(branchId);
@@ -33,9 +33,9 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
                 price_data: {
                     currency: 'EGP',
                     product_data: {
-                        name: serviceMainData.name || 'Service Payment',
+                        name: name || 'Service Payment',
                     },
-                    unit_amount: Math.round(serviceMainData.price * 100),
+                    unit_amount: Math.round(price * 100),
                 },
                 quantity: 1,
             },
@@ -49,7 +49,7 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
             branchId,
             serviceId,
             orderType: 'service',
-            date: req.body.date ? req.body.date : Date.now()
+            date: date ? date : Date.now()
         },
     });
 
