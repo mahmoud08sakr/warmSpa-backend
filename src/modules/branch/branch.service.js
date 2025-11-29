@@ -17,7 +17,7 @@ export const createBranch = async (branchData) => {
 }
 export const getAllBranches = async (query = {}) => {
     try {
-        const branches = await Branch.find({})
+        const branches = await Branch.find({isActive:true})
             .select('-__v')
         console.log(branches);
         console.log('Branches before return:', JSON.stringify(branches, null, 2));
