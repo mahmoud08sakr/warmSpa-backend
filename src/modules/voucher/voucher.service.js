@@ -5,7 +5,7 @@ import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
 import {AppError} from "../../errorHandling/AppError.js";
 
 export const createVoucher = handleAsyncError(async (req, res) => {
-    const { code, discountType, discountValue, branchId } = req.body;
+    const { code, discountType, discountValue, branchId , products } = req.body;
     const exists = await voucherModel.findOne({ code });
     if (exists) {
         return res.status(400).json({ message: "This voucher code already exists in the system" });
@@ -18,7 +18,7 @@ export const createVoucher = handleAsyncError(async (req, res) => {
         }
     }
 
-    const voucher = await voucherModel.create({ code, discountType, discountValue, branchId });
+    const voucher = await voucherModel.create({ code, discountType, discountValue, branchId , products });
     if (!voucher) {
         return res.status(400).json({ message: "Failed to create voucher" });
     }
