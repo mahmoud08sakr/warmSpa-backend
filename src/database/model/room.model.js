@@ -47,6 +47,9 @@ let roomSchema = new mongoose.Schema({
     price: {
         type: Number,
     },
+    priceAfterDiscount: {
+        type: Number,
+    },
     currency: {
         type: String,
         default: 'EGP'

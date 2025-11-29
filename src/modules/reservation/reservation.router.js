@@ -9,7 +9,7 @@ router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
     let { branchId, roomId } = req.params;
     console.log(roomId, "testttttttttttt");
 
-    let { customerName, customerPhone, gender, paymentMethod, currency, price, responsiblePerson, captain } = req.body
+    let { customerName, customerPhone, gender, paymentMethod, currency, price, responsiblePerson, captain, priceAfterDiscount } = req.body
     let roomData = await Room.findOne({ _id: roomId, branchId: branchId });
     if (!roomData) {
         return res.status(404).json({ message: "Room not found in the specified branch" });
@@ -17,6 +17,7 @@ router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
     if (roomData.isReserved) {
         return res.status(400).json({ message: "Room is already reserved" });
     }
+    roomData.priceAfterDiscount = priceAfterDiscount ? priceAfterDiscount : price;
     roomData.isReserved = true;
     roomData.customerName = customerName;
     roomData.customerPhone = customerPhone
@@ -24,7 +25,7 @@ router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
     roomData.paymentMethod = paymentMethod;
     roomData.currency = currency;
     await roomData.save();
-    const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, branchId: branchId, gender: gender, reservationDate: new Date(), price, responsiblePerson, captain });
+    const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, branchId: branchId, gender: gender, reservationDate: new Date(), price, priceAfterDiscount, responsiblePerson, captain });
     res.status(201).json({ message: 'Reservation created successfully' });
 });
 
