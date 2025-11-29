@@ -50,4 +50,9 @@ router.put('/deactive-voucher/:voucherId', async (req, res) => {
     return res.status(result.status).json(result.body);
 })
 
+router.delete('/delete-voucher/:voucherId', async (req, res) => {
+    const { voucherId } = req.params;
+    const result = await deleteVoucher(voucherId);
+    return res.status(result.status).json(result.body);
+})
 export default router;

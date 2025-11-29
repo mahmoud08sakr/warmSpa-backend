@@ -1,8 +1,10 @@
 import Branch from "../../database/model/branch.model.js";
 import Product from "../../database/model/product.model.js";
 import { voucherModel } from "../../database/model/voucher.model.js";
+import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
+import router from "./voucher.controller.js";
 
-export const createVoucher = async ({ code, discountType, discountValue, branchId }) => {
+export const createVoucher = handleAsyncError(async ({ code, discountType, discountValue, branchId }) => {
     const exists = await voucherModel.findOne({ code });
     if (exists) {
         return { status: 400, body: { message: "This voucher code already exists in the system" } };
@@ -20,19 +22,19 @@ export const createVoucher = async ({ code, discountType, discountValue, branchI
         return { status: 400, body: { message: "Failed to create voucher" } };
     }
     return { status: 201, body: { message: "Voucher created successfully", voucher } };
-};
+})
 
-export const getVoucherByBranchId = async (branchId) => {
+export const getVoucherByBranchId = handleAsyncError(async (branchId) => {
     const voucher = await voucherModel.find({ branchId });
     return { status: 200, body: { voucher } };
-};
+})
 
-export const getAllVouchers = async () => {
+export const getAllVouchers = handleAsyncError(async () => {
     const voucher = await voucherModel.find();
     return { status: 200, body: { voucher } };
-};
+});
 
-export const updateVoucher = async (voucherId, { code, discountType, discountValue, branchId }) => {
+export const updateVoucher = handleAsyncError(async (voucherId, { code, discountType, discountValue, branchId }) => {
     const voucher = await voucherModel.findById(voucherId);
     if (!voucher) {
         return { status: 400, body: { message: "Voucher not found" } };
@@ -43,9 +45,9 @@ export const updateVoucher = async (voucherId, { code, discountType, discountVal
     voucher.branchId = branchId;
     await voucher.save();
     return { status: 200, body: { message: "Voucher updated successfully" } };
-};
+})
 
-export const activateVoucher = async (voucherId) => {
+export const activateVoucher = handleAsyncError(async (voucherId) => {
     const voucher = await voucherModel.findById(voucherId);
     if (!voucher) {
         return { status: 400, body: { message: "Voucher not found" } };
@@ -56,9 +58,9 @@ export const activateVoucher = async (voucherId) => {
     voucher.isActive = true;
     await voucher.save();
     return { status: 200, body: { message: "Voucher activated successfully" } };
-};
+})
 
-export const deactivateVoucher = async (voucherId) => {
+export const deactivateVoucher = handleAsyncError(async (voucherId) => {
     const voucher = await voucherModel.findById(voucherId);
     if (!voucher) {
         return { status: 400, body: { message: "Voucher not found" } };
@@ -69,9 +71,8 @@ export const deactivateVoucher = async (voucherId) => {
     voucher.isActive = false;
     await voucher.save();
     return { status: 200, body: { message: "Voucher deactivated successfully" } };
-};
-
-export const applyVoucher = async (serviceId , code) => {
+})
+export const applyVoucher = handleAsyncError(async (serviceId , code) => {
     const voucher = await voucherModel.findOne({code});
     if (!voucher) {
         return { status: 400, body: { message: "Voucher not found" } };
@@ -93,4 +94,16 @@ export const applyVoucher = async (serviceId , code) => {
     let finalAmount = totalAmount - discountAmount;
     serviceDate.price = finalAmount;
     return { status: 200, body: { message: "Voucher applied successfully", serviceDate } };
-};
+})
+
+export const deleteVoucher = handleAsyncError(async (req, res, next) => {
+    const { voucherId } = req.params;
+    const voucher = await voucherModel.findByIdAndDelete(voucherId);
+    if (!voucher) {
+        return next(new AppError('No voucher found with that ID', 404));
+    }
+    return res.status(200).json({
+        status: 'success',
+        message: 'Voucher deleted successfully',
+    });
+})
