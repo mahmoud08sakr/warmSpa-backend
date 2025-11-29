@@ -16,6 +16,9 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
     if (!branch) {
         return next(new AppError('No branch found with that ID', 404));
     }
+    if (!branch.isActive) {
+        return next(new AppError('This branch is not active', 400));
+    }
 
     const serviceData = branch.services.find(
 
