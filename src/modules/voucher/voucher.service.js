@@ -17,7 +17,9 @@ export const createVoucher = handleAsyncError(async (req, res) => {
             return res.status(400).json({ message: "The specified branch does not exist" });
         }
     }
-
+if (products) {
+    
+}
     const voucher = await voucherModel.create({ code, discountType, discountValue, branchId , products });
     if (!voucher) {
         return res.status(400).json({ message: "Failed to create voucher" });

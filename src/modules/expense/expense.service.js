@@ -85,6 +85,7 @@ export const approveRequest = handleAsyncError(async (req, res) => {
     }
     expense.isApproved = true;
     expense.approvedBy = req.user.id;
+    expense.status = "Approved";
     const { nameExpense, description, amount, branch } = expense;
     const Createexpense = await expenseModel.create({
         nameExpense,
@@ -108,6 +109,7 @@ export const cancelRequest = handleAsyncError(async (req, res) => {
     if (expense.isApproved) {
         return res.status(400).json({ message: "Expense request already approved" });
     }
+    expense.status = "Canceled";
     expense.isApproved = false;
     await expense.save();
     res.status(200).json({ message: "Expense request canceled successfully" });

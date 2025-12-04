@@ -26,6 +26,11 @@ const expenseSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch',
         required: [true, 'Branch reference is required']
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+        default: 'pending'
     }
 }, { timestamps: true });
 

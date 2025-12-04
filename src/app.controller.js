@@ -63,7 +63,7 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/staff', staffRouter);
         app.use('/api/v1/feedback', feedbackRouter);
         app.use('/api/v1/vouchers', voucherRouter);
-        app.use('/api/v1/expense',expenseRouter );
+        app.use('/api/v1/expense', expenseRouter);
         app.use(globalErrorHandling);
 
         console.log("✅ API routes configured successfully");
