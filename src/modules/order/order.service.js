@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import Order from "../../database/model/order.model.js";
 import { AppError } from "../../errorHandling/AppError.js";
 import Product from "../../database/model/product.model.js";
+import { reservationOrderModel } from "../../database/model/reservationOrder.model.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -36,7 +37,7 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
                         name: name || 'Service Payment',
                     },
                     unit_amount: Math.round(price * 100),
-                    
+
                 },
                 quantity: 1,
             },
@@ -101,7 +102,9 @@ export const handleStripeWebhook = async (req, res) => {
                     orderType: session.metadata.orderType,
                     date: session.metadata.date
                 });
-                console.log('Order created:', createdOrder._id);
+                let addReservartioOrderrr = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
+
+                console.log('Order created:', addReservartioOrder);
                 break;
 
             case 'payment_intent.succeeded':
@@ -140,6 +143,8 @@ export const handleStripeWebhook = async (req, res) => {
                         service: paymentIntentUpdate.metadata.serviceId,
                         orderType: paymentIntentUpdate.metadata.orderType,
                     });
+                    let addReservartioOrderr = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
+
                 }
                 break;
 
@@ -163,6 +168,8 @@ export const handleStripeWebhook = async (req, res) => {
                     service: paymentIntentCreated.metadata.serviceId,
                     orderType: paymentIntentCreated.metadata.orderType,
                 });
+                let addReservartioOrder = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
+
                 break;
 
             case 'charge.updated':
