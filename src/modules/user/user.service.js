@@ -198,7 +198,7 @@ export const getAllUsers = async (req, res) => {
 }
 
 
-export const getUserById = async () => {
+export const getUserById = async (req, res) => {
     let { id } = req.params
     const userData = await userModel.findById(id).select('-password')
     if (!userData) {
