@@ -19,7 +19,6 @@ const router = express.Router();
 
 router.get('/within/distance', getBranchesWithinHandler);
 router.get('/', getAllBranchesHandler);
-router.get('/get-user-data' , getUserData)
 router.get('/city' ,getAllBranchesCityHandler)
 router.get('/get-branch-by-id/:id', getBranchHandler);
 router.use(auth);
