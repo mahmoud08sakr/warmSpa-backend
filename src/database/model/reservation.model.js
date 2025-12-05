@@ -6,6 +6,7 @@ const reservationSchema = new mongoose.Schema({
     userEmail: { type: String, required: true },
     RoomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
     branchId: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch', required: true },
+    serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
     captain: { type: String },
     responsiblePerson: { type: String },
     price: { type: Number },
