@@ -229,3 +229,4 @@ export const getBranchesWithinHandler = handleAsyncError(async (req, res) => {
         }
     });
 });
+

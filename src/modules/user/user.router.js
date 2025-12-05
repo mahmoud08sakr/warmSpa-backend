@@ -1,7 +1,7 @@
 import express from 'express';
 import { validation } from '../../utilts/validation.js';
 import { signupSchema, loginSchema, resetPasswordSchema, sendOTPSchema, verifyOTPSchema } from './user.validation.js';
-import { signup, login, resetpassword, sendOTP, verifyOTP, getAllUsers } from './user.service.js';
+import { signup, login, resetpassword, sendOTP, verifyOTP, getAllUsers, getUserById } from './user.service.js';
 import { auth } from '../../midlleware/auth.js';
 import { checkRole } from '../../midlleware/role.js';
 
@@ -12,6 +12,7 @@ router.post('/login', validation({ body: loginSchema }), login);
 router.post('/reset-password', auth, validation({ body: resetPasswordSchema }), resetpassword);
 router.post('/send-otp', validation({ body: sendOTPSchema }), sendOTP);
 router.post('/verify-otp', validation({ body: verifyOTPSchema }), verifyOTP);
-router.get('/get-all-users' , auth, checkRole("Admin", "SAdmin"), getAllUsers )
+router.get('/get-all-users', auth, checkRole("Admin", "SAdmin"), getAllUsers)
+router.get('/get-user-data', auth, getUserById)
 
 export default router;

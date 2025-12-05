@@ -5,6 +5,7 @@ import Order from "../../database/model/order.model.js";
 import { AppError } from "../../errorHandling/AppError.js";
 import Product from "../../database/model/product.model.js";
 import { reservationOrderModel } from "../../database/model/reservationOrder.model.js";
+import userModel from "../../database/model/user.model.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -103,7 +104,9 @@ export const handleStripeWebhook = async (req, res) => {
                     date: session.metadata.date
                 });
                 let addReservartioOrderrr = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
-
+                const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
+                userData.points += paymentIntentUpdate.amount_received / 100;
+                await userData.save();
                 console.log('Order created:', addReservartioOrder);
                 break;
 
@@ -144,7 +147,9 @@ export const handleStripeWebhook = async (req, res) => {
                         orderType: paymentIntentUpdate.metadata.orderType,
                     });
                     let addReservartioOrderr = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
-
+                    const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
+                    userData.points += paymentIntentUpdate.amount_received / 100;
+                    await userData.save();
                 }
                 break;
 
@@ -169,7 +174,9 @@ export const handleStripeWebhook = async (req, res) => {
                     orderType: paymentIntentCreated.metadata.orderType,
                 });
                 let addReservartioOrder = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
-
+                const userDataa = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
+                userData.points += paymentIntentUpdate.amount_received / 100;
+                await userData.save();
                 break;
 
             case 'charge.updated':
