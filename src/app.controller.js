@@ -64,9 +64,9 @@ export const bootstrap = async (app, express) => {
             res.json('success ya rgola');
         });
 
-        app.get('/filter-data/:serviceId/:branchId', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
+        app.get('/filter-data', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
             try {
-                const { serviceId, branchId } = req.params;
+                const { serviceId, branchId } = req.query;
                 const isAll = (v) => !v || v === 'all' || v === 'undefined' || v === 'null';
 
                 const expenseMatch = isAll(branchId) ? {} : { branch: new mongoose.Types.ObjectId(branchId) };
