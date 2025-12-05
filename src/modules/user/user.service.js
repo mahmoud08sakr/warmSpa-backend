@@ -5,10 +5,11 @@ import { AppError } from '../../errorHandling/AppError.js';
 import { sendEmail } from '../../utilts/sendEmail.js';
 import { resetpasswordTemplate } from '../../template/template.js';
 import translations from '../../utilts/translations.js';
+import { handleAsyncError } from '../../errorHandling/handelAsyncError.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
-const generateToken = (userId, role) => {
+const generateToken =  (userId, role) => {
     let signature;
     switch (role) {
         case 'Admin':
@@ -31,7 +32,7 @@ const generateToken = (userId, role) => {
     return jwt.sign({ id: userId, role }, signature, { expiresIn: '24h' });
 };
 
-export const signup = async (req, res) => {
+export const signup = handleAsyncError( async (req, res) => {
     const { name, email, password, phone, city, gender } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
@@ -62,11 +63,11 @@ export const signup = async (req, res) => {
             token
         }
     });
-};
+});
 
 // Using the existing generateToken function that's already defined at the top of the file
 
-export const login = async (req, res, next) => {
+export const login = handleAsyncError( async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
@@ -96,8 +97,8 @@ export const login = async (req, res, next) => {
         console.error('Login error:', error);
         next(new AppError('An error occurred during login', 500));
     }
-};
-export const resetpassword = async (req, res) => {
+});
+export const resetpassword = handleAsyncError( async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user._id;
 
@@ -120,9 +121,9 @@ export const resetpassword = async (req, res) => {
         status: 'success',
         message: translations.resetPassword.success.en
     });
-};
+});
 
-export const sendOTP = async (req, res) => {
+export const sendOTP = handleAsyncError( async (req, res) => {
     const { email } = req.body;
     try {
         const user = await userModel.findOne({ email });
@@ -148,9 +149,9 @@ export const sendOTP = async (req, res) => {
             message: error.message || 'Failed to send OTP',
         });
     }
-};
+});
 
-export const verifyOTP = async (req, res) => {
+export const verifyOTP = handleAsyncError( async (req, res) => {
     const { OTP, email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
@@ -174,10 +175,10 @@ export const verifyOTP = async (req, res) => {
         status: 'success',
         message: 'Password reset successfully'
     });
-};
+});
 
 
-export const getAllUsers = async (req, res) => {
+export const getAllUsers = handleAsyncError( async (req, res) => {
     try {
         const users = await userModel.find({ role: "User" }).select('-password -OTP -__v');
         res.status(200).json({
@@ -195,14 +196,14 @@ export const getAllUsers = async (req, res) => {
             message: 'Failed to fetch users',
         });
     }
-}
+})
 
 
-export const getUserById = async (req, res) => {
-    let { id } = req.params
+export const getUserById = handleAsyncError(async (req, res) => {
+    let { id } = req.user
     const userData = await userModel.findById(id).select('-password')
     if (!userData) {
         throw new AppError('user not found', 404)
     }
     res.json({ message: "user found successfully", userData })
-}
+})
