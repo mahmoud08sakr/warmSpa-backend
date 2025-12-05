@@ -24,6 +24,7 @@ import ReservationModel from "./database/model/reservation.model.js";
 import Room from "./database/model/room.model.js";
 import { StaffModel } from "./database/model/staff.model.js";
 import OrderDiscountModel from "./database/model/order.reciption.model.js";
+import Product from "./database/model/product.model.js";
 
 dotenv.config();
 
@@ -148,6 +149,64 @@ export const bootstrap = async (app, express) => {
                 ]);
                 const staffAgg = staffTotals && staffTotals[0] ? staffTotals[0] : { total: 0, active: 0 };
 
+                // Best ordered services (by revenue and count) across orders + reception orders
+                const topOrdersAgg = await Order.aggregate([
+                    { $match: orderMatch },
+                    { $unwind: "$items" },
+                    {
+                        $group: {
+                            _id: "$items.service",
+                            count: { $sum: { $ifNull: ["$items.quantity", 1] } },
+                            revenue: { $sum: { $multiply: [{ $ifNull: ["$items.price", 0] }, { $ifNull: ["$items.quantity", 1] }] } }
+                        }
+                    }
+                ]);
+                const topReceptionAgg = await OrderDiscountModel.aggregate([
+                    { $match: isAll(branchId) ? {} : { branchId: new mongoose.Types.ObjectId(branchId) } },
+                    { $unwind: "$products" },
+                    {
+                        $group: {
+                            _id: "$products.productId",
+                            count: { $sum: 1 },
+                            revenue: { $sum: { $ifNull: ["$products.price", 0] } }
+                        }
+                    }
+                ]);
+
+                const totalsMap = new Map(); // key: serviceId -> { count, revenue }
+                const addToMap = (arr) => {
+                    for (const row of arr) {
+                        if (!row || !row._id) continue;
+                        const key = row._id.toString();
+                        const prev = totalsMap.get(key) || { count: 0, revenue: 0 };
+                        totalsMap.set(key, {
+                            count: prev.count + (row.count || 0),
+                            revenue: prev.revenue + (row.revenue || 0)
+                        });
+                    }
+                };
+                addToMap(topOrdersAgg);
+                addToMap(topReceptionAgg);
+
+                const combined = Array.from(totalsMap.entries()).map(([serviceIdStr, v]) => ({
+                    serviceId: serviceIdStr,
+                    count: v.count,
+                    revenue: v.revenue
+                }));
+                const topByRevenue = combined.sort((a, b) => b.revenue - a.revenue).slice(0, 5);
+                const topByCount = combined.sort((a, b) => b.count - a.count).slice(0, 5);
+
+                const ids = Array.from(new Set([...topByRevenue, ...topByCount].map(x => x.serviceId))).map(id => new mongoose.Types.ObjectId(id));
+                const products = await Product.find({ _id: { $in: ids } }).select('_id name').lean();
+                const nameMap = new Map(products.map(p => [p._id.toString(), p.name]));
+
+                const decorate = (arr) => arr.map(x => ({ ...x, name: nameMap.get(x.serviceId) || null }));
+                const bestServices = {
+                    topByRevenue: decorate(topByRevenue),
+                    topByCount: decorate(topByCount),
+                    topService: decorate(topByRevenue)[0] || null
+                };
+
                 // Fetch actual data documents with pagination
                 const expenseDataPromise = expenseModel
                     .find(expenseMatch)
@@ -250,6 +309,7 @@ export const bootstrap = async (app, express) => {
                         total: staffAgg.total || 0,
                         active: staffAgg.active || 0
                     },
+                    bestServices,
                     page,
                     limit,
                     data: {
