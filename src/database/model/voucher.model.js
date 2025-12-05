@@ -23,10 +23,10 @@ const voucherSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    branchId: {
+    branchId:[ {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch'
-    },
+    }],
     products: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'

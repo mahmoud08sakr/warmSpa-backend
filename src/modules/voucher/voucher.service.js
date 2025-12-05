@@ -2,10 +2,10 @@ import Branch from "../../database/model/branch.model.js";
 import Product from "../../database/model/product.model.js";
 import { voucherModel } from "../../database/model/voucher.model.js";
 import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
-import {AppError} from "../../errorHandling/AppError.js";
+import { AppError } from "../../errorHandling/AppError.js";
 
 export const createVoucher = handleAsyncError(async (req, res) => {
-    const { code, discountType, discountValue, branchId , products } = req.body;
+    const { code, discountType, discountValue, branchId, products } = req.body;
     const exists = await voucherModel.findOne({ code });
     if (exists) {
         return res.status(400).json({ message: "This voucher code already exists in the system" });
@@ -17,10 +17,10 @@ export const createVoucher = handleAsyncError(async (req, res) => {
             return res.status(400).json({ message: "The specified branch does not exist" });
         }
     }
-if (products) {
-    
-}
-    const voucher = await voucherModel.create({ code, discountType, discountValue, branchId , products });
+    if (products) {
+
+    }
+    const voucher = await voucherModel.create({ code, discountType, discountValue, branchId, products });
     if (!voucher) {
         return res.status(400).json({ message: "Failed to create voucher" });
     }
@@ -40,7 +40,7 @@ export const getAllVouchers = handleAsyncError(async (req, res) => {
 
 export const updateVoucher = handleAsyncError(async (req, res) => {
     const { voucherId } = req.params;
-    const { code, discountType, discountValue, branchId } = req.body;
+    const { code, discountType, discountValue, branchId, serviceId } = req.body;
     const voucher = await voucherModel.findById(voucherId);
     if (!voucher) {
         return res.status(400).json({ message: "Voucher not found" });
@@ -49,6 +49,7 @@ export const updateVoucher = handleAsyncError(async (req, res) => {
     voucher.discountType = discountType;
     voucher.discountValue = discountValue;
     voucher.branchId = branchId;
+    voucher.serviceId = serviceId;
     await voucher.save();
     return res.status(200).json({ message: "Voucher updated successfully" });
 });
