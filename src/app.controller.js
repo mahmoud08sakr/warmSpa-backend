@@ -67,6 +67,9 @@ export const bootstrap = async (app, express) => {
         app.get('/filter-data', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
             try {
                 const { serviceId, branchId } = req.query;
+                const page = Math.max(parseInt(req.query.page || '1', 10), 1);
+                const limit = Math.min(Math.max(parseInt(req.query.limit || '50', 10), 1), 200);
+                const skip = (page - 1) * limit;
                 const isAll = (v) => !v || v === 'all' || v === 'undefined' || v === 'null';
 
                 const expenseMatch = isAll(branchId) ? {} : { branch: new mongoose.Types.ObjectId(branchId) };
@@ -145,6 +148,83 @@ export const bootstrap = async (app, express) => {
                 ]);
                 const staffAgg = staffTotals && staffTotals[0] ? staffTotals[0] : { total: 0, active: 0 };
 
+                // Fetch actual data documents with pagination
+                const expenseDataPromise = expenseModel
+                    .find(expenseMatch)
+                    .select('nameExpense amount date branch status createdAt')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean();
+
+                const orderQuery = { ...orderMatch };
+                if (!isAll(serviceId)) {
+                    orderQuery['items.service'] = new mongoose.Types.ObjectId(serviceId);
+                }
+                const ordersDataPromise = Order
+                    .find(orderQuery)
+                    .select('_id branch totalAmount status paymentStatus items createdAt')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean();
+
+                const recepOrderQuery = isAll(branchId) ? {} : { branchId: new mongoose.Types.ObjectId(branchId) };
+                if (!isAll(serviceId)) {
+                    recepOrderQuery['products.productId'] = new mongoose.Types.ObjectId(serviceId);
+                }
+                const receptionOrdersDataPromise = OrderDiscountModel
+                    .find(recepOrderQuery)
+                    .select('_id branchId totalAmount status paymentStatus products createdAt')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean();
+
+                const reservationQuery = { ...reservationMatch };
+                if (!isAll(serviceId)) reservationQuery.serviceId = new mongoose.Types.ObjectId(serviceId);
+                const reservationsDataPromise = ReservationModel
+                    .find(reservationQuery)
+                    .select('_id userName userEmail RoomId branchId serviceId price reservationDate createdAt')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean();
+
+                const roomQuery = { ...roomMatch };
+                if (!isAll(serviceId)) roomQuery.selectedServide = new mongoose.Types.ObjectId(serviceId);
+                const roomsDataPromise = Room
+                    .find(roomQuery)
+                    .select('_id roomNumber isReserved selectedServide price priceAfterDiscount branchId createdAt')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean();
+
+                const staffsDataPromise = StaffModel
+                    .find(staffMatch)
+                    .select('_id name role branchId isFired phone createdAt')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limit)
+                    .lean();
+
+                const [
+                    expensesData,
+                    ordersData,
+                    receptionOrdersData,
+                    reservationsData,
+                    roomsData,
+                    staffsData
+                ] = await Promise.all([
+                    expenseDataPromise,
+                    ordersDataPromise,
+                    receptionOrdersDataPromise,
+                    reservationsDataPromise,
+                    roomsDataPromise,
+                    staffsDataPromise
+                ]);
+
                 return res.json({
                     filters: {
                         branchId: isAll(branchId) ? 'all' : branchId,
@@ -169,6 +249,16 @@ export const bootstrap = async (app, express) => {
                     staffs: {
                         total: staffAgg.total || 0,
                         active: staffAgg.active || 0
+                    },
+                    page,
+                    limit,
+                    data: {
+                        expenses: expensesData,
+                        orders: ordersData,
+                        receptionOrders: receptionOrdersData,
+                        reservations: reservationsData,
+                        rooms: roomsData,
+                        staffs: staffsData
                     }
                 });
             } catch (err) {
