@@ -3,8 +3,6 @@ import { auth } from "../../midlleware/auth.js";
 import Room from "../../database/model/room.model.js";
 import ReservationModel from "../../database/model/reservation.model.js";
 import { reservationOrderModel } from "../../database/model/reservationOrder.model.js";
-import Order from "../../database/model/order.model.js";
-import mongoose from "mongoose";
 const router = Router();
 
 router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
@@ -18,7 +16,6 @@ router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
         return res.status(400).json({ message: "Room is already reserved" });
     }
     console.log(roomData.isReserved);
-
     roomData.priceAfterDiscount = priceAfterDiscount ? priceAfterDiscount : price;
     roomData.isReserved = true;
     roomData.customerName = customerName;

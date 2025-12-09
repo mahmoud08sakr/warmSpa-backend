@@ -21,6 +21,11 @@ let requiestDiscountSchema = new Schema({
             required: true
         }
     }],
+    roomId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Room",
+        required: true
+    },
     reseptionist: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",

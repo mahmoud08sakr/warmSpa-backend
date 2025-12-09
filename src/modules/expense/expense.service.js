@@ -76,7 +76,6 @@ export const getExpenceRequistForBranch = handleAsyncError(async (req, res) => {
 export const approveRequest = handleAsyncError(async (req, res) => {
     const { id } = req.params;
     const expense = await expenseRequestModel.findById(id);
-    // const reservationData = await ReservationModel.findById(expense.reservationId);
     if (!expense) {
         return res.status(404).json({ message: "Expense request not found" });
     }

@@ -10,6 +10,7 @@ import {
 import { handleAsyncError } from '../../errorHandling/handelAsyncError.js';
 import RequestDiscountModel from '../../database/model/requestDescount.model.js';
 import OrderDiscountModel from '../../database/model/order.reciption.model.js';
+import Room from '../../database/model/room.model.js';
 export const createProductHandler = handleAsyncError(async (req, res) => {
     const product = await createProduct(req.body);
     res.status(201).json({
@@ -93,7 +94,7 @@ export const getProductsByBranchHandler = handleAsyncError(async (req, res) => {
 
 export const requestDiscout = handleAsyncError(async (req, res) => {
 
-    let { branchId, requiestPrice, reson, products, reseptionist } = req.body
+    let { branchId, requiestPrice, reson, products, reseptionist, roomId, customerName, customerPhone, gender, paymentMethod, currency } = req.body
     let productData = []
     for (let i = 0; i < products.length; i++) {
         const product = await getProductById(products[i].productId);
@@ -110,8 +111,21 @@ export const requestDiscout = handleAsyncError(async (req, res) => {
         requiestPrice,
         reson,
         products: productData,
-        reseptionist
+        reseptionist, roomId
     })
+    let roomData = await Room.findById(roomId);
+    if (!roomData) {
+        throw new AppError('Room not found', 404);
+    } else {
+        roomData.isReserved = false;
+        roomData.customerName = customerName;
+        roomData.customerPhone = customerPhone;
+        roomData.gender = gender;
+        roomData.paymentMethod = paymentMethod;
+        roomData.currency = currency;
+        await roomData.save();
+    }
+
 
     res.status(201).json({
         status: 'success',
@@ -138,6 +152,8 @@ export const approveDiscountHandler = handleAsyncError(async (req, res) => {
         })
     }
     requestDiscount.status = 'approved';
+    let updateRoomStatus = Room.findById(requestDiscount.roomId);
+    updateRoomStatus.isReserved = true;
     await requestDiscount.save();
     res.status(200).json({
         status: 'success',
