@@ -40,7 +40,7 @@ export const getAllVouchers = handleAsyncError(async (req, res) => {
 
 export const updateVoucher = handleAsyncError(async (req, res) => {
     const { voucherId } = req.params;
-    const { code, discountType, discountValue, branchId, serviceId } = req.body;
+    const { code, discountType, discountValue, branchId, products } = req.body;
     const voucher = await voucherModel.findById(voucherId);
     if (!voucher) {
         return res.status(400).json({ message: "Voucher not found" });
@@ -49,7 +49,7 @@ export const updateVoucher = handleAsyncError(async (req, res) => {
     voucher.discountType = discountType;
     voucher.discountValue = discountValue;
     voucher.branchId = branchId;
-    voucher.serviceId = serviceId;
+    voucher.products = products;
     await voucher.save();
     return res.status(200).json({ message: "Voucher updated successfully" });
 });
