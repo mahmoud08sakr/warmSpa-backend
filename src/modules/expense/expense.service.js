@@ -25,7 +25,6 @@ export const createExpenseHandler = handleAsyncError(async (req, res) => {
         if (createExpenseRequist) {
             return res.status(201).json({ message: "Expense request created successfully wait for approval from admin ", createExpenseRequist });
         }
-
         throw new AppError('Failed to create expense request', 500);
     } else {
         const expense = await expenseModel.create({
@@ -94,7 +93,8 @@ export const approveRequest = handleAsyncError(async (req, res) => {
         nameExpense,
         description,
         amount,
-        branch
+        branch,
+        status: "approved"
     });
     if (expense) {
         return res.status(201).json({ message: "Expense created successfully", expense });
