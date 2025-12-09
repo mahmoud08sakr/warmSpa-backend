@@ -111,9 +111,7 @@ export const cancelRequest = handleAsyncError(async (req, res) => {
     if (expense.isApproved) {
         return res.status(400).json({ message: "Expense request already approved" });
     }
-    expense.status = "Canceled";
-    expense.isApproved = false;
-    await expense.save();
+    let deleteExpense = await expenseRequestModel.findByIdAndDelete(id);
     res.status(200).json({ message: "Expense request canceled successfully" });
 })
 
