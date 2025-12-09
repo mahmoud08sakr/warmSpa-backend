@@ -152,6 +152,7 @@ export const approveDiscountHandler = handleAsyncError(async (req, res) => {
         })
     }
     requestDiscount.status = 'approved';
+    await requestDiscount.save();
     let updateRoomStatus = await Room.findOneAndUpdate({ _id: requestDiscount.roomId }, { isReserved: true }, { new: true });
     console.log(updateRoomStatus, "update the product data");
 
