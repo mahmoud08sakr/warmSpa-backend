@@ -51,7 +51,7 @@ router.post('/end-reservation/:branchId/:roomId', auth, async (req, res) => {
 
 router.get('/active/:branchId', auth, async (req, res) => {
     let { branchId } = req.params;
-    let { roomId } = req.body
+    // let { roomId } = req.body
     let activeReservations = await Room.find({ branchId: branchId, isReserved: true });
     if (roomId) {
 
