@@ -5,6 +5,7 @@ import Order from "../../database/model/order.model.js";
 import { AppError } from "../../errorHandling/AppError.js";
 import expenseModel from "../../database/model/expense.model.js";
 import { expenseRequestModel } from "../../database/model/expenseRequest.model.js";
+import ReservationModel from "../../database/model/reservation.model.js";
 
 
 
@@ -32,13 +33,12 @@ export const createExpenseHandler = handleAsyncError(async (req, res) => {
             description,
             amount,
             date,
-            branch
+            branch,
+            status: "approved"
         });
         if (expense) {
-
             res.status(201).json({ message: "Expense created successfully", expense });
         }
-
         throw new AppError('Failed to create expense', 500);
     }
 });
@@ -77,6 +77,7 @@ export const getExpenceRequistForBranch = handleAsyncError(async (req, res) => {
 export const approveRequest = handleAsyncError(async (req, res) => {
     const { id } = req.params;
     const expense = await expenseRequestModel.findById(id);
+    // const reservationData = await ReservationModel.findById(expense.reservationId);
     if (!expense) {
         return res.status(404).json({ message: "Expense request not found" });
     }
@@ -86,6 +87,8 @@ export const approveRequest = handleAsyncError(async (req, res) => {
     expense.isApproved = true;
     expense.approvedBy = req.user.id;
     expense.status = "Approved";
+    await expense.save();
+
     const { nameExpense, description, amount, branch } = expense;
     const Createexpense = await expenseModel.create({
         nameExpense,

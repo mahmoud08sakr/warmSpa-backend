@@ -11,7 +11,8 @@ const reservationSchema = new mongoose.Schema({
     responsiblePerson: { type: String },
     price: { type: Number },
     gender: { type: String, enum: ['Male', 'Female', 'Other'], default: 'Other' },
-    reservationDate: { type: Date, required: true }
+    reservationDate: { type: Date, required: true },
+    status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' }
 }, { timestamps: true });
 
 const ReservationModel = mongoose.model('Reservation', reservationSchema);
