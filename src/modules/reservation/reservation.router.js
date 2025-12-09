@@ -15,7 +15,6 @@ router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
     if (roomData.isReserved) {
         return res.status(400).json({ message: "Room is already reserved" });
     }
-    console.log(roomData.isReserved);
     roomData.priceAfterDiscount = priceAfterDiscount ? priceAfterDiscount : price;
     roomData.isReserved = true;
     roomData.customerName = customerName;
@@ -26,7 +25,9 @@ router.post('/reserve/:branchId/:roomId', auth, async (req, res) => {
 
     const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, branchId: branchId, gender: gender, reservationDate: new Date(), price, priceAfterDiscount, responsiblePerson, captain, serviceId });
     let addReservartioOrder = await reservationOrderModel.create({ reservationId: addreservaion._id, date: new Date() });
-    await roomData.save();
+    if (addReservartioOrder && addreservaion) {
+        await roomData.save();
+    }
     res.status(201).json({ message: 'Reservation created successfully' });
 });
 
