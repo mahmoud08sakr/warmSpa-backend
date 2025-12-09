@@ -53,28 +53,28 @@ router.get('/active/:branchId', auth, async (req, res) => {
     let { branchId } = req.params;
     // let { roomId } = req.body
     let activeReservations = await Room.find({ branchId: branchId, isReserved: true });
-    if (roomId) {
+    // if (roomId) {
 
 
-        let roomData = await Room.findOne({ _id: roomId, branchId: branchId });
-        if (!roomData) {
-            return res.status(404).json({ message: "Room not found in the specified branch" });
-        }
-        if (roomData.isReserved) {
-            return res.status(400).json({ message: "Room is already reserved" });
-        }
-        console.log(roomData.isReserved);
+    //     let roomData = await Room.findOne({ _id: roomId, branchId: branchId });
+    //     if (!roomData) {
+    //         return res.status(404).json({ message: "Room not found in the specified branch" });
+    //     }
+    //     if (roomData.isReserved) {
+    //         return res.status(400).json({ message: "Room is already reserved" });
+    //     }
+    //     console.log(roomData.isReserved);
 
-        roomData.priceAfterDiscount = priceAfterDiscount ? priceAfterDiscount : price;
-        roomData.isReserved = true;
-        roomData.customerName = customerName;
-        roomData.customerPhone = customerPhone
-        roomData.gender = gender
-        roomData.paymentMethod = paymentMethod;
-        roomData.currency = currency;
+    //     roomData.priceAfterDiscount = priceAfterDiscount ? priceAfterDiscount : price;
+    //     roomData.isReserved = true;
+    //     roomData.customerName = customerName;
+    //     roomData.customerPhone = customerPhone
+    //     roomData.gender = gender
+    //     roomData.paymentMethod = paymentMethod;
+    //     roomData.currency = currency;
 
-        await roomData.save();
-    }
+    //     await roomData.save();
+    // }
     res.status(200).json({ activeReservations });
 });
 
