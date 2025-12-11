@@ -43,7 +43,14 @@ const staffSchema = new mongoose.Schema({
     files: [{
         type: String,
     }],
-})
+}, {
+    timestamps: true
+});
 
+// Indexes for better query performance
+// nationalId is already indexed by unique: true
+staffSchema.index({ branchId: 1 });
+staffSchema.index({ isFired: 1 });
+staffSchema.index({ branchId: 1, isFired: 1 }); // Compound index for finding active staff per branch
 
 export const StaffModel = mongoose.model('Staff', staffSchema);

@@ -34,6 +34,13 @@ const expenseSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+// Indexes for better query performance
+expenseSchema.index({ branch: 1, status: 1 }); // Find expenses by branch and status
+expenseSchema.index({ branch: 1, date: -1 }); // Find branch expenses by date
+expenseSchema.index({ status: 1, date: -1 }); // Find pending/approved expenses by date
+expenseSchema.index({ date: -1 }); // Sort by date (newest first)
+expenseSchema.index({ createdAt: -1 }); // Track when expenses were created
+
 export const expenseModel = mongoose.model('Expense', expenseSchema);
 export default expenseModel;
 

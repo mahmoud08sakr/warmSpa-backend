@@ -36,7 +36,16 @@ let requiestDiscountSchema = new Schema({
         enum: ["pending", "approved", "rejected"],
         default: "pending"
     }
-})
+}, {
+    timestamps: true
+});
 
-const RequestDiscountModel = mongoose.model("RequestDiscount", requiestDiscountSchema)
-export default RequestDiscountModel
+// Indexes for better query performance
+requiestDiscountSchema.index({ branchId: 1, status: 1 }); // Find discount requests by branch and status
+requiestDiscountSchema.index({ roomId: 1 }); // Find discount requests by room
+requiestDiscountSchema.index({ reseptionist: 1, status: 1 }); // Find requests by receptionist
+requiestDiscountSchema.index({ status: 1, createdAt: -1 }); // Find pending requests by date
+requiestDiscountSchema.index({ branchId: 1, createdAt: -1 }); // Branch requests by date
+
+const RequestDiscountModel = mongoose.model("RequestDiscount", requiestDiscountSchema);
+export default RequestDiscountModel;

@@ -62,8 +62,13 @@ let roomSchema = new mongoose.Schema({
     {
         timestamps: true
     }
-)
+);
 
-const Room = mongoose.model('Room', roomSchema)
+// Indexes for better query performance
+roomSchema.index({ branchId: 1, isReserved: 1 }); // Find available rooms per branch
+roomSchema.index({ roomNumber: 1 }); // Quick lookup by room number
+roomSchema.index({ branchId: 1 }); // Find all rooms in a branch
 
-export default Room
+const Room = mongoose.model('Room', roomSchema);
+
+export default Room;

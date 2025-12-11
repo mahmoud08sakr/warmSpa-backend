@@ -51,8 +51,13 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for better query performance (only role index, email is already indexed by unique: true)
+// Indexes for better query performance
+// email is already indexed by unique: true
 userSchema.index({ role: 1 });
+userSchema.index({ isActive: 1 });
+userSchema.index({ phone: 1 });
+userSchema.index({ city: 1, isActive: 1 });
+userSchema.index({ createdAt: -1 }); // For registration analytics
 
 const userModel = mongoose.model("User", userSchema);
 export default userModel;

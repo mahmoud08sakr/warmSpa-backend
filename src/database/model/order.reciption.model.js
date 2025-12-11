@@ -50,5 +50,12 @@ const orderSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Indexes for better query performance
+orderSchema.index({ branchId: 1, status: 1 }); // Find branch orders by status
+orderSchema.index({ phone: 1 }); // Find orders by customer phone
+orderSchema.index({ status: 1, paymentStatus: 1 }); // Find orders by status and payment
+orderSchema.index({ createdAt: -1 }); // Sort by creation date
+orderSchema.index({ branchId: 1, createdAt: -1 }); // Branch orders by date
+
 const OrderDiscountModel = mongoose.model('OrderDiscount', orderSchema);
 export default OrderDiscountModel;

@@ -44,7 +44,7 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
             },
         ],
         mode: 'payment',
-        success_url: `https://warmspa.vercel.app/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `https://warmspa.vercel.app/payment-success?session_id={CHECKOUT_SESSION_ID}&paymentIntentId={PAYMENT_INTENT}`,
         cancel_url: `${req.protocol}://${req.get('host')}/payment/cancel`,
 
         metadata: {

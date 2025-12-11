@@ -39,4 +39,11 @@ const expenseRequestSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+// Indexes for better query performance
+expenseRequestSchema.index({ branch: 1, isApproved: 1 }); // Find expense requests by branch and approval status
+expenseRequestSchema.index({ branch: 1, date: -1 }); // Find branch expense requests by date
+expenseRequestSchema.index({ isApproved: 1, date: -1 }); // Find pending/approved requests by date
+expenseRequestSchema.index({ approvedBy: 1 }); // Find requests approved by specific user
+expenseRequestSchema.index({ createdAt: -1 }); // Track when requests were created
+
 export const expenseRequestModel = mongoose.model('ExpenseRequest', expenseRequestSchema);

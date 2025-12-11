@@ -13,6 +13,12 @@ const citySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch'
     }]
-})
+}, {
+    timestamps: true
+});
+
+// Indexes for better query performance
+citySchema.index({ name: 1 }); // Quick city lookup
+citySchema.index({ name: 'text' }); // Text search for cities
 
 export const cityModel = mongoose.model('City', citySchema);

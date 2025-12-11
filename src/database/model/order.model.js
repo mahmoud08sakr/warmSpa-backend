@@ -68,10 +68,14 @@ const orderSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
-
-orderSchema.index({ user: 1, status: 1 });
-orderSchema.index({ paymentStatus: 1 });
-orderSchema.index({ createdAt: -1 });
+// Indexes for better query performance
+orderSchema.index({ user: 1, status: 1 }); // Find user orders by status
+orderSchema.index({ branch: 1, status: 1 }); // Find branch orders by status
+orderSchema.index({ paymentStatus: 1 }); // Filter by payment status
+orderSchema.index({ paymentIntentId: 1 }); // Lookup by payment intent
+orderSchema.index({ date: -1 }); // Sort by order date
+orderSchema.index({ createdAt: -1 }); // Sort by creation date
+orderSchema.index({ branch: 1, createdAt: -1 }); // Branch orders by date
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;

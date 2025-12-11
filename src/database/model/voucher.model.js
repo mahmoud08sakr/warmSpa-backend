@@ -23,7 +23,7 @@ const voucherSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    branchId:[ {
+    branchId: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch'
     }],
@@ -32,5 +32,11 @@ const voucherSchema = new mongoose.Schema({
         ref: 'Product'
     }]
 }, { timestamps: true });
+
+// Indexes for better query performance
+// code is already indexed by unique: true
+voucherSchema.index({ isActive: 1 }); // Find active vouchers
+voucherSchema.index({ branchId: 1, isActive: 1 }); // Find active vouchers per branch
+voucherSchema.index({ code: 1, isActive: 1 }); // Validate voucher code
 
 export const voucherModel = mongoose.model('Voucher', voucherSchema);
