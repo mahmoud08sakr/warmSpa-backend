@@ -44,7 +44,7 @@ export const createPaymentIntent = handleAsyncError(async (req, res, next) => {
             },
         ],
         mode: 'payment',
-        success_url: `https://warmspa.vercel.app/payment-success?session_id={CHECKOUT_SESSION_ID}&paymentIntentId={PAYMENT_INTENT}`,
+        success_url: `https://warmspa.vercel.app/payment-success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${req.protocol}://${req.get('host')}/payment/cancel`,
 
         metadata: {
@@ -87,6 +87,7 @@ export const handleStripeWebhook = async (req, res) => {
                 console.log('Checkout session completed:', session.id);
 
                 const createdOrder = await Order.create({
+                    sessionId: session.id,
                     paymentIntentId: session.payment_intent || session.id,
                     status: 'completed',
                     paymentStatus: 'paid',
@@ -131,6 +132,7 @@ export const handleStripeWebhook = async (req, res) => {
                     );
                 } else {
                     await Order.create({
+                        sessionId: session.id,
                         paymentIntentId: paymentIntentUpdate.id,
                         status: 'completed',
                         paymentStatus: 'paid',
@@ -158,6 +160,7 @@ export const handleStripeWebhook = async (req, res) => {
                 console.log('Payment intent created:', paymentIntentCreated.id);
 
                 await Order.create({
+                    sessionId: session.id,
                     paymentIntentId: paymentIntentCreated.id,
                     status: 'pending',
                     paymentStatus: 'pending',
@@ -225,6 +228,44 @@ const handlePaymentIntentFailed = async (paymentIntent) => {
         { new: true }
     );
 };
+
+// Get order by session ID
+export const getOrderBySessionId = handleAsyncError(async (req, res, next) => {
+    const { sessionId } = req.params;
+
+    const order = await Order.findOne({ sessionId })
+        .populate('user', 'name email')
+        .populate('branch', 'name address')
+        .populate('items.service', 'name price');
+
+    if (!order) {
+        return next(new AppError('No order found with that session ID', 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: order
+    });
+});
+
+// Get order by payment intent ID
+export const getOrderByPaymentIntent = handleAsyncError(async (req, res, next) => {
+    const { paymentIntentId } = req.params;
+
+    const order = await Order.findOne({ paymentIntentId })
+        .populate('user', 'name email')
+        .populate('branch', 'name address')
+        .populate('items.service', 'name price');
+
+    if (!order) {
+        return next(new AppError('No order found with that payment intent ID', 404));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: order
+    });
+});
 
 // Get order by ID
 export const getOrder = handleAsyncError(async (req, res, next) => {
