@@ -16,8 +16,8 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
     if (roomData.isReserved) {
         return res.status(400).json({ message: "Room is already reserved" });
     }
-    roomData.priceAfterDiscount = priceAfterDiscount ? priceAfterDiscount : price;
-    roomData.isReserved = true;
+    priceAfterDiscount ? roomData.priceAfterDiscount = priceAfterDiscount : roomData.priceAfterDiscount = price;
+     roomData.isReserved = true;
     roomData.customerName = customerName;
     roomData.customerPhone = customerPhone
     roomData.gender = gender

@@ -104,11 +104,11 @@ export const handleStripeWebhook = async (req, res) => {
                     orderType: session.metadata.orderType,
                     date: session.metadata.date
                 });
-                let addReservartioOrderrr = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
-                const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
-                userData.points += paymentIntentUpdate.amount_received / 100;
+                let reservationOrder1 = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
+                const userData = await userModel.findById(session.metadata.userId).select('-password')
+                userData.points += session.amount_total / 100;
                 await userData.save();
-                console.log('Order created:', addReservartioOrder);
+                console.log('Order created:', reservationOrder1);
                 break;
 
             case 'payment_intent.succeeded':
@@ -131,8 +131,7 @@ export const handleStripeWebhook = async (req, res) => {
                         { new: true }
                     );
                 } else {
-                    await Order.create({
-                        sessionId: session.id,
+                    const newOrder = await Order.create({
                         paymentIntentId: paymentIntentUpdate.id,
                         status: 'completed',
                         paymentStatus: 'paid',
@@ -148,7 +147,7 @@ export const handleStripeWebhook = async (req, res) => {
                         service: paymentIntentUpdate.metadata.serviceId,
                         orderType: paymentIntentUpdate.metadata.orderType,
                     });
-                    let addReservartioOrderr = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
+                    let reservationOrder2 = await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
                     const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
                     userData.points += paymentIntentUpdate.amount_received / 100;
                     await userData.save();
@@ -159,8 +158,7 @@ export const handleStripeWebhook = async (req, res) => {
                 const paymentIntentCreated = event.data.object;
                 console.log('Payment intent created:', paymentIntentCreated.id);
 
-                await Order.create({
-                    sessionId: session.id,
+                const newPendingOrder = await Order.create({
                     paymentIntentId: paymentIntentCreated.id,
                     status: 'pending',
                     paymentStatus: 'pending',
@@ -176,10 +174,8 @@ export const handleStripeWebhook = async (req, res) => {
                     service: paymentIntentCreated.metadata.serviceId,
                     orderType: paymentIntentCreated.metadata.orderType,
                 });
-                let addReservartioOrder = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
-                const userDataa = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
-                userData.points += paymentIntentUpdate.amount_received / 100;
-                await userData.save();
+                let reservationOrder3 = await reservationOrderModel.create({ orderId: newPendingOrder._id, date: new Date() });
+                // Note: Points are awarded only on successful payment, not on creation
                 break;
 
             case 'charge.updated':
@@ -316,3 +312,41 @@ export const getAllOrderForAdmin = handleAsyncError(async (req, res) => {
         data: orders
     });
 })
+
+// Redeem user points for discount
+export const redeemPoints = handleAsyncError(async (req, res, next) => {
+    const userId = req.user.id;
+
+    const user = await userModel.findById(userId).select('-password');
+
+    if (!user) {
+        return next(new AppError('User not found', 404));
+    }
+
+    if (user.points < 10000) {
+        return next(new AppError('Insufficient points. Minimum 10,000 points required to redeem', 400));
+    }
+
+    // Calculate discount based on formula:
+    // 10,000 points = 100 EGP
+    // 20,000 points = 300 EGP (100 + 200)
+    // 30,000 points = 500 EGP (100 + 400)
+    // Formula: discount = 100 + (n-1) * 200, where n = number of 10k increments
+    const pointsIncrements = Math.floor(user.points / 10000);
+    const discount = 100 + (pointsIncrements - 1) * 200;
+    const pointsToRedeem = pointsIncrements * 10000;
+
+    // Deduct points from user
+    user.points -= pointsToRedeem;
+    await user.save();
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Points redeemed successfully',
+        data: {
+            pointsRedeemed: pointsToRedeem,
+            discountAmount: discount,
+            remainingPoints: user.points
+        }
+    });
+});
