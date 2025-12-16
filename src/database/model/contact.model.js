@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 
-constContactSchema = new mongoose.Schema({
+const constContactSchema = new mongoose.Schema({
 
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -49,6 +49,6 @@ constContactSchema = new mongoose.Schema({
 });
 
 
-const contactModel = mongoose.model('Contact', contactSchema);
+const contactModel = mongoose.model('Contact', constContactSchema);
 
 export default contactModel;
