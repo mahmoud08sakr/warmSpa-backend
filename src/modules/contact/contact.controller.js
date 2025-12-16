@@ -44,4 +44,15 @@ router.delete('/delete-contact/:id', auth, checkRole("Admin", "SAdmin", "Branch"
         res.status(400).json({ message: "contact not found" })
     }
 })
+
+router.patch('/update-reading-status/:id', auth, checkRole("Admin", "SAdmin", "Branch"), async (req, res) => {
+    let { id } = req.params
+    let { isRead } = req.body
+    let updatedContact = await contactModel.findByIdAndUpdate(id, { isRead }, { new: true })
+    if (updatedContact) {
+        res.status(200).json({ message: "contact updated successfully", updatedContact })
+    } else {
+        res.status(400).json({ message: "contact not found" })
+    }
+})
 export default router
