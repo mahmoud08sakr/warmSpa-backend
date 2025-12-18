@@ -58,6 +58,12 @@ let roomSchema = new mongoose.Schema({
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch'
+    },
+    startTime: {
+        type: Date
+    },
+    endTime: {
+        type: Date
     }
 },
     {
