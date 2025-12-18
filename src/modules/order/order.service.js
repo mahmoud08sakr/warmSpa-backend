@@ -107,6 +107,8 @@ export const handleStripeWebhook = async (req, res) => {
                 let reservationOrder1 = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
                 const userData = await userModel.findById(session.metadata.userId).select('-password')
                 userData.points += session.amount_total / 100;
+                console.log(session.amount_total / 100);
+
                 await userData.save();
                 console.log('Order created:', reservationOrder1);
                 break;
@@ -150,6 +152,8 @@ export const handleStripeWebhook = async (req, res) => {
                     let reservationOrder2 = await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
                     const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
                     userData.points += paymentIntentUpdate.amount_received / 100;
+                    console.log(session.amount_total / 100);
+
                     await userData.save();
                 }
                 break;
@@ -175,6 +179,9 @@ export const handleStripeWebhook = async (req, res) => {
                     orderType: paymentIntentCreated.metadata.orderType,
                 });
                 let reservationOrder3 = await reservationOrderModel.create({ orderId: newPendingOrder._id, date: new Date() });
+                const userDataa = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
+                userDataa.points += paymentIntentUpdate.amount_received / 100;
+                console.log(session.amount_total / 100);
                 // Note: Points are awarded only on successful payment, not on creation
                 break;
 

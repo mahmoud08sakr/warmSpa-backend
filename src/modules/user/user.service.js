@@ -166,11 +166,9 @@ export const verifyOTP = handleAsyncError( async (req, res) => {
         throw new AppError('Invalid OTP', 400);
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-
     user.password = hashedPassword;
     user.OTP = undefined;
     await user.save();
-
     res.status(200).json({
         status: 'success',
         message: 'Password reset successfully'
