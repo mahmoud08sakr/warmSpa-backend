@@ -16,7 +16,7 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
     if (roomData.isReserved) {
         return res.status(400).json({ message: "Room is already reserved" });
     }
-    priceAfterDiscount ? roomData.priceAfterDiscount = priceAfterDiscount : roomData.priceAfterDiscount = price;
+    // priceAfterDiscount ? roomData.priceAfterDiscount = priceAfterDiscount : roomData.priceAfterDiscount = price;
      roomData.isReserved = true;
     roomData.customerName = customerName;
     roomData.customerPhone = customerPhone
@@ -24,7 +24,7 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
     roomData.paymentMethod = paymentMethod;
     roomData.currency = currency;
 
-    const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, branchId: branchId, gender: gender, reservationDate: new Date(), price, responsiblePerson, captain, serviceId });
+    const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, branchId: branchId, gender: gender, reservationDate: new Date(), price, responsiblePerson, captain, serviceId ,priceAfterDiscount });
     let addReservartioOrder = await reservationOrderModel.create({ reservationId: addreservaion._id, date: new Date() });
     if (addReservartioOrder && addreservaion) {
         await roomData.save();

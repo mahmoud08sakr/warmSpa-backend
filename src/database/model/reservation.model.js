@@ -12,7 +12,8 @@ const reservationSchema = new mongoose.Schema({
     price: { type: Number },
     gender: { type: String, enum: ['Male', 'Female', 'Other'], default: 'Other' },
     reservationDate: { type: Date, required: true },
-    status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' }
+    status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+    priceAfterDiscount: { type: Number },
 }, { timestamps: true });
 
 // Indexes for better query performance
