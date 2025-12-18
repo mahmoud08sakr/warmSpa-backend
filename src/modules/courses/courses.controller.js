@@ -47,7 +47,11 @@ router.patch('/update-quantity/:id', auth, checkRole("Admin", "SAdmin" , "Branch
     let condition = courseData.quantity >= quantity
     if (condition) {
         let updatedQuantity = courseData.quantity - quantity
-        let updatedCourse = await courseModel.findByIdAndUpdate(id, { updatedQuantity }, { new: true })
+        console.log(courseData.quantity  , "quantity of the course");
+        console.log(quantity , "from body");
+        console.log(updatedQuantity , "updated quantity");
+        
+        let updatedCourse = await courseModel.findByIdAndUpdate(id, { quantity:updatedQuantity }, { new: true })
         if (updatedCourse) {
             res.status(200).json({ message: "course updated successfully", updatedCourse })
         } else {
