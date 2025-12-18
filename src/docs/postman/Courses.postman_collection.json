@@ -1,0 +1,252 @@
+{
+  "info": {
+    "name": "WarmSpa - Courses API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Postman collection for Courses module in WarmSpa API."
+  },
+  "item": [
+    {
+      "name": "Create Course for User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"price\": 100,\n  \"branchId\": \"{{branchId}}\",\n  \"quantity\": 1,\n  \"userName\": \"John Doe\",\n  \"phone\": \"1234567890\",\n  \"email\": \"john@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/courses/create-course-for-user",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "courses",
+            "create-course-for-user"
+          ]
+        },
+        "description": "Creates a new course for a specific user (Admin/SAdmin only)."
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Courses",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/courses/get-all-courses",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "courses",
+            "get-all-courses"
+          ]
+        },
+        "description": "Fetches all courses (Admin/SAdmin only)."
+      },
+      "response": []
+    },
+    {
+      "name": "Get User Courses by User ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/courses/get-user-course-by-id/{{userId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "courses",
+            "get-user-course-by-id",
+            "{{userId}}"
+          ]
+        },
+        "description": "Fetches all courses belonging to a specific user."
+      },
+      "response": []
+    },
+    {
+      "name": "Update Course Quantity",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"quantity\": 1\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/courses/update-quantity/{{courseId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "courses",
+            "update-quantity",
+            "{{courseId}}"
+          ]
+        },
+        "description": "Updates (decreases) the quantity of a course (Admin/SAdmin only)."
+      },
+      "response": []
+    },
+    {
+      "name": "Search User for Courses",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/courses/search-user-for-courses?userName=John&email=john@example.com&phone=1234567890",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "courses",
+            "search-user-for-courses"
+          ],
+          "query": [
+            {
+              "key": "userName",
+              "value": "John",
+              "description": "Search by user name"
+            },
+            {
+              "key": "email",
+              "value": "john@example.com",
+              "description": "Search by email"
+            },
+            {
+              "key": "phone",
+              "value": "1234567890",
+              "description": "Search by phone"
+            }
+          ]
+        },
+        "description": "Search for users/courses by name, email, or phone (Admin/SAdmin only)."
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Course",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/courses/delete-course/{{courseId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "courses",
+            "delete-course",
+            "{{courseId}}"
+          ]
+        },
+        "description": "Deletes a course by ID (Admin/SAdmin only)."
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// If a token is present in the environment variables, add it to Authorization header",
+          "var token = pm.environment.get('token');",
+          "if (token) {",
+          "    pm.request.headers.add({",
+          "        key: 'Authorization',",
+          "        value: 'Bearer ' + token",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "branchId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "courseId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
