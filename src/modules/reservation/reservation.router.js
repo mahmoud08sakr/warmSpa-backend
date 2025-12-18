@@ -23,6 +23,7 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
     roomData.gender = gender
     roomData.paymentMethod = paymentMethod;
     roomData.currency = currency;
+    roomData.startDate = new Date();
 
     const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, branchId: branchId, gender: gender, reservationDate: new Date(), price, responsiblePerson, captain, serviceId ,priceAfterDiscount });
     let addReservartioOrder = await reservationOrderModel.create({ reservationId: addreservaion._id, date: new Date() });
