@@ -6,7 +6,7 @@ import express from "express";
 
 const router = express.Router();
 
-router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin" , "Branch"), async (req, res) => {
+router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branch"), async (req, res) => {
     let { price, branchId, quantity, userName, phone, email } = req.body
     let branchData = await Branch.findById(branchId)
     if (!branchData) {
@@ -32,7 +32,7 @@ router.get('/get-all-courses', auth, checkRole("Admin", "SAdmin"), async (req, r
 
 router.get('/get-user-course-by-id/:id', auth, async (req, res) => {
     let { id } = req.params
-    let userCourses = await courseModel.find({ userId: id })
+    let userCourses = await courseModel.findById(id)
     if (userCourses) {
         res.status(200).json({ message: "user courses", userCourses })
     } else {
@@ -60,16 +60,16 @@ router.patch('/update-quantity/:id', auth, checkRole("Admin", "SAdmin"), async (
 
 router.get('/search-user-for-courses', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
     let { userName, email, phone } = req.query
-let findData = {}
-if (userName) {
-    findData.userName = userName
-}
-if (email) {
-    findData.email = email
-}
-if (phone) {
-    findData.phone = phone
-}
+    let findData = {}
+    if (userName) {
+        findData.userName = userName
+    }
+    if (email) {
+        findData.email = email
+    }
+    if (phone) {
+        findData.phone = phone
+    }
     let user = await courseModel.find({ findData })
     if (user) {
         res.status(200).json({ message: "user found", user })
