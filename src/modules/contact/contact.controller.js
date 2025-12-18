@@ -12,6 +12,8 @@ router.post('/add/contact', auth, async (req, res) => {
         return res.status(400).json({ message: "user not found" });
     }
     let addedContact = await contactModel.create({ userId: id, fullName, email, phone, message, subject, isRead: "false" })
+    console.log(addedContact);
+    
     if (addedContact) {
         res.status(200).json({ message: "contact added successfully", addedContact })
     }
