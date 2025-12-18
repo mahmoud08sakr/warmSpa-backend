@@ -6,7 +6,7 @@ import express from "express";
 
 const router = express.Router();
 
-router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
+router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin" , "Branch"), async (req, res) => {
     let { price, branchId, quantity, userName, phone, email } = req.body
     let branchData = await Branch.findById(branchId)
     if (!branchData) {
