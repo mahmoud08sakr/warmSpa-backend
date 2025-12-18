@@ -4,11 +4,7 @@ import { auth } from "../../midlleware/auth.js";
 import { checkRole } from "../../midlleware/role.js";
 import express from "express";
 
-
-
 const router = express.Router();
-
-
 
 router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
     let { price, branchId, quantity, userName, phone, email } = req.body

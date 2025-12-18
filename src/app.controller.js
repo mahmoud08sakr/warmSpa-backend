@@ -15,6 +15,7 @@ import staffRouter from "./modules/staff/staff.router.js";
 import feedbackRouter from "./modules/feedback/feedback.router.js";
 import voucherRouter from "./modules/voucher/voucher.controller.js";
 import resOrderRouter from "./modules/reseOrderModel/resOrder.controller.js";
+import coursesRoutes from "./modules/courses/courses.controller.js";
 import bodyParser from "body-parser";
 import { auth } from "./midlleware/auth.js";
 import { checkRole } from "./midlleware/role.js";
@@ -26,6 +27,7 @@ import { StaffModel } from "./database/model/staff.model.js";
 import OrderDiscountModel from "./database/model/order.reciption.model.js";
 import contactRouter from "./modules/contact/contact.controller.js";
 import Product from "./database/model/product.model.js";
+
 
 dotenv.config();
 
@@ -337,6 +339,7 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/vouchers', voucherRouter);
         app.use('/api/v1/expense', expenseRouter);
         app.use('/api/v1/resOrder', resOrderRouter);
+        app.use('/api/v1/courses', coursesRoutes);
         app.use('/api/v1/contacts', contactRouter);
         app.use(globalErrorHandling);
 
