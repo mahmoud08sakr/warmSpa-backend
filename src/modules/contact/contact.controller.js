@@ -21,8 +21,7 @@ router.post('/add/contact', auth, async (req, res) => {
 
 
 router.get('/get-all-contacts', auth, checkRole("Admin", "SAdmin", "Branch"), async (req, res) => {
-    let { id } = req.user
-    let allContacts = await contactModel.find({ userId: id })
+    let allContacts = await contactModel.find({ })
     if (allContacts) {
         res.status(200).json({ message: "all contacts", allContacts })
     } else {
