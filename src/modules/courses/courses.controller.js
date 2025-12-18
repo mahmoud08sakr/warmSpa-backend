@@ -40,7 +40,7 @@ router.get('/get-user-course-by-id/:id', auth, async (req, res) => {
     }
 })
 
-router.patch('/update-quantity/:id', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
+router.patch('/update-quantity/:id', auth, checkRole("Admin", "SAdmin" , "Branch"), async (req, res) => {
     let { id } = req.params
     let { quantity } = req.body
     let courseData = await courseModel.findById(id)
@@ -58,7 +58,7 @@ router.patch('/update-quantity/:id', auth, checkRole("Admin", "SAdmin"), async (
     }
 })
 
-router.get('/search-user-for-courses', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
+router.get('/search-user-for-courses', auth, checkRole("Admin", "SAdmin" , "Branch"), async (req, res) => {
     let { userName, email, phone } = req.query
     let findData = {}
     if (userName) {
