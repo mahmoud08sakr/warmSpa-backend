@@ -17,7 +17,7 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
         return res.status(400).json({ message: "Room is already reserved" });
     }
     // priceAfterDiscount ? roomData.priceAfterDiscount = priceAfterDiscount : roomData.priceAfterDiscount = price;
-     roomData.isReserved = true;
+    roomData.isReserved = true;
     roomData.customerName = customerName;
     roomData.customerPhone = customerPhone
     roomData.gender = gender
@@ -25,7 +25,7 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
     roomData.currency = currency;
     roomData.startDate = new Date();
 
-    const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, branchId: branchId, gender: gender, reservationDate: new Date(), price, responsiblePerson, captain, serviceId ,priceAfterDiscount });
+    const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, branchId: branchId, gender: gender, reservationDate: new Date(), price, responsiblePerson, captain, serviceId, priceAfterDiscount });
     let addReservartioOrder = await reservationOrderModel.create({ reservationId: addreservaion._id, date: new Date() });
     if (addReservartioOrder && addreservaion) {
         await roomData.save();
@@ -48,6 +48,7 @@ router.post('/end-reservation/:branchId/:roomId', auth, async (req, res) => {
     roomData.gender = null;
     roomData.paymentMethod = null;
     roomData.currency = null;
+    roomData.startDate = null;
     await roomData.save();
     res.status(200).json({ message: 'Reservation cancelled successfully' });
 });
