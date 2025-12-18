@@ -200,7 +200,7 @@ export const getAllUsers = handleAsyncError( async (req, res) => {
 
 
 export const getUserById = handleAsyncError(async (req, res) => {
-    let { id } = req.userw
+    let { id } = req.user
     const userData = await userModel.findById(id).select('-password')
     if (!userData) {
         throw new AppError('user not found', 404)
