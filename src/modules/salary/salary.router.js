@@ -34,9 +34,9 @@ router.get('/get-salary-by-id/:id', auth, checkRole("Admin", "SAdmin"), handleAs
 }))
 
 
-router.patch("/add-deduction" , auth, checkRole("Admin", "SAdmin"), handleAsyncError(async (req, res) => {
+router.patch("/add-deduction/:id" , auth, checkRole("Admin", "SAdmin"), handleAsyncError(async (req, res) => {
     let { id } = req.params
-    let { deduction } = req.body
+    let { deduction  } = req.body
     let updateSalary = await salaryModel.findByIdAndUpdate(id, { $push: { deduction } }, { new: true })
     if (updateSalary) {
         res.status(200).json({ message: "deduction added successfully", updateSalary })

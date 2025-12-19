@@ -153,21 +153,26 @@ export const approveDiscountHandler = handleAsyncError(async (req, res) => {
         })
     }
     requestDiscount.status = 'approved';
+
     await requestDiscount.save();
     let addedReservation = await ReservationModel.create({
-        userName: requestDiscount.customerName,
-        userEmail: requestDiscount.customerPhone,
+        userName: requestDiscount.customerName || 'user' ,
+        userEmail: requestDiscount.customerPhone || '015********',
         RoomId: requestDiscount.roomId,
-        serviceId: requestDiscount.serviceId,
+        serviceId: requestDiscount.products[0].productId,
         branchId: requestDiscount.branchId,
         gender: requestDiscount.gender,
         reservationDate: new Date(),
         price: requestDiscount.requiestPrice,
         responsiblePerson: requestDiscount.reseptionist,
         priceAfterDiscount: requestDiscount.requiestPrice,
-        status: requestDiscount.status,
+        status: "Approved",
         captain: requestDiscount.captain
     })
+console.log(addedReservation);
+
+    console.log(addedReservation , "from zeby");
+    
     let updateRoomStatus = await Room.findOneAndUpdate({ _id: requestDiscount.roomId }, { isReserved: true }, { new: true });
     console.log(updateRoomStatus, "update the product data");
 
