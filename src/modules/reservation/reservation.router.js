@@ -48,7 +48,7 @@ router.post('/end-reservation/:branchId/:roomId', auth, async (req, res) => {
     roomData.gender = null;
     roomData.paymentMethod = null;
     roomData.currency = null;
-    roomData.startDate = null;
+    roomData.startTime = null;
     await roomData.save();
     res.status(200).json({ message: 'Reservation cancelled successfully' });
 });
