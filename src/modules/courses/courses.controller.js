@@ -7,12 +7,12 @@ import express from "express";
 const router = express.Router();
 
 router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branch"), async (req, res) => {
-    let { price, branchId, quantity, userName, phone, email } = req.body
+    let { price, branchId, quantity, userName, phone, email ,serviceName } = req.body
     let branchData = await Branch.findById(branchId)
     if (!branchData) {
         return res.status(400).json({ message: "branch not found" });
     }
-    let createCourses = await courseModel.create({ price, branchId, quantity, userName, phone, email })
+    let createCourses = await courseModel.create({ price, branchId, quantity, userName, phone, email , serviceName , numberOfSessions:quantity })
     let course = await createCourses.save()
     if (course) {
         res.status(200).json({ message: "course created successfully", course })

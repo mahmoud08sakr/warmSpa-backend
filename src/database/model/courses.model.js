@@ -1,6 +1,12 @@
 import mongoose from "mongoose";
 
 const courseSchema = new mongoose.Schema({
+    serviceName: {
+        type: String,
+        required: [true, 'Course name is required'],
+        trim: true,
+        maxlength: [100, 'Course name cannot exceed 100 characters']
+    },
     price: {
         type: Number,
         required: [true, 'Course price is required'],
@@ -15,6 +21,11 @@ const courseSchema = new mongoose.Schema({
         type: Number,
         required: [true, 'Course quantity is required'],
         min: [0, 'Quantity must be a positive number']
+    },
+    numberOfSessions: {
+        type: Number,
+        required: [true, 'Number of sessions is required'],
+        min: [0, 'Number of sessions must be a positive number']
     },
     userName: {
         type: String,
