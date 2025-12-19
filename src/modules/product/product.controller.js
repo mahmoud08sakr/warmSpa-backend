@@ -158,7 +158,7 @@ export const approveDiscountHandler = handleAsyncError(async (req, res) => {
         userName: requestDiscount.customerName,
         userEmail: requestDiscount.customerPhone,
         RoomId: requestDiscount.roomId,
-        serviceId: requestDescount.serviceId
+        serviceId: requestDescount.serviceId,
         branchId: requestDiscount.branchId,
         gender: requestDiscount.gender,
         reservationDate: new Date(),
@@ -167,7 +167,6 @@ export const approveDiscountHandler = handleAsyncError(async (req, res) => {
         priceAfterDiscount: requestDiscount.requiestPrice,
         status: requestDescount.status,
         captain: requestDescount.captain
-
     })
     let updateRoomStatus = await Room.findOneAndUpdate({ _id: requestDiscount.roomId }, { isReserved: true }, { new: true });
     console.log(updateRoomStatus, "update the product data");
