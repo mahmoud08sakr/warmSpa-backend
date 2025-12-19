@@ -2,7 +2,6 @@ import express from "express";
 import { auth } from "../../midlleware/auth.js";
 import { checkRole } from "../../midlleware/role.js";
 import salaryModel from "../../database/model/salary.model.js";
-import { createSalary, getAllSalary, getSalaryById, updateSalary, deleteSalary } from "./salary.controller.js";
 import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
 const router = express.Router();
 

@@ -23,6 +23,7 @@ import expenseModel from "./database/model/expense.model.js";
 import Order from "./database/model/order.model.js";
 import ReservationModel from "./database/model/reservation.model.js";
 import Room from "./database/model/room.model.js";
+import salaryRoutes from "./modules/salary/salary.router.js";
 import { StaffModel } from "./database/model/staff.model.js";
 import OrderDiscountModel from "./database/model/order.reciption.model.js";
 import contactRouter from "./modules/contact/contact.controller.js";
@@ -341,6 +342,7 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/resOrder', resOrderRouter);
         app.use('/api/v1/courses', coursesRoutes);
         app.use('/api/v1/contacts', contactRouter);
+        app.use('/api/v1/salary', salaryRoutes);
         app.use(globalErrorHandling);
 
         console.log("✅ API routes configured successfully");
