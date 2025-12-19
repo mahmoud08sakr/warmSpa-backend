@@ -11,6 +11,7 @@ import { handleAsyncError } from '../../errorHandling/handelAsyncError.js';
 import RequestDiscountModel from '../../database/model/requestDescount.model.js';
 import OrderDiscountModel from '../../database/model/order.reciption.model.js';
 import Room from '../../database/model/room.model.js';
+import ReservationModel from '../../database/model/reservation.model.js';
 export const createProductHandler = handleAsyncError(async (req, res) => {
     const product = await createProduct(req.body);
     res.status(201).json({
@@ -153,6 +154,21 @@ export const approveDiscountHandler = handleAsyncError(async (req, res) => {
     }
     requestDiscount.status = 'approved';
     await requestDiscount.save();
+    let addedReservation = await ReservationModel.create({
+        userName: requestDiscount.customerName,
+        userEmail: requestDiscount.customerPhone,
+        RoomId: requestDiscount.roomId,
+        serviceId: requestDescount.serviceId
+        branchId: requestDiscount.branchId,
+        gender: requestDiscount.gender,
+        reservationDate: new Date(),
+        price: requestDiscount.requiestPrice,
+        responsiblePerson: requestDiscount.reseptionist,
+        priceAfterDiscount: requestDiscount.requiestPrice,
+        status: requestDescount.status,
+        captain: requestDescount.captain
+
+    })
     let updateRoomStatus = await Room.findOneAndUpdate({ _id: requestDiscount.roomId }, { isReserved: true }, { new: true });
     console.log(updateRoomStatus, "update the product data");
 
