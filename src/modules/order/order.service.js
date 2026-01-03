@@ -106,8 +106,10 @@ export const handleStripeWebhook = async (req, res) => {
                 });
                 let reservationOrder1 = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
                 const userData = await userModel.findById(session.metadata.userId).select('-password')
-                userData.points += session.amount_total / 100;
+                userData.points ? userData.points += session.amount_total / 100 : userData.points = session.amount_total / 100;
+                userData.points.numberOfPoints ? userData.points.numberOfPoints += session.amount_total / 100 : userData.points.numberOfPoints = session.amount_total / 100;
                 console.log(session.amount_total / 100);
+                console.log(userData.points);
 
                 await userData.save();
                 console.log('Order created:', reservationOrder1);
@@ -151,8 +153,9 @@ export const handleStripeWebhook = async (req, res) => {
                     });
                     let reservationOrder2 = await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
                     const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
-                    userData.points.numberOfPoints ? userData.points.numberOfPoints += paymentIntentUpdate.amount_received / 100 : userData.points.numberOfPoints = paymentIntentUpdate.amount_received / 100;
                     userData.points.totalPoints ? userData.points.totalPoints += paymentIntentUpdate.amount_received / 100 : userData.points.totalPoints = paymentIntentUpdate.amount_received / 100;
+                    userData.points.numberOfPoints ? userData.points.numberOfPoints += paymentIntentUpdate.amount_received / 100 : userData.points.numberOfPoints = paymentIntentUpdate.amount_received / 100;
+                    userData.points.date = new Date();
                     console.log(session.amount_total / 100);
 
                     await userData.save();
@@ -183,6 +186,7 @@ export const handleStripeWebhook = async (req, res) => {
                 const userDataa = await userModel.findById(paymentIntentCreated.metadata.userId).select('-password')
                 userDataa.points.numberOfPoints ? userDataa.points.numberOfPoints += paymentIntentCreated.amount / 100 : userDataa.points.numberOfPoints = paymentIntentCreated.amount / 100;
                 userDataa.points.totalPoints ? userDataa.points.totalPoints += paymentIntentCreated.amount / 100 : userDataa.points.totalPoints = paymentIntentCreated.amount / 100;
+                userDataa.points.date = new Date();
                 console.log(paymentIntentCreated.amount / 100);
                 await userDataa.save();
                 // Note: Points are awarded only on successful payment, not on creation
