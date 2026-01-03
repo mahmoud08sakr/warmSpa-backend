@@ -151,8 +151,8 @@ export const handleStripeWebhook = async (req, res) => {
                     });
                     let reservationOrder2 = await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
                     const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
-                    userData.points.numberOfPoints += paymentIntentUpdate.amount_received / 100;
-                    userData.points.totalPoints += paymentIntentUpdate.amount_received / 100;
+                    userData.points.numberOfPoints ? userData.points.numberOfPoints += paymentIntentUpdate.amount_received / 100 : userData.points.numberOfPoints = paymentIntentUpdate.amount_received / 100;
+                    userData.points.totalPoints ? userData.points.totalPoints += paymentIntentUpdate.amount_received / 100 : userData.points.totalPoints = paymentIntentUpdate.amount_received / 100;
                     console.log(session.amount_total / 100);
 
                     await userData.save();
@@ -181,8 +181,8 @@ export const handleStripeWebhook = async (req, res) => {
                 });
                 let reservationOrder3 = await reservationOrderModel.create({ orderId: newPendingOrder._id, date: new Date() });
                 const userDataa = await userModel.findById(paymentIntentCreated.metadata.userId).select('-password')
-                userDataa.points.numberOfPoints += paymentIntentCreated.amount / 100;
-                userDataa.points.totalPoints += paymentIntentCreated.amount / 100;
+                userDataa.points.numberOfPoints ? userDataa.points.numberOfPoints += paymentIntentCreated.amount / 100 : userDataa.points.numberOfPoints = paymentIntentCreated.amount / 100;
+                userDataa.points.totalPoints ? userDataa.points.totalPoints += paymentIntentCreated.amount / 100 : userDataa.points.totalPoints = paymentIntentCreated.amount / 100;
                 console.log(paymentIntentCreated.amount / 100);
                 await userDataa.save();
                 // Note: Points are awarded only on successful payment, not on creation
