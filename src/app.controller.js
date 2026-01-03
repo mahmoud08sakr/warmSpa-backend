@@ -20,6 +20,7 @@ import bodyParser from "body-parser";
 import { auth } from "./midlleware/auth.js";
 import { checkRole } from "./midlleware/role.js";
 import expenseModel from "./database/model/expense.model.js";
+import helperRouter from "./modules/helper/helper.controller.js";
 import Order from "./database/model/order.model.js";
 import ReservationModel from "./database/model/reservation.model.js";
 import Room from "./database/model/room.model.js";
@@ -343,6 +344,7 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/courses', coursesRoutes);
         app.use('/api/v1/contacts', contactRouter);
         app.use('/api/v1/salary', salaryRoutes);
+        app.use('/api/v1/helper', helperRouter);
         app.use(globalErrorHandling);
 
         console.log("✅ API routes configured successfully");

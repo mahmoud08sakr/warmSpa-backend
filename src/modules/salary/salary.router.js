@@ -15,6 +15,7 @@ router.post('/create-salary', auth, checkRole("Admin", "SAdmin"), handleAsyncErr
         res.status(400).json({ message: "salary not created" })
     }
 }))
+
 router.get('/get-all-salary', auth, checkRole("Admin", "SAdmin"), handleAsyncError(async (req, res) => {
     let allSalary = await salaryModel.find()
     if (allSalary.length > 0) {
@@ -23,6 +24,7 @@ router.get('/get-all-salary', auth, checkRole("Admin", "SAdmin"), handleAsyncErr
         res.status(400).json({ message: "no salary found" })
     }
 }))
+
 router.get('/get-salary-by-id/:id', auth, checkRole("Admin", "SAdmin"), handleAsyncError(async (req, res) => {
     let { id } = req.params
     let salary = await salaryModel.findById(id)
@@ -32,7 +34,6 @@ router.get('/get-salary-by-id/:id', auth, checkRole("Admin", "SAdmin"), handleAs
         res.status(400).json({ message: "salary not found" })
     }
 }))
-
 
 router.patch("/add-deduction/:id" , auth, checkRole("Admin", "SAdmin"), handleAsyncError(async (req, res) => {
     let { id } = req.params
