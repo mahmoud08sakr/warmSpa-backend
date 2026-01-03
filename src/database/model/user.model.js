@@ -43,10 +43,20 @@ const userSchema = new mongoose.Schema({
         enum: ["Male", "Female", "Other"],
         default: "Male"
     },
-    points: {
-        type: Number,
-        default: 0
-    }
+    points: [{
+        numberOfPoints: {
+            type: Number,
+            default: 0
+        },
+        date: {
+            type: Date,
+            default: Date.now
+        },
+        totalPoints: {
+            type: Number,
+            default: 0
+        }
+    }]
 }, {
     timestamps: true
 });
