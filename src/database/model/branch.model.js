@@ -104,7 +104,7 @@ const branchSchema = new mongoose.Schema({
     helper: [{
         user: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User"
+            ref: "Staff"
         },
         date: {
             type: Date,
