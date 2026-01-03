@@ -105,11 +105,28 @@ export const handleStripeWebhook = async (req, res) => {
                     date: session.metadata.date
                 });
                 let reservationOrder1 = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
-                const userData = await userModel.findById(session.metadata.userId).select('-password')
-                userData.points ? userData.points += session.amount_total / 100 : userData.points = session.amount_total / 100;
-                userData.points.numberOfPoints ? userData.points.numberOfPoints += session.amount_total / 100 : userData.points.numberOfPoints = session.amount_total / 100;
-                console.log(session.amount_total / 100);
-                console.log(userData.points);
+                const userData = await userModel.findById(session.metadata.userId).select('-password');
+                
+                // Initialize points array if it doesn't exist or is empty
+                if (!userData.points || !Array.isArray(userData.points) || userData.points.length === 0) {
+                    userData.points = [{
+                        numberOfPoints: 0,
+                        totalPoints: 0,
+                        date: new Date()
+                    }];
+                }
+                
+                // Get the latest points entry (or the only one if there's just one)
+                const latestPoints = userData.points[userData.points.length - 1];
+                
+                // Update the points
+                const pointsToAdd = session.amount_total / 100;
+                latestPoints.numberOfPoints = (latestPoints.numberOfPoints || 0) + pointsToAdd;
+                latestPoints.totalPoints = (latestPoints.totalPoints || 0) + pointsToAdd;
+                latestPoints.date = new Date();
+                
+                console.log('Added points:', pointsToAdd);
+                console.log('Updated points:', latestPoints);
 
                 await userData.save();
                 console.log('Order created:', reservationOrder1);
@@ -152,11 +169,27 @@ export const handleStripeWebhook = async (req, res) => {
                         orderType: paymentIntentUpdate.metadata.orderType,
                     });
                     let reservationOrder2 = await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
-                    const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password')
-                    userData.points.totalPoints ? userData.points.totalPoints += paymentIntentUpdate.amount_received / 100 : userData.points.totalPoints = paymentIntentUpdate.amount_received / 100;
-                    userData.points.numberOfPoints ? userData.points.numberOfPoints += paymentIntentUpdate.amount_received / 100 : userData.points.numberOfPoints = paymentIntentUpdate.amount_received / 100;
-                    userData.points.date = new Date();
-                    console.log(session.amount_total / 100);
+                    const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password');
+                    
+                    // Initialize points array if it doesn't exist or is empty
+                    if (!userData.points || !Array.isArray(userData.points) || userData.points.length === 0) {
+                        userData.points = [{
+                            numberOfPoints: 0,
+                            totalPoints: 0,
+                            date: new Date()
+                        }];
+                    }
+                    
+                    // Get the latest points entry
+                    const latestPoints = userData.points[userData.points.length - 1];
+                    
+                    // Update the points
+                    const pointsToAdd = paymentIntentUpdate.amount_received / 100;
+                    latestPoints.numberOfPoints = (latestPoints.numberOfPoints || 0) + pointsToAdd;
+                    latestPoints.totalPoints = (latestPoints.totalPoints || 0) + pointsToAdd;
+                    latestPoints.date = new Date();
+                    
+                    console.log('Added points (payment_intent.succeeded):', pointsToAdd);
 
                     await userData.save();
                 }
@@ -183,11 +216,27 @@ export const handleStripeWebhook = async (req, res) => {
                     orderType: paymentIntentCreated.metadata.orderType,
                 });
                 let reservationOrder3 = await reservationOrderModel.create({ orderId: newPendingOrder._id, date: new Date() });
-                const userDataa = await userModel.findById(paymentIntentCreated.metadata.userId).select('-password')
-                userDataa.points.numberOfPoints ? userDataa.points.numberOfPoints += paymentIntentCreated.amount / 100 : userDataa.points.numberOfPoints = paymentIntentCreated.amount / 100;
-                userDataa.points.totalPoints ? userDataa.points.totalPoints += paymentIntentCreated.amount / 100 : userDataa.points.totalPoints = paymentIntentCreated.amount / 100;
-                userDataa.points.date = new Date();
-                console.log(paymentIntentCreated.amount / 100);
+                const userDataa = await userModel.findById(paymentIntentCreated.metadata.userId).select('-password');
+                
+                // Initialize points array if it doesn't exist or is empty
+                if (!userDataa.points || !Array.isArray(userDataa.points) || userDataa.points.length === 0) {
+                    userDataa.points = [{
+                        numberOfPoints: 0,
+                        totalPoints: 0,
+                        date: new Date()
+                    }];
+                }
+                
+                // Get the latest points entry
+                const latestPoints2 = userDataa.points[userDataa.points.length - 1];
+                
+                // Update the points
+                const pointsToAdd2 = paymentIntentCreated.amount / 100;
+                latestPoints2.numberOfPoints = (latestPoints2.numberOfPoints || 0) + pointsToAdd2;
+                latestPoints2.totalPoints = (latestPoints2.totalPoints || 0) + pointsToAdd2;
+                latestPoints2.date = new Date();
+                
+                console.log('Added points (payment_intent.created):', pointsToAdd2);
                 await userDataa.save();
                 // Note: Points are awarded only on successful payment, not on creation
                 break;
