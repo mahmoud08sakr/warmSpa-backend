@@ -107,28 +107,29 @@ export const handleStripeWebhook = async (req, res) => {
                 let reservationOrder1 = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
                 const userData = await userModel.findById(session.metadata.userId).select('-password');
                 
-                // Initialize points array if it doesn't exist or is empty
-                if (!userData.points || !Array.isArray(userData.points) || userData.points.length === 0) {
-                    userData.points = [{
-                        numberOfPoints: 0,
-                        totalPoints: 0,
-                        date: new Date()
-                    }];
+                // Initialize points array if it doesn't exist
+                if (!userData.points) {
+                    userData.points = [];
                 }
                 
-                // Get the latest points entry (or the only one if there's just one)
-                const latestPoints = userData.points[userData.points.length - 1];
+                // Calculate points to add (1 point per EGP)
+                const pointsToAdd = Math.floor(session.amount_total / 100);
                 
-                // Update the points
-                const pointsToAdd = session.amount_total / 100;
-                latestPoints.numberOfPoints = (latestPoints.numberOfPoints || 0) + pointsToAdd;
-                latestPoints.totalPoints = (latestPoints.totalPoints || 0) + pointsToAdd;
-                latestPoints.date = new Date();
+                // Create new points entry
+                const newPointsEntry = {
+                    numberOfPoints: pointsToAdd,
+                    totalPoints: pointsToAdd,
+                    date: new Date()
+                };
                 
-                console.log('Added points:', pointsToAdd);
-                console.log('Updated points:', latestPoints);
-
-                await userData.save();
+                // Add to the beginning of the array (most recent first)
+                userData.points.unshift(newPointsEntry);
+                
+                console.log('Added points (checkout.session.completed):', pointsToAdd);
+                
+                // Save the updated user document
+                await userData.save({ validateBeforeSave: true });
+                console.log('User points updated successfully');
                 console.log('Order created:', reservationOrder1);
                 break;
 
@@ -171,27 +172,29 @@ export const handleStripeWebhook = async (req, res) => {
                     let reservationOrder2 = await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
                     const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password');
                     
-                    // Initialize points array if it doesn't exist or is empty
-                    if (!userData.points || !Array.isArray(userData.points) || userData.points.length === 0) {
-                        userData.points = [{
-                            numberOfPoints: 0,
-                            totalPoints: 0,
-                            date: new Date()
-                        }];
+                    // Initialize points array if it doesn't exist
+                    if (!userData.points) {
+                        userData.points = [];
                     }
                     
-                    // Get the latest points entry
-                    const latestPoints = userData.points[userData.points.length - 1];
+                    // Calculate points to add (1 point per EGP)
+                    const pointsToAdd = Math.floor(paymentIntentUpdate.amount_received / 100);
                     
-                    // Update the points
-                    const pointsToAdd = paymentIntentUpdate.amount_received / 100;
-                    latestPoints.numberOfPoints = (latestPoints.numberOfPoints || 0) + pointsToAdd;
-                    latestPoints.totalPoints = (latestPoints.totalPoints || 0) + pointsToAdd;
-                    latestPoints.date = new Date();
+                    // Create new points entry
+                    const newPointsEntry = {
+                        numberOfPoints: pointsToAdd,
+                        totalPoints: pointsToAdd,
+                        date: new Date()
+                    };
+                    
+                    // Add to the beginning of the array (most recent first)
+                    userData.points.unshift(newPointsEntry);
                     
                     console.log('Added points (payment_intent.succeeded):', pointsToAdd);
-
-                    await userData.save();
+                    
+                    // Save the updated user document
+                    await userData.save({ validateBeforeSave: true });
+                    console.log('User points updated successfully');
                 }
                 break;
 
@@ -218,26 +221,29 @@ export const handleStripeWebhook = async (req, res) => {
                 let reservationOrder3 = await reservationOrderModel.create({ orderId: newPendingOrder._id, date: new Date() });
                 const userDataa = await userModel.findById(paymentIntentCreated.metadata.userId).select('-password');
                 
-                // Initialize points array if it doesn't exist or is empty
-                if (!userDataa.points || !Array.isArray(userDataa.points) || userDataa.points.length === 0) {
-                    userDataa.points = [{
-                        numberOfPoints: 0,
-                        totalPoints: 0,
-                        date: new Date()
-                    }];
+                // Initialize points array if it doesn't exist
+                if (!userDataa.points) {
+                    userDataa.points = [];
                 }
                 
-                // Get the latest points entry
-                const latestPoints2 = userDataa.points[userDataa.points.length - 1];
+                // Calculate points to add (1 point per EGP)
+                const pointsToAdd2 = Math.floor(paymentIntentCreated.amount / 100);
                 
-                // Update the points
-                const pointsToAdd2 = paymentIntentCreated.amount / 100;
-                latestPoints2.numberOfPoints = (latestPoints2.numberOfPoints || 0) + pointsToAdd2;
-                latestPoints2.totalPoints = (latestPoints2.totalPoints || 0) + pointsToAdd2;
-                latestPoints2.date = new Date();
+                // Create new points entry
+                const newPointsEntry2 = {
+                    numberOfPoints: pointsToAdd2,
+                    totalPoints: pointsToAdd2,
+                    date: new Date()
+                };
+                
+                // Add to the beginning of the array (most recent first)
+                userDataa.points.unshift(newPointsEntry2);
                 
                 console.log('Added points (payment_intent.created):', pointsToAdd2);
-                await userDataa.save();
+                
+                // Save the updated user document
+                await userDataa.save({ validateBeforeSave: true });
+                console.log('User points updated successfully');
                 // Note: Points are awarded only on successful payment, not on creation
                 break;
 
