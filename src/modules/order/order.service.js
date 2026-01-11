@@ -106,27 +106,27 @@ export const handleStripeWebhook = async (req, res) => {
                 });
                 let reservationOrder1 = await reservationOrderModel.create({ orderId: createdOrder._id, date: new Date() });
                 const userData = await userModel.findById(session.metadata.userId).select('-password');
-                
+
                 // Initialize points array if it doesn't exist
                 if (!userData.points) {
                     userData.points = [];
                 }
-                
+
                 // Calculate points to add (1 point per EGP)
                 const pointsToAdd = Math.floor(session.amount_total / 100);
-                
+
                 // Create new points entry
                 const newPointsEntry = {
                     numberOfPoints: pointsToAdd,
                     totalPoints: pointsToAdd,
                     date: new Date()
                 };
-                
+
                 // Add to the beginning of the array (most recent first)
                 userData.points.unshift(newPointsEntry);
-                
+
                 console.log('Added points (checkout.session.completed):', pointsToAdd);
-                
+
                 // Save the updated user document
                 await userData.save({ validateBeforeSave: true });
                 console.log('User points updated successfully');
@@ -171,27 +171,27 @@ export const handleStripeWebhook = async (req, res) => {
                     });
                     let reservationOrder2 = await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
                     const userData = await userModel.findById(paymentIntentUpdate.metadata.userId).select('-password');
-                    
+
                     // Initialize points array if it doesn't exist
                     if (!userData.points) {
                         userData.points = [];
                     }
-                    
+
                     // Calculate points to add (1 point per EGP)
                     const pointsToAdd = Math.floor(paymentIntentUpdate.amount_received / 100);
-                    
+
                     // Create new points entry
                     const newPointsEntry = {
                         numberOfPoints: pointsToAdd,
                         totalPoints: pointsToAdd,
                         date: new Date()
                     };
-                    
+
                     // Add to the beginning of the array (most recent first)
                     userData.points.unshift(newPointsEntry);
-                    
+
                     console.log('Added points (payment_intent.succeeded):', pointsToAdd);
-                    
+
                     // Save the updated user document
                     await userData.save({ validateBeforeSave: true });
                     console.log('User points updated successfully');
@@ -220,27 +220,27 @@ export const handleStripeWebhook = async (req, res) => {
                 });
                 let reservationOrder3 = await reservationOrderModel.create({ orderId: newPendingOrder._id, date: new Date() });
                 const userDataa = await userModel.findById(paymentIntentCreated.metadata.userId).select('-password');
-                
+
                 // Initialize points array if it doesn't exist
                 if (!userDataa.points) {
                     userDataa.points = [];
                 }
-                
+
                 // Calculate points to add (1 point per EGP)
                 const pointsToAdd2 = Math.floor(paymentIntentCreated.amount / 100);
-                
+
                 // Create new points entry
                 const newPointsEntry2 = {
                     numberOfPoints: pointsToAdd2,
                     totalPoints: pointsToAdd2,
                     date: new Date()
                 };
-                
+
                 // Add to the beginning of the array (most recent first)
                 userDataa.points.unshift(newPointsEntry2);
-                
+
                 console.log('Added points (payment_intent.created):', pointsToAdd2);
-                
+
                 // Save the updated user document
                 await userDataa.save({ validateBeforeSave: true });
                 console.log('User points updated successfully');
@@ -420,3 +420,14 @@ export const redeemPoints = handleAsyncError(async (req, res, next) => {
     });
 });
 
+export const getOrdersByBranchId = handleAsyncError(async (req, res, next) => {
+    const { branchId } = req.params;
+    const orders = await Order.find({ branch: branchId })
+        .populate('user', 'name email')
+        .populate('items.service', 'name price');
+    res.status(200).json({
+        status: 'success',
+        results: orders.length,
+        data: orders
+    });
+});
