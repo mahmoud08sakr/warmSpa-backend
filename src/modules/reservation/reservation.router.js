@@ -88,4 +88,33 @@ router.get('/reports-for-branch/:branchId', auth, async (req, res) => {
     let reservations = await ReservationModel.find({ branchId: branchId }).populate('RoomId');
     res.status(200).json({ reservations });
 });
+
+
+router.post('/reserve-order/:orderId/:roomId', auth, handleAsyncError(async (req, res) => {
+    let { orderId, roomId } = req.params;
+    let { customerName, customerPhone, gender, paymentMethod, currency, price, responsiblePerson, captain, serviceId, priceAfterDiscount } = req.body
+    let roomData = await Room.findOne({ _id: roomId, branchId: branchId });
+    if (!roomData) {
+        return res.status(404).json({ message: "Room not found in the specified branch" });
+    }
+    if (roomData.isReserved) {
+        return res.status(400).json({ message: "Room is already reserved" });
+    }
+    // priceAfterDiscount ? roomData.priceAfterDiscount = priceAfterDiscount : roomData.priceAfterDiscount = price;
+    roomData.isReserved = true;
+    roomData.customerName = customerName;
+    roomData.customerPhone = customerPhone
+    roomData.gender = gender
+    roomData.paymentMethod = paymentMethod;
+    roomData.currency = currency;
+    roomData.startTime = new Date();
+
+    const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, orderId: orderId, gender: gender, reservationDate: new Date(), price, responsiblePerson, captain, serviceId, priceAfterDiscount });
+    let addReservartioOrder = await reservationOrderModel.create({ reservationId: addreservaion._id, date: new Date() });
+    if (addReservartioOrder && addreservaion) {
+        await roomData.save();
+    }
+    res.status(201).json({ message: 'Reservation created successfully' });
+}));
+
 export default router;

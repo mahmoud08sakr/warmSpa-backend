@@ -419,3 +419,4 @@ export const redeemPoints = handleAsyncError(async (req, res, next) => {
         }
     });
 });
+

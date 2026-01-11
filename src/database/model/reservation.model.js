@@ -2,10 +2,10 @@ import mongoose from 'mongoose';
 
 
 const reservationSchema = new mongoose.Schema({
-    userName: { type: String, required: true },
-    userEmail: { type: String, required: true },
+    userName: { type: String },
+    userEmail: { type: String },
     RoomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
-    branchId: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch', required: true },
+    branchId: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch' },
     serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
     captain: { type: String },
     responsiblePerson: { type: String },
@@ -14,8 +14,9 @@ const reservationSchema = new mongoose.Schema({
     reservationDate: { type: Date, required: true },
     status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
     priceAfterDiscount: { type: Number },
-    startTime: { type: Date},
-    endTime: { type: Date},
+    startTime: { type: Date },
+    endTime: { type: Date },
+    orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
 }, { timestamps: true });
 
 // Indexes for better query performance
