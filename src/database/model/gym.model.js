@@ -7,7 +7,7 @@ const gymSchema = new mongoose.Schema({
         trim: true,
         maxlength: [100, 'Gym name cannot exceed 100 characters']
     },
-    phone:{
+    phone: {
         type: String,
         trim: true
     },
@@ -15,18 +15,15 @@ const gymSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch'
     },
-    numberOfSessions: {
-        type: Number,
-        min: [0, 'Number of sessions must be a positive number']
-    },
-    subscriptionEndDate: {
-        type: Date,
+    price: {
+        type: [Number],
+        default: [500, 800, 1200, 1600, 2000],
     }
 }, {
     timestamps: true
 });
 
-gymSchema.index({ name: 1 }); 
+gymSchema.index({ name: 1 });
 gymSchema.index({ name: 'text' }); // Text search for gyms
 
 export const gymModel = mongoose.model('Gym', gymSchema);

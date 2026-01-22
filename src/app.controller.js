@@ -29,7 +29,7 @@ import { StaffModel } from "./database/model/staff.model.js";
 import OrderDiscountModel from "./database/model/order.reciption.model.js";
 import contactRouter from "./modules/contact/contact.controller.js";
 import Product from "./database/model/product.model.js";
-
+import gymReservationRouter from "./modules/gym/gym.controller.js";
 
 dotenv.config();
 
@@ -345,6 +345,7 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/contacts', contactRouter);
         app.use('/api/v1/salary', salaryRoutes);
         app.use('/api/v1/helper', helperRouter);
+        app.use('/api/v1/gym-reservation', gymReservationRouter);
         app.use(globalErrorHandling);
 
         console.log("✅ API routes configured successfully");
