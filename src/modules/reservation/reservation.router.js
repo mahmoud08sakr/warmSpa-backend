@@ -90,7 +90,7 @@ router.get('/reports-for-branch/:branchId', auth, async (req, res) => {
 });
 
 
-router.post('/reserve-order/:orderId/:roomId', auth, handleAsyncError(async (req, res) => {
+router.post('/reserve-order/:branchId/:roomId', auth, handleAsyncError(async (req, res) => {
     let { branchId, roomId } = req.params;
     let { customerName, customerPhone, gender, paymentMethod, currency, responsiblePerson, captain, serviceId, priceAfterDiscount } = req.body
     let roomData = await Room.findOne({ _id: roomId, branchId: branchId });
