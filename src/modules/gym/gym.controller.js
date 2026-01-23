@@ -86,8 +86,11 @@ router.put('/update-sessions/:gymReservationId', async (req, res) => {
     let reservationData = await gymReservationModel.findById(gymReservationId)
     if (reservationData) {
         let nowDate = Date.now
+        console.log(subscriptionEndDate , "from update session");
+        console.log(nowDate , "from update session now date");
+        
         if (reservationData.subscriptionEndDate < nowDate) {
-            return res.json({ message: "subscription not expired" })
+            return res.json({ message: "subscription is expired" })
         }
         if (reservationData.numberOfSessions > 0) {
             reservationData.numberOfSessions = reservationData.numberOfSessions - 1
