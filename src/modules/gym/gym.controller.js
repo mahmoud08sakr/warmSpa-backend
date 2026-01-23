@@ -65,7 +65,7 @@ router.post('/add-reservation', async (req, res) => {
     }
 })
 
-router.get('/search-reservation', async (req, res) => {
+router.post('/search-reservation', async (req, res) => {
     const { userName, userEmail ,userPhone } = req.body
     let findData = {}
     if (userName) {
