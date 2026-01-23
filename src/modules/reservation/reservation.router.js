@@ -110,6 +110,8 @@ router.post('/reserve-order/:branchId/:roomId', auth, handleAsyncError(async (re
     roomData.currency = currency;
     roomData.startTime = new Date();
     let updateOrderData = await Order.findByIdAndUpdate(orderId, { isReserverInBranch: true }, { new: true });
+    console.log(updateOrderData, "from updated order");
+
     const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, orderId: orderId, gender: gender, reservationDate: new Date(), responsiblePerson, captain, serviceId, priceAfterDiscount });
     let addReservartioOrder = await reservationOrderModel.create({ reservationId: addreservaion._id, date: new Date() });
     if (addReservartioOrder && addreservaion) {
