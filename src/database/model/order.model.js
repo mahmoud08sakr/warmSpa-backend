@@ -48,6 +48,10 @@ const orderSchema = new mongoose.Schema({
         unique: true,
         sparse: true
     },
+    isReserverInBranch: {
+        type: Boolean,
+        default: false
+    },
     paymentIntentId: {
         type: String,
         unique: true,

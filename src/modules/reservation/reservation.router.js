@@ -4,6 +4,7 @@ import Room from "../../database/model/room.model.js";
 import ReservationModel from "../../database/model/reservation.model.js";
 import { reservationOrderModel } from "../../database/model/reservationOrder.model.js";
 import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
+import Order from "../../database/model/order.model.js";
 const router = Router();
 
 router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res) => {
@@ -92,7 +93,7 @@ router.get('/reports-for-branch/:branchId', auth, async (req, res) => {
 
 router.post('/reserve-order/:branchId/:roomId', auth, handleAsyncError(async (req, res) => {
     let { branchId, roomId } = req.params;
-    let { customerName, customerPhone, gender, paymentMethod, currency, responsiblePerson, captain, serviceId, priceAfterDiscount , orderId } = req.body
+    let { customerName, customerPhone, gender, paymentMethod, currency, responsiblePerson, captain, serviceId, priceAfterDiscount, orderId } = req.body
     let roomData = await Room.findOne({ _id: roomId, branchId: branchId });
     if (!roomData) {
         return res.status(404).json({ message: "Room not found in the specified branch" });
@@ -108,7 +109,7 @@ router.post('/reserve-order/:branchId/:roomId', auth, handleAsyncError(async (re
     roomData.paymentMethod = paymentMethod;
     roomData.currency = currency;
     roomData.startTime = new Date();
-
+    let updateOrderData = await Order.findByIdAndUpdate(orderId, { isReserverInBranch: true }, { new: true });
     const addreservaion = await ReservationModel.create({ userName: customerName, userEmail: customerPhone, RoomId: roomId, orderId: orderId, gender: gender, reservationDate: new Date(), responsiblePerson, captain, serviceId, priceAfterDiscount });
     let addReservartioOrder = await reservationOrderModel.create({ reservationId: addreservaion._id, date: new Date() });
     if (addReservartioOrder && addreservaion) {
