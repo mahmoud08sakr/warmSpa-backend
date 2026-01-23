@@ -66,7 +66,7 @@ router.post('/add-reservation', async (req, res) => {
 })
 
 router.post('/search-reservation', async (req, res) => {
-    const { userName, userEmail ,userPhone } = req.body
+    const { userName, userEmail, userPhone } = req.body
     let findData = {}
     if (userName) {
         findData['reservationData.userName'] = userName
@@ -79,6 +79,23 @@ router.post('/search-reservation', async (req, res) => {
     }
     const reservation = await gymReservationModel.find(findData)
     res.json({ message: "done", reservation })
+})
+
+router.put('/update-sessions/:gymReservationId', async (req, res) => {
+    let { gymReservationId } = req.body
+    let reservationData = await gymReservationModel.findById(gymReservationId)
+    if (reservationData) {
+        if (reservationData.subscriptionEndDate > Date.now) {
+            return res.json({ message: "subscription not expired" })
+        }
+        if (reservationData.numberOfSessions > 0) {
+            reservationData.numberOfSessions = reservationData.numberOfSessions - 1
+            let updatedReservation = await gymReservationModel.findByIdAndUpdate(gymReservationId, { numberOfSessions: reservationData.numberOfSessions }, { new: true })
+            res.json({ message: "done", updatedReservation })
+        } else {
+            res.json({ message: "out of sessions" })
+        }
+    }
 })
 
 export default router;
