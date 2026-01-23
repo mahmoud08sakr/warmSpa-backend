@@ -86,7 +86,7 @@ router.put('/update-sessions/:gymReservationId', async (req, res) => {
     let reservationData = await gymReservationModel.findById(gymReservationId)
     if (reservationData) {
         let nowDate = Date.now()
-        let endSubscriptionDateTime = Date.now(reservationData.subscriptionEndDate).getTime()
+        let endSubscriptionDateTime = new Date(reservationData.subscriptionEndDate).getTime()
         console.log(reservationData.subscriptionEndDate, "from update session");
         console.log(nowDate, "from update session now date");
 
