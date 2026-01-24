@@ -22,11 +22,21 @@ const courseSchema = new mongoose.Schema({
         required: [true, 'Course quantity is required'],
         min: [0, 'Quantity must be a positive number']
     },
-    numberOfSessions: {
-        type: Number,
-        required: [true, 'Number of sessions is required'],
-        min: [0, 'Number of sessions must be a positive number']
-    },
+    numberOfSessions: [
+        {
+            name: {
+                type: String,
+                required: [true, 'Session name is required'],
+                trim: true,
+                maxlength: [100, 'Session name cannot exceed 100 characters']
+            },
+            quantity: {
+                type: Number,
+                required: [true, 'Session quantity is required'],
+                min: [0, 'Quantity must be a positive number']
+            }
+        }
+    ],
     userName: {
         type: String,
         required: [true, 'User name is required'],

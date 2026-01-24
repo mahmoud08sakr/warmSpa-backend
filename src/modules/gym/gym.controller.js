@@ -89,7 +89,6 @@ router.put('/update-sessions/:gymReservationId', async (req, res) => {
         let endSubscriptionDateTime = new Date(reservationData.subscriptionEndDate).getTime()
         console.log(endSubscriptionDateTime, "from update session");
         console.log(nowDate, "from update session now date");
-
         if (endSubscriptionDateTime < nowDate) {
             return res.json({ message: "subscription is expired" })
         }
