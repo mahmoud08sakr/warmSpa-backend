@@ -14,7 +14,6 @@ export const authenticate = async () => {
                 api_key: process.env.PAYMOB_API_KEY,
             }),
         });
-
         const data = await response.json();
         if (!response.ok) {
             throw new Error(data.detail || "Paymob Authentication Failed");

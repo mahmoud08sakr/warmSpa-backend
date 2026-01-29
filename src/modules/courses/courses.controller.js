@@ -126,11 +126,7 @@ router.get('/get-all-courses', auth, checkRole("Admin", "SAdmin"), async (req, r
     }
 });
 
-/**
- * GET /get-user-course-by-id/:id
- * Get a specific course by ID
- * Required role: Any authenticated user
- */
+
 router.get('/get-user-course-by-id/:id', auth, async (req, res) => {
     try {
         const { id } = req.params;

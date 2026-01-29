@@ -435,10 +435,9 @@ export const getOrdersByBranchId = handleAsyncError(async (req, res, next) => {
 
 export const initiatePaymobPayment = handleAsyncError(async (req, res, next) => {
     const { branchId, serviceId } = req.params;
-    const { name, price, date } = req.body; // price in EGP
+    const { name, price, date } = req.body;
     const userId = req.user.id;
 
-    // 1. Validation
     const branch = await Branch.findById(branchId);
     if (!branch) return next(new AppError('No branch found with that ID', 404));
     if (!branch.isActive) return next(new AppError('This branch is not active', 400));
@@ -448,12 +447,10 @@ export const initiatePaymobPayment = handleAsyncError(async (req, res, next) => 
 
     const user = await userModel.findById(userId);
 
-    // 2. Paymob Authentication
     const authToken = await authenticate();
 
-    // 3. Register Order
     const amountCents = Math.round(price * 100);
-    const merchantOrderId = `ORD-${Date.now()}-${userId}`; // Unique internal ID
+    const merchantOrderId = `ORD-${Date.now()}-${userId}`;
 
     const paymobOrderId = await registerOrder(
         authToken,
@@ -497,8 +494,6 @@ export const initiatePaymobPayment = handleAsyncError(async (req, res, next) => 
     // 5. Create Pending Order in DB
     const newOrder = await Order.create({
         paymentIntentId: paymobOrderId, // Storing Paymob Order ID here or in a new field? Using paymentIntentId for consistency
-        status: 'pending',
-        paymentStatus: 'pending',
         totalAmount: price,
         items: [{
             service: serviceId,
@@ -516,10 +511,12 @@ export const initiatePaymobPayment = handleAsyncError(async (req, res, next) => 
         date: date ? date : Date.now()
     });
 
+    console.log(newOrder);
+
     await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
 
     // 6. Return Iframe URL
-    // const iframeUrl = `https://accept.paymob.com/api/acceptance/iframes/${process.env.PAYMOB_IFRAME_ID}?payment_token=${paymentKey}`;
+    const iframeUrl = `https://accept.paymob.com/api/acceptance/iframes/${process.env.PAYMOB_IFRAME_ID}?payment_token=${paymentKey}`;
     // Returning key and iframe ID to frontend to handle flexibility or just the URL
 
     res.status(200).json({
