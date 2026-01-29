@@ -6,6 +6,7 @@ import { AppError } from "../../errorHandling/AppError.js";
 import Product from "../../database/model/product.model.js";
 import { reservationOrderModel } from "../../database/model/reservationOrder.model.js";
 import userModel from "../../database/model/user.model.js";
+import { authenticate, registerOrder, requestPaymentKey, validateHmac } from "../../utilts/paymob.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -431,3 +432,162 @@ export const getOrdersByBranchId = handleAsyncError(async (req, res, next) => {
         data: orders
     });
 });
+
+export const initiatePaymobPayment = handleAsyncError(async (req, res, next) => {
+    const { branchId, serviceId } = req.params;
+    const { name, price, date } = req.body; // price in EGP
+    const userId = req.user.id;
+
+    // 1. Validation
+    const branch = await Branch.findById(branchId);
+    if (!branch) return next(new AppError('No branch found with that ID', 404));
+    if (!branch.isActive) return next(new AppError('This branch is not active', 400));
+
+    const serviceData = branch.services.find(s => s.serviceId.toString() === serviceId);
+    if (!serviceData) return next(new AppError('No service found with that ID', 404));
+
+    const user = await userModel.findById(userId);
+
+    // 2. Paymob Authentication
+    const authToken = await authenticate();
+
+    // 3. Register Order
+    const amountCents = Math.round(price * 100);
+    const merchantOrderId = `ORD-${Date.now()}-${userId}`; // Unique internal ID
+
+    const paymobOrderId = await registerOrder(
+        authToken,
+        amountCents,
+        "EGP",
+        [{
+            name: name || "Service Payment",
+            amount_cents: amountCents,
+            description: `Service: ${serviceData.name || serviceId}`,
+            quantity: 1
+        }],
+        merchantOrderId
+    );
+
+    // 4. Request Payment Key
+    const billingData = {
+        "apartment": "NA",
+        "email": user.email,
+        "floor": "NA",
+        "first_name": user.name.split(' ')[0] || "User",
+        "street": "NA",
+        "building": "NA",
+        "phone_number": user.phone || "+201000000000",
+        "shipping_method": "NA",
+        "postal_code": "NA",
+        "city": "NA",
+        "country": "EG",
+        "last_name": user.name.split(' ')[1] || "Name",
+        "state": "NA"
+    };
+
+    const paymentKey = await requestPaymentKey(
+        authToken,
+        paymobOrderId,
+        amountCents,
+        "EGP",
+        billingData,
+        process.env.PAYMOB_INTEGRATION_ID
+    );
+
+    // 5. Create Pending Order in DB
+    const newOrder = await Order.create({
+        paymentIntentId: paymobOrderId, // Storing Paymob Order ID here or in a new field? Using paymentIntentId for consistency
+        status: 'pending',
+        paymentStatus: 'pending',
+        totalAmount: price,
+        items: [{
+            service: serviceId,
+            quantity: 1,
+            price: price,
+        }],
+        paymentDetails: {
+            paymobOrderId: paymobOrderId,
+            merchantOrderId: merchantOrderId
+        },
+        user: userId,
+        branch: branchId,
+        service: serviceId,
+        orderType: 'service',
+        date: date ? date : Date.now()
+    });
+
+    await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
+
+    // 6. Return Iframe URL
+    // const iframeUrl = `https://accept.paymob.com/api/acceptance/iframes/${process.env.PAYMOB_IFRAME_ID}?payment_token=${paymentKey}`;
+    // Returning key and iframe ID to frontend to handle flexibility or just the URL
+
+    res.status(200).json({
+        status: 'success',
+        paymobUrl: `https://accept.paymob.com/api/acceptance/iframes/${process.env.PAYMOB_IFRAME_ID}?payment_token=${paymentKey}`,
+        paymentKey
+    });
+});
+
+
+export const handlePaymobWebhook = async (req, res) => {
+    try {
+        const { obj, hmac } = req.body;
+        const query = req.query; // If GET callback
+
+        // Paymob sends data in body for POST webhook (Transaction Processed)
+        // Check if it's a POST webhook or GET callback
+        let data = obj;
+        let incomingHmac = hmac;
+
+        if (!data) {
+            // Might be GET callback
+            data = req.query;
+            incomingHmac = req.query.hmac;
+        }
+
+        // Validate HMAC
+        const isValid = validateHmac({ ...data, hmac: incomingHmac }, process.env.PAYMOB_HMAC);
+        if (!isValid) {
+            console.error("Paymob HMAC Validation Failed");
+            return res.status(400).send("HMAC Validation Failed");
+        }
+
+        if (data.success === true || data.success === "true") {
+            const paymobOrderId = data.order.id || data.order;
+
+            // Find order by Paymob Order ID (stored in paymentIntentId or paymentDetails)
+            const order = await Order.findOne({ 'paymentDetails.paymobOrderId': paymobOrderId });
+
+            if (order && order.status !== 'completed') {
+                order.status = 'completed';
+                order.paymentStatus = 'paid';
+                order.paymentDetails = { ...order.paymentDetails, transaction: data };
+                await order.save();
+
+                // Add Points
+                const user = await userModel.findById(order.user);
+                if (user) {
+                    if (!user.points) user.points = [];
+                    const pointsToAdd = Math.floor(data.amount_cents / 100);
+                    const newPointsEntry = {
+                        numberOfPoints: pointsToAdd,
+                        totalPoints: pointsToAdd,
+                        date: new Date()
+                    };
+                    user.points.unshift(newPointsEntry);
+                    await user.save({ validateBeforeSave: false });
+                    console.log(`Points added for User ${user._id}: ${pointsToAdd}`);
+                }
+            }
+        } else {
+            console.log("Paymob Transaction Failed or Pending", data.id);
+            // Handle failure if needed
+        }
+
+        res.status(200).send("Received");
+    } catch (error) {
+        console.error("Paymob Webhook Error:", error);
+        res.status(500).json({ error: error.message });
+    }
+};

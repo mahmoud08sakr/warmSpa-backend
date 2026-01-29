@@ -1,0 +1,509 @@
+{
+	"info": {
+		"_postman_id": "course-api-collection-2026",
+		"name": "WarmSpa - Course APIs with Paymob Payment",
+		"description": "Complete collection for testing Course APIs with session-based discount logic and Paymob payment integration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Course Management",
+			"item": [
+				{
+					"name": "Create Course for User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": [\n    {\n      \"serviceName\": \"Deep Tissue Massage\",\n      \"serviceId\": \"65abc123def4567890123456\",\n      \"servicePrice\": 400,\n      \"noOfSessions\": 6\n    },\n    {\n      \"serviceName\": \"Aromatherapy\",\n      \"serviceId\": \"65abc987fed6543210987654\",\n      \"servicePrice\": 300,\n      \"noOfSessions\": 5\n    }\n  ],\n  \"branchId\": \"65xyz123abc4567890123456\",\n  \"userName\": \"Ahmed Hassan\",\n  \"phone\": \"01012345678\",\n  \"email\": \"ahmed@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/create-course-for-user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"create-course-for-user"
+							]
+						},
+						"description": "Create a new course with multiple services. The system will automatically:\n- Calculate total sessions across all services\n- Apply discount (5% for >5 sessions, 15% for >10 sessions)\n- Set remainingSessions = noOfSessions for each service\n- Return detailed price breakdown\n\n**Required Role:** Admin, SAdmin, or Branch"
+					},
+					"response": [
+						{
+							"name": "Success - With 15% Discount",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"service\": [\n    {\n      \"serviceName\": \"Deep Tissue Massage\",\n      \"serviceId\": \"65abc123def4567890123456\",\n      \"servicePrice\": 400,\n      \"noOfSessions\": 6\n    },\n    {\n      \"serviceName\": \"Aromatherapy\",\n      \"serviceId\": \"65abc987fed6543210987654\",\n      \"servicePrice\": 300,\n      \"noOfSessions\": 5\n    }\n  ],\n  \"branchId\": \"65xyz123abc4567890123456\",\n  \"userName\": \"Ahmed Hassan\",\n  \"phone\": \"01012345678\",\n  \"email\": \"ahmed@example.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/create-course-for-user",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"create-course-for-user"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n  \"message\": \"Course created successfully\",\n  \"course\": {\n    \"_id\": \"65xyz789...\",\n    \"service\": [\n      {\n        \"serviceName\": \"Deep Tissue Massage\",\n        \"serviceId\": \"65abc123def4567890123456\",\n        \"servicePrice\": 400,\n        \"noOfSessions\": 6,\n        \"remainingSessions\": 6\n      },\n      {\n        \"serviceName\": \"Aromatherapy\",\n        \"serviceId\": \"65abc987fed6543210987654\",\n        \"servicePrice\": 300,\n        \"noOfSessions\": 5,\n        \"remainingSessions\": 5\n      }\n    ],\n    \"totalPrice\": 595,\n    \"branchId\": \"65xyz123abc4567890123456\",\n    \"userName\": \"Ahmed Hassan\",\n    \"phone\": \"01012345678\",\n    \"email\": \"ahmed@example.com\"\n  },\n  \"priceBreakdown\": {\n    \"subtotal\": 700,\n    \"totalSessions\": 11,\n    \"discountPercent\": 15,\n    \"discountAmount\": 105,\n    \"totalPrice\": 595\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get All Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/get-all-courses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"get-all-courses"
+							]
+						},
+						"description": "Retrieve all courses in the system with branch information populated.\n\n**Required Role:** Admin or SAdmin"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Course by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/get-user-course-by-id/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"get-user-course-by-id",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "65xyz789abc4567890123456",
+									"description": "Course ID"
+								}
+							]
+						},
+						"description": "Retrieve a specific course by its ID.\n\n**Required Role:** Any authenticated user"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Sessions",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"serviceId\": \"65abc123def4567890123456\",\n  \"sessionsUsed\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/update-sessions/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"update-sessions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "65xyz789abc4567890123456",
+									"description": "Course ID"
+								}
+							]
+						},
+						"description": "Update (reduce) remaining sessions for a specific service within a course.\n\n**Required Role:** Admin, SAdmin, or Branch\n\n**Note:** This endpoint validates that sufficient sessions remain before updating."
+					},
+					"response": [
+						{
+							"name": "Success",
+							"originalRequest": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"serviceId\": \"65abc123def4567890123456\",\n  \"sessionsUsed\": 2\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/update-sessions/:id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"update-sessions",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "65xyz789abc4567890123456"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n  \"message\": \"Sessions updated successfully\",\n  \"course\": {\n    \"_id\": \"65xyz789abc4567890123456\",\n    \"service\": [\n      {\n        \"serviceName\": \"Deep Tissue Massage\",\n        \"serviceId\": \"65abc123def4567890123456\",\n        \"servicePrice\": 400,\n        \"noOfSessions\": 6,\n        \"remainingSessions\": 4\n      }\n    ]\n  },\n  \"updatedService\": {\n    \"serviceName\": \"Deep Tissue Massage\",\n    \"previousRemaining\": 6,\n    \"sessionsUsed\": 2,\n    \"newRemaining\": 4\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Search Courses by User Info",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/search-user-for-courses?userName=Ahmed&email=&phone=",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"search-user-for-courses"
+							],
+							"query": [
+								{
+									"key": "userName",
+									"value": "Ahmed",
+									"description": "Search by user name (case-insensitive)"
+								},
+								{
+									"key": "email",
+									"value": "",
+									"description": "Search by email (case-insensitive)"
+								},
+								{
+									"key": "phone",
+									"value": "",
+									"description": "Search by phone number"
+								}
+							]
+						},
+						"description": "Search for courses by user information. Accepts userName, email, and/or phone as query parameters. Search is case-insensitive.\n\n**Required Role:** Admin, SAdmin, or Branch\n\n**Note:** At least one search parameter must be provided."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Course",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/delete-course/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"delete-course",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "65xyz789abc4567890123456",
+									"description": "Course ID to delete"
+								}
+							]
+						},
+						"description": "Delete a course by its ID.\n\n**Required Role:** Admin or SAdmin"
+					},
+					"response": []
+				}
+			],
+			"description": "Complete CRUD operations for Course management with session-based discount logic"
+		},
+		{
+			"name": "Payment APIs",
+			"item": [
+				{
+					"name": "Initiate Paymob Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": [\n    {\n      \"serviceName\": \"Deep Tissue Massage\",\n      \"serviceId\": \"65abc123def4567890123456\",\n      \"servicePrice\": 120,\n      \"noOfSessions\": 6\n    },\n    {\n      \"serviceName\": \"Aromatherapy\",\n      \"serviceId\": \"65abc987fed6543210987654\",\n      \"servicePrice\": 80,\n      \"noOfSessions\": 5\n    }\n  ],\n  \"branchId\": \"65xyz123abc4567890123456\",\n  \"userName\": \"Ahmed Hassan\",\n  \"phone\": \"01012345678\",\n  \"email\": \"ahmed@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment/initiate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payment",
+								"initiate"
+							]
+						},
+						"description": "Initiate a Paymob payment for a course purchase. This endpoint:\n- Creates a pending course record\n- Calculates total price with session-based discount\n- Creates a Paymob payment session\n- Returns a payment URL for the user to complete payment\n\n**Required Role:** Authenticated user\n\n**Expected Response:**\n```json\n{\n  \"status\": \"success\",\n  \"courseId\": \"697bc0b1...\",\n  \"paymobUrl\": \"https://accept.paymob.com/api/acceptance/iframes/...\",\n  \"paymentKey\": \"payment_token_...\",\n  \"priceBreakdown\": {\n    \"subtotal\": 1120,\n    \"totalSessions\": 11,\n    \"discountPercent\": 15,\n    \"discountAmount\": 168,\n    \"totalPrice\": 952\n  }\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Payment Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/payment/verify/:courseId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payment",
+								"verify",
+								":courseId"
+							],
+							"variable": [
+								{
+									"key": "courseId",
+									"value": "697bc0b1...",
+									"description": "Course ID to verify"
+								}
+							]
+						},
+						"description": "Verify the payment status of a course.\n\n**Required Role:** Authenticated user\n\n**Response includes:**\n- Course details\n- Payment status (pending/paid/failed)\n- Associated order information"
+					},
+					"response": []
+				},
+				{
+					"name": "Paymob Webhook (Test)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"obj\": {\n    \"id\": 123456789,\n    \"amount_cents\": 95200,\n    \"success\": true,\n    \"pending\": false,\n    \"order\": {\n      \"id\": \"987654321\"\n    },\n    \"created_at\": \"2026-01-29T22:00:00\",\n    \"currency\": \"EGP\",\n    \"error_occured\": false,\n    \"has_parent_transaction\": false,\n    \"integration_id\": 123456,\n    \"is_3d_secure\": true,\n    \"is_auth\": false,\n    \"is_capture\": false,\n    \"is_refunded\": false,\n    \"is_standalone_payment\": true,\n    \"is_voided\": false,\n    \"owner\": 1234567,\n    \"source_data\": {\n      \"pan\": \"1234\",\n      \"sub_type\": \"DEBIT\",\n      \"type\": \"card\"\n    }\n  },\n  \"hmac\": \"calculated_hmac_value_here\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payment/webhook",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"payment",
+								"webhook"
+							]
+						},
+						"description": "**⚠️ This endpoint is for Paymob's internal use only.**\n\nPaymob will call this webhook when payment status changes.\n\n**For testing purposes:** You can manually trigger this endpoint with the correct HMAC to simulate a successful payment.\n\n**What happens on success:**\n1. Course payment status updated to 'paid'\n2. Order status updated to 'completed'\n3. Points added to user account\n4. Payment transaction details stored\n\n**Note:** HMAC validation is required. Generate the proper HMAC using the secret from your Paymob dashboard."
+					},
+					"response": []
+				}
+			],
+			"description": "Paymob payment integration endpoints for course purchases"
+		},
+		{
+			"name": "Test Scenarios",
+			"item": [
+				{
+					"name": "No Discount (5 Sessions)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": [\n    {\n      \"serviceName\": \"Basic Massage\",\n      \"serviceId\": \"65abc123def4567890123456\",\n      \"servicePrice\": 500,\n      \"noOfSessions\": 5\n    }\n  ],\n  \"branchId\": \"65xyz123abc4567890123456\",\n  \"userName\": \"Test User 1\",\n  \"phone\": \"01011111111\",\n  \"email\": \"test1@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/create-course-for-user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"create-course-for-user"
+							]
+						},
+						"description": "Test case: 5 sessions total\n- Expected discount: 0%\n- Expected total: 500 EGP"
+					},
+					"response": []
+				},
+				{
+					"name": "5% Discount (7 Sessions)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": [\n    {\n      \"serviceName\": \"Swedish Massage\",\n      \"serviceId\": \"65abc123def4567890123456\",\n      \"servicePrice\": 400,\n      \"noOfSessions\": 4\n    },\n    {\n      \"serviceName\": \"Facial Treatment\",\n      \"serviceId\": \"65abc987fed6543210987654\",\n      \"servicePrice\": 300,\n      \"noOfSessions\": 3\n    }\n  ],\n  \"branchId\": \"65xyz123abc4567890123456\",\n  \"userName\": \"Test User 2\",\n  \"phone\": \"01022222222\",\n  \"email\": \"test2@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/create-course-for-user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"create-course-for-user"
+							]
+						},
+						"description": "Test case: 7 sessions total (4 + 3)\n- Subtotal: 700 EGP\n- Expected discount: 5% (35 EGP)\n- Expected total: 665 EGP"
+					},
+					"response": []
+				},
+				{
+					"name": "15% Discount (12 Sessions)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{authToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"service\": [\n    {\n      \"serviceName\": \"Hot Stone Massage\",\n      \"serviceId\": \"65abc123def4567890123456\",\n      \"servicePrice\": 500,\n      \"noOfSessions\": 6\n    },\n    {\n      \"serviceName\": \"Aromatherapy\",\n      \"serviceId\": \"65abc987fed6543210987654\",\n      \"servicePrice\": 400,\n      \"noOfSessions\": 6\n    }\n  ],\n  \"branchId\": \"65xyz123abc4567890123456\",\n  \"userName\": \"Test User 3\",\n  \"phone\": \"01033333333\",\n  \"email\": \"test3@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/create-course-for-user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"create-course-for-user"
+							]
+						},
+						"description": "Test case: 12 sessions total (6 + 6)\n- Subtotal: 900 EGP\n- Expected discount: 15% (135 EGP)\n- Expected total: 765 EGP"
+					},
+					"response": []
+				}
+			],
+			"description": "Example requests to test different discount scenarios"
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/courses",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "Bearer YOUR_JWT_TOKEN_HERE",
+			"type": "string"
+		}
+	]
+}

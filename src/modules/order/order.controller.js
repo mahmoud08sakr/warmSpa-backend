@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { createPaymentIntent, getOrder, getOrderBySessionId, getOrderByPaymentIntent, getUserOrders, getAllOrderForAdmin, redeemPoints, getOrdersByBranchId } from "./order.service.js";
+import { createPaymentIntent, getOrder, getOrderBySessionId, getOrderByPaymentIntent, getUserOrders, getAllOrderForAdmin, redeemPoints, getOrdersByBranchId, initiatePaymobPayment, handlePaymobWebhook } from "./order.service.js";
 import { auth } from "../../midlleware/auth.js";
 import { checkRole } from "../../midlleware/role.js";
 
 const router = Router()
 
 router.post('/create-payment-intent/:branchId/:serviceId', auth, createPaymentIntent);
+router.post('/paymob/initiate/:branchId/:serviceId', auth, initiatePaymobPayment);
+router.post('/paymob/webhook', handlePaymobWebhook);
 router.get('/get-order-by-id/:id', auth, getOrder);
 router.get('/get-order-by-session/:sessionId', getOrderBySessionId);
 router.get('/get-order-by-payment-intent/:paymentIntentId', getOrderByPaymentIntent);
