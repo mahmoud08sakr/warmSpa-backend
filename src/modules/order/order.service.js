@@ -552,34 +552,60 @@ export const handlePaymobWebhook = async (req, res) => {
 
         if (data.success === true || data.success === "true") {
             const paymobOrderId = data.order.id || data.order;
+            console.log("Paymob Transaction Success:", paymobOrderId);
 
             // Find order by Paymob Order ID (stored in paymentIntentId or paymentDetails)
             const order = await Order.findOne({ 'paymentDetails.paymobOrderId': paymobOrderId });
 
             if (order && order.status !== 'completed') {
+                // 1. Update Order Status
                 order.status = 'completed';
                 order.paymentStatus = 'paid';
                 order.paymentDetails = { ...order.paymentDetails, transaction: data };
                 await order.save();
 
-                // Add Points
+                // 2. Create Reservation Order (Same as Stripe)
+                let reservationOrder = await reservationOrderModel.create({ orderId: order._id, date: new Date() });
+                console.log('Order created (Reservation):', reservationOrder);
+
+                // 3. Add Points to User (Same as Stripe)
                 const user = await userModel.findById(order.user);
                 if (user) {
                     if (!user.points) user.points = [];
+
+                    // Calculate points (1 point per EGP = 100 cents)
                     const pointsToAdd = Math.floor(data.amount_cents / 100);
+
                     const newPointsEntry = {
                         numberOfPoints: pointsToAdd,
                         totalPoints: pointsToAdd,
                         date: new Date()
                     };
+
                     user.points.unshift(newPointsEntry);
+
+                    // Save without validation to avoid unrelated schema errors
                     await user.save({ validateBeforeSave: false });
                     console.log(`Points added for User ${user._id}: ${pointsToAdd}`);
                 }
+            } else if (!order) {
+                console.log("Order not found for Paymob ID:", paymobOrderId);
+            } else {
+                console.log("Order already completed:", order._id);
             }
         } else {
+            // Handle Failure
             console.log("Paymob Transaction Failed or Pending", data.id);
-            // Handle failure if needed
+            const paymobOrderId = data.order.id || data.order;
+
+            const order = await Order.findOne({ 'paymentDetails.paymobOrderId': paymobOrderId });
+            if (order) {
+                order.status = 'failed';
+                order.paymentStatus = 'failed';
+                order.paymentDetails = { ...order.paymentDetails, transaction: data };
+                await order.save();
+                console.log("Order marked as failed:", order._id);
+            }
         }
 
         res.status(200).send("Received");

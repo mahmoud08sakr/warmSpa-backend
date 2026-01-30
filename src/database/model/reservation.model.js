@@ -4,9 +4,9 @@ import mongoose from 'mongoose';
 const reservationSchema = new mongoose.Schema({
     userName: { type: String },
     userEmail: { type: String },
-    RoomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room', required: true },
+    RoomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room' },
     branchId: { type: mongoose.Schema.Types.ObjectId, ref: 'Branch' },
-    serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+    serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
     captain: { type: String },
     responsiblePerson: { type: String },
     price: { type: Number },
@@ -14,6 +14,11 @@ const reservationSchema = new mongoose.Schema({
     reservationDate: { type: Date, required: true },
     status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
     priceAfterDiscount: { type: Number },
+    serviceFor: {
+        type: String,
+        enum: ['normal', 'course', 'gym'],
+        default: 'normal'
+    },
     startTime: { type: Date },
     endTime: { type: Date },
     orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },

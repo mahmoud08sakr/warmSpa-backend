@@ -5,6 +5,7 @@ import { checkRole } from "../../midlleware/role.js";
 import express from "express";
 import mongoose from "mongoose";
 import { initiatePaymobCoursePayment, handlePaymobCourseWebhook, verifyCoursePayment } from "./courses.payment.service.js";
+import ReservationModel from "../../database/model/reservation.model.js";
 
 const router = express.Router();
 
@@ -87,7 +88,13 @@ router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branc
         };
 
         const createCourses = await courseModel.create(courseData);
-
+        const addReservationData = await ReservationModel.create({
+            userName: userName,
+            userEmail: email,
+            reservationDate: new Date(),
+            price: priceCalculation.totalPrice,
+            serviceFor: "course",
+        });
         res.status(201).json({
             message: "Course created successfully",
             course: createCourses,

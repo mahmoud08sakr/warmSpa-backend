@@ -4,6 +4,7 @@ import { checkRole } from "../../midlleware/role.js";
 import { gymModel } from "../../database/model/gym.model.js";
 import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
 import { gymReservationModel } from "../../database/model/gym.reservation.model.js";
+import ReservationModel from "../../database/model/reservation.model.js";
 
 const router = express.Router();
 
@@ -48,6 +49,13 @@ router.delete('/delete-gym/:id', async (req, res) => {
 router.post('/add-reservation-gym', async (req, res) => {
     let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate } = req.body
     let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate })
+    const addReservationData = await ReservationModel.create({
+        userName: reservationData.userName,
+        userEmail: reservationData.userEmail,
+        reservationDate: date,
+        price: reservationData.price,
+        serviceFor: "gym",
+    });
     if (addedReservation) {
         res.json({ message: "done", addedReservation })
     } else {
