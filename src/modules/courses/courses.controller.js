@@ -6,6 +6,7 @@ import express from "express";
 import mongoose from "mongoose";
 import { initiatePaymobCoursePayment, handlePaymobCourseWebhook, verifyCoursePayment } from "./courses.payment.service.js";
 import ReservationModel from "../../database/model/reservation.model.js";
+import { reservationOrderModel } from "../../database/model/reservationOrder.model.js";
 
 const router = express.Router();
 
@@ -92,6 +93,7 @@ router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branc
             userName: userName,
             userEmail: email,
             reservationDate: new Date(),
+            branchId: branchId,
             price: priceCalculation.totalPrice,
             serviceFor: "course",
         });
