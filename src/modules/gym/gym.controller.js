@@ -57,7 +57,7 @@ router.post('/add-reservation-gym', async (req, res) => {
         price: reservationData.price,
         serviceFor: "gym",
     });
-    if (addedReservation) {
+    if (addedReservation && addReservationData) {
         res.json({ message: "done", addedReservation })
     } else {
         res.json({ message: "error" })
