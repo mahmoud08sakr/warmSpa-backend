@@ -50,8 +50,8 @@ router.post('/add-reservation-gym', async (req, res) => {
     let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate, branchId } = req.body
     let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate })
 
-    
-    if (addedReservation ) {
+
+    if (addedReservation) {
         res.json({ message: "done", addedReservation })
     } else {
         res.json({ message: "error" })
@@ -59,21 +59,33 @@ router.post('/add-reservation-gym', async (req, res) => {
 })
 
 router.post('/add-reservation', async (req, res) => {
-    let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate , branchId } = req.body
-    let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate })
-        const addReservationData = await ReservationModel.insertOne({
-        userName: reservationData.userName,
-        userEmail: reservationData.userEmail,
+    let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate, branchId } = req.body
+console.log(reservationData);
+
+    const addReservationData = await ReservationModel.insertOne({
+        userName: reservationData[0].userName,
+        userEmail: reservationData[1].userEmail,
         reservationDate: date,
         branchId: branchId,
-        price: reservationData.price,
+        price: reservationData[3].price,
         serviceFor: "gym",
     });
-    if (addedReservation) {
-        res.json({ message: "done", addedReservation })
+    if (addReservationData) {
+        console.log('eroorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+
+        let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate })
+        console.log(reservationData);
+        console.log("ana gowa");
+        console.log(addReservationData);
+        if (addedReservation) {
+            res.json({ message: "done", addedReservation })
+        } else {
+            res.json({ message: "error in add reservation" })
+        }
     } else {
-        res.json({ message: "error in add reservation" })
+        res.json({ message: "error in add reservation data" })
     }
+
 })
 
 router.post('/search-reservation', async (req, res) => {
