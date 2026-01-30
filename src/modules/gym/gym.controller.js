@@ -49,17 +49,9 @@ router.delete('/delete-gym/:id', async (req, res) => {
 router.post('/add-reservation-gym', async (req, res) => {
     let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate, branchId } = req.body
     let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate })
-    const addReservationData = await ReservationModel.insertOne({
-        userName: reservationData.userName,
-        userEmail: reservationData.userEmail,
-        reservationDate: date,
-        branchId: branchId,
-        price: reservationData.price,
-        serviceFor: "gym",
-    });
-    console.log(addReservationData,"555555555555555555555555555555555555555555555");
+
     
-    if (addedReservation && addReservationData) {
+    if (addedReservation ) {
         res.json({ message: "done", addedReservation })
     } else {
         res.json({ message: "error" })
@@ -67,8 +59,16 @@ router.post('/add-reservation-gym', async (req, res) => {
 })
 
 router.post('/add-reservation', async (req, res) => {
-    let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate } = req.body
+    let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate , branchId } = req.body
     let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate })
+        const addReservationData = await ReservationModel.insertOne({
+        userName: reservationData.userName,
+        userEmail: reservationData.userEmail,
+        reservationDate: date,
+        branchId: branchId,
+        price: reservationData.price,
+        serviceFor: "gym",
+    });
     if (addedReservation) {
         res.json({ message: "done", addedReservation })
     } else {
