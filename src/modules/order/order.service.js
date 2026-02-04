@@ -565,7 +565,7 @@ export const handlePaymobWebhook = async (req, res) => {
             console.log("Paymob Transaction Success:", paymobOrderId);
 
             // Find order by Paymob Order ID (stored in paymentIntentId or paymentDetails)
-            const order = await Order.findOne({ 'paymentDetails.paymobOrderId': paymobOrderId });
+            const order = await Order.findOne({ paymobOrderId });
 
             if (order && order.status !== 'completed') {
                 // 1. Update Order Status
