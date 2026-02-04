@@ -48,7 +48,7 @@ export const bootstrap = async (app, express) => {
             handleStripeWebhook
         );
         app.use(express.json());
-        app.post("/paymob-webhook", handlePaymobWebhook);
+        app.post("/paymob-webhook", bodyParser.raw({ type: "application/json" }), handlePaymobWebhook);
         app.get("/health", (req, res) => {
             const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
             res.json({
