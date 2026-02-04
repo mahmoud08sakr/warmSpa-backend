@@ -530,7 +530,7 @@ export const handlePaymobWebhook = async (req, res) => {
         // Paymob sends data in body for POST webhook (Transaction Processed)
         // Check if it's a POST webhook or GET callback
         let data = obj;
-        let incomingHmac = hmac;
+        let incomingHmac = hmac || req.query.hmac;
 
         if (!data) {
             // Might be GET callback
