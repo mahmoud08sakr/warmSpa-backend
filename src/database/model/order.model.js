@@ -40,8 +40,8 @@ const orderSchema = new mongoose.Schema({
     },
     paymentStatus: {
         type: String,
-        enum: ['unpaid', 'paid', 'refunded', 'failed'],
-        default: 'unpaid'
+        enum: ['unpaid', 'paid', 'refunded', 'failed', 'pending'],
+        default: 'pending'
     },
     sessionId: {
         type: String,

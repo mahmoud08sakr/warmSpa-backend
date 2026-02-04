@@ -187,7 +187,8 @@ export const initiatePaymobCoursePayment = handleAsyncError(async (req, res, nex
         },
         user: userId,
         branch: branchId,
-        orderType: 'course'
+        orderType: 'course',
+        paymobOrderId: paymobOrderId.toString()
     });
 
     // 11. Link order to course
