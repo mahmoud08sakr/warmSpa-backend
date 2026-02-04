@@ -550,6 +550,7 @@ export const handlePaymobWebhook = async (req, res) => {
         const isValid = validateHmac({ ...data, hmac: incomingHmac }, process.env.PAYMOB_HMAC);
         console.log("Is Valid:", isValid);
         console.log("----- PAYMOB DEBUG END -----");
+        console.log(data, "555555555555555555555555555555555555555555");
 
         if (!isValid) {
             console.error("Paymob HMAC Validation Failed");
