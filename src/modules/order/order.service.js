@@ -508,7 +508,8 @@ export const initiatePaymobPayment = handleAsyncError(async (req, res, next) => 
         branch: branchId,
         service: serviceId,
         orderType: 'service',
-        date: date ? date : Date.now()
+        date: date ? date : Date.now(),
+        paymobOrderId: paymobOrderId,
     });
 
     console.log(newOrder);

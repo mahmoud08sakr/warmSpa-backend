@@ -73,6 +73,11 @@ const orderSchema = new mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
+    },
+    paymobOrderId: {
+        type: String,
+        unique: true,
+        sparse: true
     }
 }, {
     timestamps: true
@@ -86,6 +91,7 @@ orderSchema.index({ paymentIntentId: 1 }); // Lookup by payment intent
 orderSchema.index({ date: -1 }); // Sort by order date
 orderSchema.index({ createdAt: -1 }); // Sort by creation date
 orderSchema.index({ branch: 1, createdAt: -1 }); // Branch orders by date
+orderSchema.index({ paymobOrderId: 1 }); // Lookup by paymob order ID
 
 const Order = mongoose.model('Order', orderSchema);
 export default Order;
