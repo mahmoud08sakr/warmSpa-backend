@@ -538,8 +538,19 @@ export const handlePaymobWebhook = async (req, res) => {
             incomingHmac = req.query.hmac;
         }
 
+        console.log("----- PAYMOB DEBUG START -----");
+        console.log("Req Body Type:", typeof req.body);
+        console.log("Req Body Keys:", Object.keys(req.body));
+        console.log("Req Query Keys:", Object.keys(req.query));
+        console.log("Extracted Data ID:", data ? data.id : "NO DATA");
+        console.log("Incoming HMAC:", incomingHmac);
+        console.log("Env HMAC Secret:", process.env.PAYMOB_HMAC ? "EXISTS" : "MISSING");
+
         // Validate HMAC
         const isValid = validateHmac({ ...data, hmac: incomingHmac }, process.env.PAYMOB_HMAC);
+        console.log("Is Valid:", isValid);
+        console.log("----- PAYMOB DEBUG END -----");
+
         if (!isValid) {
             console.error("Paymob HMAC Validation Failed");
             return res.status(400).send("HMAC Validation Failed");
