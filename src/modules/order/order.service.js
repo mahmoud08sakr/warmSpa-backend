@@ -476,7 +476,7 @@ export const initiatePaymobPayment = handleAsyncError(async (req, res, next) => 
         "phone_number": user.phone || "+201000000000",
         "shipping_method": "NA",
         "postal_code": "NA",
-        "city": "NA",
+        "city": "Cairo",
         "country": "EG",
         "last_name": user.name.split(' ')[1] || "Name",
         "state": "NA"
@@ -514,11 +514,6 @@ export const initiatePaymobPayment = handleAsyncError(async (req, res, next) => 
     console.log(newOrder);
 
     await reservationOrderModel.create({ orderId: newOrder._id, date: new Date() });
-
-    // 6. Return Iframe URL
-    const iframeUrl = `https://accept.paymob.com/api/acceptance/iframes/${process.env.PAYMOB_IFRAME_ID}?payment_token=${paymentKey}`;
-    // Returning key and iframe ID to frontend to handle flexibility or just the URL
-
     res.status(200).json({
         status: 'success',
         paymobUrl: `https://accept.paymob.com/api/acceptance/iframes/${process.env.PAYMOB_IFRAME_ID}?payment_token=${paymentKey}`,
@@ -551,6 +546,8 @@ export const handlePaymobWebhook = async (req, res) => {
         }
 
         if (data.success === true || data.success === "true") {
+            console.log("ana fl sex mno ");
+
             const paymobOrderId = data.order.id || data.order;
             console.log("Paymob Transaction Success:", paymobOrderId);
 
@@ -596,6 +593,9 @@ export const handlePaymobWebhook = async (req, res) => {
         } else {
             // Handle Failure
             console.log("Paymob Transaction Failed or Pending", data.id);
+            console.log("Reason Code:", data.txn_response_code);
+            console.log("Message:", data.data ? data.data.message : "No message");
+
             const paymobOrderId = data.order.id || data.order;
 
             const order = await Order.findOne({ 'paymentDetails.paymobOrderId': paymobOrderId });

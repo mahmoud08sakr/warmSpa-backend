@@ -71,8 +71,6 @@ console.log(reservationData);
         serviceFor: "gym",
     });
     if (addReservationData) {
-        console.log('eroorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
-
         let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate })
         console.log(reservationData);
         console.log("ana gowa");

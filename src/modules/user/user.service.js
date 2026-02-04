@@ -29,7 +29,7 @@ const generateToken =  (userId, role) => {
         throw new AppError('JWT signature not configured for this role', 500);
     }
 
-    return jwt.sign({ id: userId, role }, signature, { expiresIn: '24h' });
+    return jwt.sign({ id: userId, role }, signature);
 };
 
 export const signup = handleAsyncError( async (req, res) => {
