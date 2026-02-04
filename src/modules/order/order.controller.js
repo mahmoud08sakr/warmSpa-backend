@@ -7,7 +7,7 @@ const router = Router()
 
 router.post('/create-payment-intent/:branchId/:serviceId', auth, createPaymentIntent);
 router.post('/paymob/initiate/:branchId/:serviceId', auth, initiatePaymobPayment);
-router.post('/paymob/webhook', handlePaymobWebhook);
+
 router.get('/get-order-by-id/:id', auth, getOrder);
 router.get('/get-order-by-session/:sessionId', getOrderBySessionId);
 router.get('/get-order-by-payment-intent/:paymentIntentId', getOrderByPaymentIntent);

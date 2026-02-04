@@ -6,7 +6,7 @@ import productRouter from './modules/product/product.router.js';
 import { globalErrorHandling } from "./errorHandling/globalErrorHandling.js";
 import cors from "cors"
 import mongoose from 'mongoose';
-import { handleStripeWebhook } from "./modules/order/order.service.js";
+import { handleStripeWebhook, handlePaymobWebhook } from "./modules/order/order.service.js";
 import orderRouter from "./modules/order/order.controller.js";
 import reservationRouter from "./modules/reservation/reservation.router.js";
 import roomsRouter from "./modules/rooms/room.router.js";
@@ -48,6 +48,7 @@ export const bootstrap = async (app, express) => {
             handleStripeWebhook
         );
         app.use(express.json());
+        app.post("/paymob-webhook", handlePaymobWebhook);
         app.get("/health", (req, res) => {
             const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
             res.json({
