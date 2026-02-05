@@ -9,7 +9,7 @@ import { handleAsyncError } from '../../errorHandling/handelAsyncError.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
-const generateToken =  (userId, role) => {
+const generateToken = (userId, role) => {
     let signature;
     switch (role) {
         case 'Admin':
@@ -21,8 +21,17 @@ const generateToken =  (userId, role) => {
         case 'Branch':
             signature = process.env.BRANCH_SECRET || 'branch-secret';
             break;
+        case 'Accountant':
+            signature = process.env.ACCOUNTANT_SECRET || 'support-secret';
+            break;
+        case 'Manege':
+            signature = process.env.MANEGER_SECRET || 'moderator-secret';
+            break;
+        case "Operation":
+            signature = process.env.OPERATION_SECRET || "operation-secret";
+            break;
         default:
-            signature = process.env.userSignature;
+            throw new AppError('Invalid role', 500);
     }
 
     if (!signature) {
@@ -32,7 +41,7 @@ const generateToken =  (userId, role) => {
     return jwt.sign({ id: userId, role }, signature);
 };
 
-export const signup = handleAsyncError( async (req, res) => {
+export const signup = handleAsyncError(async (req, res) => {
     const { name, email, password, phone, city, gender } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
@@ -67,7 +76,7 @@ export const signup = handleAsyncError( async (req, res) => {
 
 // Using the existing generateToken function that's already defined at the top of the file
 
-export const login = handleAsyncError( async (req, res, next) => {
+export const login = handleAsyncError(async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
@@ -98,7 +107,7 @@ export const login = handleAsyncError( async (req, res, next) => {
         next(new AppError('An error occurred during login', 500));
     }
 });
-export const resetpassword = handleAsyncError( async (req, res) => {
+export const resetpassword = handleAsyncError(async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user._id;
 
@@ -123,7 +132,7 @@ export const resetpassword = handleAsyncError( async (req, res) => {
     });
 });
 
-export const sendOTP = handleAsyncError( async (req, res) => {
+export const sendOTP = handleAsyncError(async (req, res) => {
     const { email } = req.body;
     try {
         const user = await userModel.findOne({ email });
@@ -151,7 +160,7 @@ export const sendOTP = handleAsyncError( async (req, res) => {
     }
 });
 
-export const verifyOTP = handleAsyncError( async (req, res) => {
+export const verifyOTP = handleAsyncError(async (req, res) => {
     const { OTP, email, password, confirmPassword } = req.body;
 
     if (password !== confirmPassword) {
@@ -176,7 +185,7 @@ export const verifyOTP = handleAsyncError( async (req, res) => {
 });
 
 
-export const getAllUsers = handleAsyncError( async (req, res) => {
+export const getAllUsers = handleAsyncError(async (req, res) => {
     try {
         const users = await userModel.find({ role: "User" }).select('-password -OTP -__v');
         res.status(200).json({
