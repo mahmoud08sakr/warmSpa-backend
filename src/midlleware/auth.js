@@ -18,22 +18,22 @@ export const auth = async (req, res, next) => {
         let signature;
         switch (bearer) {
             case 'Admin':
-                signature = process.env.ADMIN_SECRET || 'admin-secret';
+                signature = process.env.SIGNATURE || 'admin-secret';
                 break;
             case 'User':
-                signature = process.env.USER_SECRET || 'user-secret';
+                signature = process.env.SIGNATURE || 'user-secret';
                 break;
             case 'Branch':
-                signature = process.env.BRANCH_SECRET || 'branch-secret';
+                signature = process.env.SIGNATURE || 'branch-secret';
                 break;
             case 'Accountant':
-                signature = process.env.ACCOUNTANT_SECRET || 'support-secret';
+                signature = process.env.SIGNATURE || 'support-secret';
                 break;
             case 'Manege':
-                signature = process.env.MANEGER_SECRET || 'moderator-secret';
+                signature = process.env.SIGNATURE || 'moderator-secret';
                 break;
             case "Operation":
-                signature = process.env.OPERATION_SECRET || 'operation-secret';
+                signature = process.env.SIGNATURE || 'operation-secret';
                 break;
             default:
                 return next(new AppError('Unauthorized: Invalid bearer type', 403));
