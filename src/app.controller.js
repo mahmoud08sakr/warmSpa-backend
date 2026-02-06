@@ -30,6 +30,7 @@ import OrderDiscountModel from "./database/model/order.reciption.model.js";
 import contactRouter from "./modules/contact/contact.controller.js";
 import Product from "./database/model/product.model.js";
 import gymReservationRouter from "./modules/gym/gym.controller.js";
+import fingerPrintRouter from "./modules/fingerprint/fingerPrint.controller.js";
 
 dotenv.config();
 
@@ -346,6 +347,7 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/contacts', contactRouter);
         app.use('/api/v1/salary', salaryRoutes);
         app.use('/api/v1/helper', helperRouter);
+        app.use('/api/v1/fingerprint', fingerPrintRouter);
         app.use('/api/v1/gym-reservation', gymReservationRouter);
         app.use(globalErrorHandling);
 
