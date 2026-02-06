@@ -2,6 +2,7 @@ import { Router } from "express";
 import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
 import fingerPrintModel from "../../database/model/fingerPrint.model.js";
 import { auth } from "../../midlleware/auth.js";
+import { checkRole } from "../../midlleware/role.js";
 import userModel from "../../database/model/user.model.js";
 import { upload, uploadToCloudinary } from "../../utilts/multer.js";
 
@@ -14,7 +15,7 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
     const userId = req.user.id;
     const image = req.file;
     console.log(req.file);
-    
+
     const user = await userModel.findById(userId);
     if (!user) {
         return next(new AppError("User not found", 404));
@@ -31,7 +32,7 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
     });
 }));
 
-router.post('/logout', auth,handleAsyncError(async (req, res, next) => {
+router.post('/logout', auth, handleAsyncError(async (req, res, next) => {
     const { fingerPrintId } = req.body;
     const userId = req.user.id;
     const user = await userModel.findById(userId);
@@ -47,4 +48,32 @@ router.post('/logout', auth,handleAsyncError(async (req, res, next) => {
     });
 }));
 
+router.get('/get-user-checkIn', auth, async (req, res) => {
+    const id = req.user.id;
+    const userCheckIn = await fingerPrintModel.find({ userId: id });
+    res.status(200).json({
+        success: true,
+        data: userCheckIn
+    })
+})
+router.get('/get-checkId-by-id/:fingerPrintId', auth, async (req, res) => {
+    const fingerPrintId = req.params.fingerPrintId;
+    let id = req.user.id;
+    const userCheckIn = await fingerPrintModel.findOne({ _id: fingerPrintId, userId: id });
+    if (!userCheckIn) {
+        return next(new AppError("checkIn not found", 404));
+    }
+    res.status(200).json({
+        success: true,
+        data: userCheckIn
+    })
+})
+
+router.get('/get-all-finger-print', auth, checkRole("Admin"), async (req, res) => {
+    const fingerPrint = await fingerPrintModel.find({});
+    res.status(200).json({
+        success: true,
+        data: fingerPrint
+    })
+})
 export default router;
