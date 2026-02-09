@@ -220,6 +220,7 @@ export const getUserById = handleAsyncError(async (req, res) => {
         }
         return sum
     }, 0)
+console.log(availablePoints);
 
     userData.totalPoints = availablePoints
     res.json({ message: "user found successfully", userData })
