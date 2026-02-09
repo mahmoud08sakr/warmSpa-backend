@@ -12,7 +12,7 @@ router.post('/login', validation({ body: loginSchema }), login);
 router.post('/reset-password', auth, validation({ body: resetPasswordSchema }), resetpassword);
 router.post('/send-otp', validation({ body: sendOTPSchema }), sendOTP);
 router.post('/verify-otp', validation({ body: verifyOTPSchema }), verifyOTP);
-router.get('/get-all-users', auth, checkRole("Admin", "SAdmin"), getAllUsers)
+router.get('/get-all-users', auth, checkRole("Admin", "SAdmin" , "Accountant" , "Operation"), getAllUsers)
 router.get('/get-user-data', auth, getUserById)
 
 export default router;
