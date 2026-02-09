@@ -41,7 +41,7 @@ let roomSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['Cash', 'Card', 'Other'],
+        enum: ['cash', 'card', 'instapay', "wallet"],
         default: 'Cash'
     },
     price: {
