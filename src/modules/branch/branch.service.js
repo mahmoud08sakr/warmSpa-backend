@@ -1,6 +1,7 @@
 import Branch from '../../database/model/branch.model.js';
 import { AppError } from '../../errorHandling/AppError.js';
 import { cityModel } from '../../database/model/city.model.js';
+import userModel from '../../database/model/user.model.js';
 export const createBranch = async (branchData) => {
     const { city } = branchData
     const newBranch = await Branch.create(branchData);
@@ -11,13 +12,16 @@ export const createBranch = async (branchData) => {
         return newBranch;
     };
     addedCity.branches.push(newBranch._id);
-    
+
     await addedCity.save();
     return newBranch;
 }
 export const getAllBranches = async (query = {}) => {
     try {
-        const branches = await Branch.find({isActive:true})
+
+
+
+        const branches = await Branch.find({ isActive: true })
             .select('-__v')
         console.log(branches);
         console.log('Branches before return:', JSON.stringify(branches, null, 2));
@@ -29,10 +33,20 @@ export const getAllBranches = async (query = {}) => {
 };
 export const getAllBranchesForAdmin = async (query = {}) => {
     try {
+
+
+        let userData = await userModel.findById(req.user.id)
+
+        if (userData.role === 'Maneger') {
+            const updateBranch = await Branch.find({ manegedBy: req.user.id })
+            if (!updateBranch) {
+                throw new AppError('No branch found with that ID', 404);
+            }
+            return updateBranch;
+        }
         const branches = await Branch.find({})
             .select('-__v')
-        console.log(branches);
-        console.log('Branches before return:', JSON.stringify(branches, null, 2));
+
         return branches || [];
     } catch (error) {
         console.error('Error in getAllBranches:', error);
@@ -66,9 +80,21 @@ export const getBranchById = async (id) => {
     return branch;
 };
 
-export const updateBranch = async (id, updateData) => {
+export const updateBranch = async (id, updateData, user) => {
     if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
         throw new AppError('Invalid branch ID format', 400);
+
+    }
+    let userData = await userModel.findById(user.id)
+
+    if (userData.role === 'Maneger') {
+        const updateBranch = await Branch.findOneAndUpdate({ _id: id, manegedBy: user.id }, updateData, {
+            new: true,
+        })
+        if (!updateBranch) {
+            throw new AppError('No branch found with that ID', 404);
+        }
+        return updateBranch;
     }
     const updatedBranch = await Branch.findByIdAndUpdate(
         id,

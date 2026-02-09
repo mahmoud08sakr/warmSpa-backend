@@ -201,7 +201,7 @@ export const updateBranchHandler = handleAsyncError(async (req, res) => {
         }
         req.body.target = t;
     }
-    const branch = await updateBranch(req.params.id, req.body);
+    const branch = await updateBranch(req.params.id, req.body ,req.user);
     res.status(200).json({
         status: 'success',
         data: {

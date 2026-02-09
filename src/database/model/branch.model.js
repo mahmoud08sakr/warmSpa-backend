@@ -97,7 +97,7 @@ const branchSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    branchAdminAccountId:[{
+    branchAdminAccountId: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     }],
@@ -112,9 +112,13 @@ const branchSchema = new mongoose.Schema({
         }
     }
     ],
-    target:{
-        type:Number,
-        default:0
+    target: {
+        type: Number,
+        default: 0
+    },
+    manegedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     }
 }, {
     timestamps: true,
