@@ -212,7 +212,7 @@ export const getUserById = handleAsyncError(async (req, res) => {
     let availblePoints = 0
     let totalpoints = userData.points.map((ele) => {
         if (ele.date <= Date.now()) {
-            availblePoints += ele.points
+            availblePoints += ele.numberOfPoints
         }
         return availblePoints
     })
