@@ -66,28 +66,43 @@ export const createBranchHandler = handleAsyncError(async (req, res, next) => {
 
 
 export const addService = handleAsyncError(async (req, res, next) => {
-    let { serviceId } = req.body
+    let { serviceId, serviceIds } = req.body
     let { branchId } = req.params
-    let exsistServide = await Product.findById(serviceId)
-    if (!exsistServide) {
-        return next(new AppError(`No service found with ID: ${serviceId}`, 404));
+
+    if (!serviceIds && serviceId) {
+        serviceIds = [serviceId]
     }
+
+    if (!Array.isArray(serviceIds) || serviceIds.length === 0) {
+        return next(new AppError('serviceIds must be a non-empty array', 400));
+    }
+
+    serviceIds = [...new Set(serviceIds.map(String))]
+
+    const existingServices = await Product.find({ _id: { $in: serviceIds } }).select('_id')
+    if (existingServices.length !== serviceIds.length) {
+        const existingIds = new Set(existingServices.map(s => String(s._id)))
+        const missingIds = serviceIds.filter(id => !existingIds.has(String(id)))
+        return next(new AppError(`No service found with ID(s): ${missingIds.join(', ')}`, 404));
+    }
+
     let branch = await Branch.findById(branchId)
     if (!branch) {
         return next(new AppError(`no branch found with ID: ${branchId}`))
     }
-    console.log(branch);
 
-    branch.services.push({ serviceId })
+    const existingBranchServiceIds = new Set((branch.services || []).map(s => String(s.serviceId)))
+    const toAdd = serviceIds.filter(id => !existingBranchServiceIds.has(String(id)))
+    for (const id of toAdd) {
+        branch.services.push({ serviceId: id })
+    }
+
     await branch.save()
 
-
-    let addedProduct = await Product.findById(serviceId)
-    if (!addedProduct) {
-        return next(new AppError(`No service found with ID: ${serviceId}`, 404));
-    }
-    addedProduct.branch.push(branchId)
-    addedProduct.save()
+    await Product.updateMany(
+        { _id: { $in: serviceIds } },
+        { $addToSet: { branch: branchId } }
+    )
 
     res.status(200).json({
         status: 'success',
