@@ -137,7 +137,7 @@ export const getAllBranchesHandler = handleAsyncError(async (req, res) => {
 
 export const getAllBranchesByAdminHandler = handleAsyncError(async (req, res) => {
     try {
-        const branches = await getAllBranchesForAdmin(req.user.id, req.query)
+        const branches = await getAllBranchesForAdmin(req.user)
         res.status(200).json({
             status: 'success',
             results: branches ? branches.length : 0,

@@ -31,14 +31,14 @@ export const getAllBranches = async (query = {}) => {
         return [];
     }
 };
-export const getAllBranchesForAdmin = async (query = {}) => {
+export const getAllBranchesForAdmin = async (user) => {
     try {
 
 
-        let userData = await userModel.findById(req.user.id)
+        let userData = await userModel.findById(user.id)
 
         if (userData.role === 'Maneger') {
-            const updateBranch = await Branch.find({ manegedBy: req.user.id })
+            const updateBranch = await Branch.find({ manegedBy: user.id })
             if (!updateBranch) {
                 throw new AppError('No branch found with that ID', 404);
             }
