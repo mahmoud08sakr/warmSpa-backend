@@ -209,6 +209,14 @@ export const getAllUsers = handleAsyncError(async (req, res) => {
 export const getUserById = handleAsyncError(async (req, res) => {
     let { id } = req.user
     const userData = await userModel.findById(id).select('-password')
+    let availblePoints = 0
+    let totalpoints = userData.points.map((ele) => {
+        if (ele.date <= Date.now()) {
+            availblePoints += ele.points
+        }
+        return availblePoints
+    })
+    userData.points = totalpoints
     if (!userData) {
         throw new AppError('user not found', 404)
     }
