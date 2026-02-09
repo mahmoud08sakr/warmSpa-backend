@@ -25,8 +25,6 @@ const reservationSchema = new mongoose.Schema({
     endTime: { type: Date },
     orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
 }, { timestamps: true });
-
-// Indexes for better query performance
 reservationSchema.index({ branchId: 1, status: 1 }); // Find reservations by branch and status
 reservationSchema.index({ branchId: 1, reservationDate: 1 }); // Find reservations by branch and date
 reservationSchema.index({ status: 1, reservationDate: 1 }); // Find pending/approved reservations by date
