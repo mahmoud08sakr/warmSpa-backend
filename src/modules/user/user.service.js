@@ -216,7 +216,7 @@ export const getUserById = handleAsyncError(async (req, res) => {
         }
         return availblePoints
     })
-    userData.points = totalpoints
+    userData.totalpoints = totalpoints
     if (!userData) {
         throw new AppError('user not found', 404)
     }
