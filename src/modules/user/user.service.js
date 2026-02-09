@@ -24,7 +24,7 @@ const generateToken = (userId, role) => {
         case 'Accountant':
             signature = process.env.SIGNATURE || 'support-secret';
             break;
-        case 'Manege':
+        case 'Maneger':
             signature = process.env.SIGNATURE || 'moderator-secret';
             break;
         case "Operation":
