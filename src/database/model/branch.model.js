@@ -119,6 +119,14 @@ const branchSchema = new mongoose.Schema({
     manegedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
+    },
+    branchAccountant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+    },
+    operationAccount: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     }
 }, {
     timestamps: true,

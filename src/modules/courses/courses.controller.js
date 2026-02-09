@@ -16,9 +16,9 @@ const calculateTotalSessions = (services) => {
 
 const calculateDiscount = (totalSessions) => {
     if (totalSessions > 10) {
-        return 15;
+        return 20;
     } else if (totalSessions > 5) {
-        return 5;
+        return 10;
     }
     return 0;
 };

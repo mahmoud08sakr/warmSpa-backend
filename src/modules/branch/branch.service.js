@@ -44,6 +44,13 @@ export const getAllBranchesForAdmin = async (user) => {
             }
             return updateBranch;
         }
+        if (userData.role == "Operation" || userData.role == "Accountant") {
+            const updateBranch = await Branch.find({ $or: [{ operationAccount: user.id }, { branchAccountant: user.id }] })
+            if (!updateBranch) {
+                throw new AppError('No branch found with that ID', 404);
+            }
+            return updateBranch;
+        }
         const branches = await Branch.find({})
             .select('-__v')
 
