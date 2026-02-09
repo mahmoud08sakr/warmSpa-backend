@@ -3,7 +3,7 @@ import { AppError } from '../../errorHandling/AppError.js';
 import { cityModel } from '../../database/model/city.model.js';
 import userModel from '../../database/model/user.model.js';
 export const createBranch = async (branchData) => {
-    const { city } = branchData
+    const { city, branchAccountant, operationAccount } = branchData
     const newBranch = await Branch.create(branchData);
 
     let addedCity = await cityModel.findOne({ name: city });
@@ -18,8 +18,6 @@ export const createBranch = async (branchData) => {
 }
 export const getAllBranches = async (query = {}) => {
     try {
-
-
 
         const branches = await Branch.find({ isActive: true })
             .select('-__v')
