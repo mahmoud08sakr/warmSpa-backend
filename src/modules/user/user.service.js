@@ -209,16 +209,18 @@ export const getAllUsers = handleAsyncError(async (req, res) => {
 export const getUserById = handleAsyncError(async (req, res) => {
     let { id } = req.user
     const userData = await userModel.findById(id).select('-password')
-    let availblePoints = 0
-    let totalpoints = userData.points.map((ele) => {
-        if (ele.date <= Date.now()) {
-            availblePoints += ele.numberOfPoints
-        }
-        return availblePoints
-    })
-    userData.totalpoints = availblePoints
     if (!userData) {
         throw new AppError('user not found', 404)
     }
+    const now = Date.now()
+    const availablePoints = (userData.points || []).reduce((sum, p) => {
+        const pointDate = p?.date ? new Date(p.date).getTime() : 0
+        if (pointDate <= now) {
+            return sum + (Number(p?.numberOfPoints) || 0)
+        }
+        return sum
+    }, 0)
+
+    userData.totalPoints = availablePoints
     res.json({ message: "user found successfully", userData })
 })
