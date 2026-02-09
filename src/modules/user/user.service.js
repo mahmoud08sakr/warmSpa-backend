@@ -213,14 +213,15 @@ export const getUserById = handleAsyncError(async (req, res) => {
         throw new AppError('user not found', 404)
     }
     const now = Date.now()
-    const availablePoints = (userData.points || []).reduce((sum, p) => {
-        const pointDate = p?.date ? new Date(p.date).getTime() : 0
+    const points = Array.isArray(userData.points) ? userData.points : []
+    let availablePoints = 0
+    for (let i = 0; i < points.length; i++) {
+        const p = points[i] || {}
+        const pointDate = p.date ? new Date(p.date).getTime() : 0
         if (pointDate <= now) {
-            return sum + (Number(p?.numberOfPoints) || 0)
+            availablePoints += Number(p.numberOfPoints) || 0
         }
-        return sum
-    }, 0)
-console.log(availablePoints);
+    }
 
     userData.totalPoints = availablePoints
     res.json({ message: "user found successfully", userData })
