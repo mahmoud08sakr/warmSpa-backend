@@ -187,7 +187,7 @@ export const verifyOTP = handleAsyncError(async (req, res) => {
 
 export const getAllUsers = handleAsyncError(async (req, res) => {
     try {
-        const users = await userModel.find({ role: "User" }).select('-password -OTP -__v');
+        const users = await userModel.find({}).select('-password -OTP -__v');
         res.status(200).json({
             status: 'success',
             results: users.length,
