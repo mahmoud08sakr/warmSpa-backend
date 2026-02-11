@@ -50,7 +50,7 @@ router.post('/logout', auth, handleAsyncError(async (req, res, next) => {
 
 router.get('/get-user-checkIn', auth, async (req, res) => {
     const id = req.user.id;
-    const userCheckIn = await fingerPrintModel.find({ userId: id }).populate("userId").populate("branchId");
+    const userCheckIn = await fingerPrintModel.find({ }).populate("userId").populate("branchId");
     res.status(200).json({
         success: true,
         data: userCheckIn
