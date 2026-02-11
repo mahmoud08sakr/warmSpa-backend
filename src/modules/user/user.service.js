@@ -78,22 +78,34 @@ export const signup = handleAsyncError(async (req, res) => {
 
 export const login = handleAsyncError(async (req, res, next) => {
     try {
-        const { email, password } = req.body;
+        const rawEmail = req.body?.email ?? req.body?.userEmail ?? req.body?.Email
+        const password = req.body?.password
 
+        if (!rawEmail) {
+            return next(new AppError('email is required', 400));
+        }
+        if (!password) {
+            return next(new AppError('password is required', 400));
+        }
+
+        const email = String(rawEmail).trim().toLowerCase()
         const user = await userModel.findOne({ email }).select('+password');
         if (!user) {
-            return next(new AppError(translations.login.emailNotFound.en, 401));
+            res.status(401).json({
+                status: 'error',
+                message: translations.login.emailNotFound.en,
+            })
         }
-
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return next(new AppError(translations.login.invalidCredentials.en, 401));
+            res.status(401).json({
+                status: 'error',
+                message: translations.login.invalidCredentials.en,
+            })
         }
-
         // Generate token using the updated generateToken function
         const token = generateToken(user._id, user.role);
         user.password = undefined;
-
         res.status(200).json({
             status: 'success',
             message: 'Login successful',
