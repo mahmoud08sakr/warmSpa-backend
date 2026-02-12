@@ -89,6 +89,17 @@ export const addStuff = handleAsyncError(async (req, res) => {
         gender,
         role: "Staff"
     });
+    await user.save();
+    const token = generateToken(user._id, user.role);
+    user.password = undefined;
+    res.status(201).json({
+        status: 'success',
+        message: translations.signup.success.en,
+        data: {
+            user,
+            token
+        }
+    });
 })
 
 // Using the existing generateToken function that's already defined at the top of the file
