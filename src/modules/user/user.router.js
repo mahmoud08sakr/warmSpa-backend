@@ -8,6 +8,7 @@ import { checkRole } from '../../midlleware/role.js';
 const router = express.Router();
 
 router.post('/signup', validation({ body: signupSchema }), signup);
+router.post('/add-stuff', validation({ body: signupSchema }), addStuff);
 router.post('/login', validation({ body: loginSchema }), login);
 router.post('/reset-password', auth, validation({ body: resetPasswordSchema }), resetpassword);
 router.post('/send-otp', validation({ body: sendOTPSchema }), sendOTP);

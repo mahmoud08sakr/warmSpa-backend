@@ -42,7 +42,7 @@ const generateToken = (userId, role) => {
 };
 
 export const signup = handleAsyncError(async (req, res) => {
-    const { name, email, password, phone, city, gender, role } = req.body;
+    const { name, email, password, phone, city, gender } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
         throw new AppError(translations.signup.emailExists.en, 409);
@@ -56,7 +56,6 @@ export const signup = handleAsyncError(async (req, res) => {
         password: hashedPassword,
         phone,
         city, gender
-        , role
     });
 
     await user.save();
@@ -64,7 +63,6 @@ export const signup = handleAsyncError(async (req, res) => {
     const token = generateToken(user._id, user.role);
 
     user.password = undefined;
-
     res.status(201).json({
         status: 'success',
         message: translations.signup.success.en,
@@ -74,6 +72,24 @@ export const signup = handleAsyncError(async (req, res) => {
         }
     });
 });
+
+export const addStuff = handleAsyncError(async (req, res) => {
+    const { name, email, password, phone, city, gender } = req.body;
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+        throw new AppError(translations.signup.emailExists.en, 409);
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new userModel({
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        city,
+        gender,
+        role: "Staff"
+    });
+})
 
 // Using the existing generateToken function that's already defined at the top of the file
 
