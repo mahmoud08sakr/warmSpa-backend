@@ -75,9 +75,6 @@ export const bootstrap = async (app, express) => {
         app.get('/filter-data', auth, checkRole("Admin", "SAdmin", "Accountant"), async (req, res) => {
             try {
                 const { serviceId, branchId } = req.query;
-                const page = Math.max(parseInt(req.query.page || '1', 10), 1);
-                const limit = Math.min(Math.max(parseInt(req.query.limit || '50', 10), 1), 200);
-                const skip = (page - 1) * limit;
                 const isAll = (v) => !v || v === 'all' || v === 'undefined' || v === 'null';
 
                 const expenseMatch = isAll(branchId) ? {} : { branch: new mongoose.Types.ObjectId(branchId) };
@@ -299,8 +296,6 @@ export const bootstrap = async (app, express) => {
                         active: staffAgg.active || 0
                     },
                     bestServices,
-                    page,
-                    limit,
                     data: {
                         expenses: expensesData,
                         orders: ordersData,
