@@ -41,21 +41,6 @@ export const getAllProducts = async (query) => {
         } else {
             dbQuery = dbQuery.select('-__v');
         }
-
-        // 5) Pagination
-        const page = parseInt(query.page) || 1;
-        const limit = parseInt(query.limit) || 10;
-        const skip = (page - 1) * limit;
-
-        // Apply pagination
-        dbQuery = dbQuery.skip(skip).limit(limit);
-        // Check if requested page exists
-        if (query.page) {
-            const numProducts = await Product.countDocuments(JSON.parse(queryStr));
-            if (skip >= numProducts) {
-                throw new AppError('This page does not exist', 404);
-            }
-        }
         // Execute the query
         const products = await dbQuery;
 
