@@ -251,6 +251,26 @@ export const getAllUsers = handleAsyncError(async (req, res) => {
     }
 })
 
+export const getUsersForAdmin = handleAsyncError((async (req, res) => {
+    try {
+        const users = await userModel.find({ role: "User" }).select('-password -OTP -__v');
+        res.status(200).json({
+            status: 'success',
+            results: users.length,
+            data: {
+                users: users || []
+            }
+        });
+    }
+    catch (error) {
+        console.error('Error in getAllUsers:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to fetch users',
+        });
+    }
+}))
+
 
 export const getUserById = handleAsyncError(async (req, res) => {
     let { id } = req.user

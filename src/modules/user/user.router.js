@@ -14,6 +14,8 @@ router.post('/reset-password', auth, validation({ body: resetPasswordSchema }), 
 router.post('/send-otp', validation({ body: sendOTPSchema }), sendOTP);
 router.post('/verify-otp', validation({ body: verifyOTPSchema }), verifyOTP);
 router.get('/get-all-users', auth, checkRole("Admin", "SAdmin" , "Accountant" , "Operation"), getAllUsers)
+router.get('/get-all-users-markting', auth, checkRole("Admin", "SAdmin" , "Accountant" , "Operation"), getUsersForAdmin)
+
 router.get('/get-user-data', auth, getUserById)
 
 export default router;
