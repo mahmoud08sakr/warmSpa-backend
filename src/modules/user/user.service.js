@@ -42,7 +42,7 @@ const generateToken = (userId, role) => {
 };
 
 export const signup = handleAsyncError(async (req, res) => {
-    const { name, email, password, phone, city, gender } = req.body;
+    const { name, email, password, phone, city, gender, role } = req.body;
     const existingUser = await userModel.findOne({ email });
     if (existingUser) {
         throw new AppError(translations.signup.emailExists.en, 409);
@@ -56,6 +56,7 @@ export const signup = handleAsyncError(async (req, res) => {
         password: hashedPassword,
         phone,
         city, gender
+        , role
     });
 
     await user.save();
@@ -199,7 +200,7 @@ export const verifyOTP = handleAsyncError(async (req, res) => {
 
 export const getAllUsers = handleAsyncError(async (req, res) => {
     try {
-        const users = await userModel.find({}).select('-password -OTP -__v');
+        const users = await userModel.find({ role: "Staff" }).select('-password -OTP -__v');
         res.status(200).json({
             status: 'success',
             results: users.length,
