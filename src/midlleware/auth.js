@@ -35,6 +35,12 @@ export const auth = async (req, res, next) => {
             case "Operation":
                 signature = process.env.SIGNATURE || 'operation-secret';
                 break;
+            case "Moderator":
+                signature = process.env.SIGNATURE || 'moderator-secret';
+                break;
+            case "Staff":
+                signature = process.env.SIGNATURE || 'staff-secret';
+                break;
             default:
                 return next(new AppError('Unauthorized: Invalid bearer type', 403));
         }

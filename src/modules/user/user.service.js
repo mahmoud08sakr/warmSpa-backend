@@ -30,6 +30,12 @@ const generateToken = (userId, role) => {
         case "Operation":
             signature = process.env.SIGNATURE || "operation-secret";
             break;
+        case "Moderator":
+            signature = process.env.SIGNATURE || "moderator-secret";
+            break;
+        case "Staff":
+            signature = process.env.SIGNATURE || "staff-secret";
+            break;
         default:
             throw new AppError('Invalid role', 500);
     }
