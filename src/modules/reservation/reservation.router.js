@@ -9,7 +9,7 @@ const router = Router();
 
 router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res) => {
     let { branchId, roomId } = req.params;
-    let { customerName, customerPhone, gender, paymentMethod, currency, price, responsiblePerson, remainingPayments, orderId, captain, serviceId, priceAfterDiscount, marketingCompany } = req.body
+    let { customerName, customerPhone, gender, paymentMethod, marketingCompanyPercentage, currency, price, responsiblePerson, remainingPayments, orderId, captain, serviceId, priceAfterDiscount, marketingCompany } = req.body
     let roomData = await Room.findOne({ _id: roomId, branchId: branchId });
     if (!roomData) {
         return res.status(404).json({ message: "Room not found in the specified branch" });
@@ -31,6 +31,7 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
     const addreservaion = await ReservationModel.create({
         orderId: orderId,
         userName: customerName,
+        marketingCompanyPercentage,
         userEmail: customerPhone,
         RoomId: roomId,
         branchId: branchId,
