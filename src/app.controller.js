@@ -72,7 +72,7 @@ export const bootstrap = async (app, express) => {
             res.json('success ya rgola');
         });
 
-        app.get('/filter-data', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
+        app.get('/filter-data', auth, checkRole("Admin", "SAdmin", "Accountant"), async (req, res) => {
             try {
                 const { serviceId, branchId } = req.query;
                 const page = Math.max(parseInt(req.query.page || '1', 10), 1);

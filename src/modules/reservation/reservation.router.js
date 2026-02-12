@@ -5,6 +5,7 @@ import ReservationModel from "../../database/model/reservation.model.js";
 import { reservationOrderModel } from "../../database/model/reservationOrder.model.js";
 import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
 import Order from "../../database/model/order.model.js";
+import Product from "../../database/model/product.model.js";
 const router = Router();
 
 router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res) => {
@@ -27,11 +28,15 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
     roomData.startTime = new Date();
     let updateOrderData = await Order.findByIdAndUpdate(orderId, { isReserverInBranch: true }, { new: true });
     console.log(updateOrderData, "from updated order");
-
+    let priceOfMarketingCompany = 0;
+    if (marketingCompany) {
+        let serviceData = await Product.findById(serviceId);
+        priceOfMarketingCompany = serviceData.price * 25 / 100;
+    }
     const addreservaion = await ReservationModel.create({
         orderId: orderId,
         userName: customerName,
-        marketingCompanyPercentage,
+        marketingCompanyPercentage: priceOfMarketingCompany,
         userEmail: customerPhone,
         RoomId: roomId,
         branchId: branchId,
