@@ -22,6 +22,12 @@ const reservationSchema = new mongoose.Schema({
         default: 'normal'
     },
     startTime: { type: Date },
+    remainingPayments: {
+        type: {
+            amount: { type: Number },
+            currency: { type: String }
+        }
+    },
     endTime: { type: Date },
     orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order' },
     marketingCompany: { type: String },
