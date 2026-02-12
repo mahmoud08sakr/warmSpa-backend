@@ -218,9 +218,6 @@ export const bootstrap = async (app, express) => {
                 const expenseDataPromise = expenseModel
                     .find(expenseMatch)
                     .select('nameExpense amount date branch status createdAt')
-                    .sort({ createdAt: -1 })
-                    .skip(skip)
-                    .limit(limit)
                     .lean();
 
                 const orderQuery = { ...orderMatch };
@@ -230,9 +227,6 @@ export const bootstrap = async (app, express) => {
                 const ordersDataPromise = Order
                     .find(orderQuery)
                     .select('_id branch totalAmount status paymentStatus items createdAt')
-                    .sort({ createdAt: -1 })
-                    .skip(skip)
-                    .limit(limit)
                     .lean();
 
                 const recepOrderQuery = isAll(branchId) ? {} : { branchId: new mongoose.Types.ObjectId(branchId) };
@@ -242,9 +236,6 @@ export const bootstrap = async (app, express) => {
                 const receptionOrdersDataPromise = OrderDiscountModel
                     .find(recepOrderQuery)
                     .select('_id branchId totalAmount status paymentStatus products createdAt')
-                    .sort({ createdAt: -1 })
-                    .skip(skip)
-                    .limit(limit)
                     .lean();
 
                 const reservationQuery = { ...reservationMatch };
@@ -252,9 +243,6 @@ export const bootstrap = async (app, express) => {
                 const reservationsDataPromise = ReservationModel
                     .find(reservationQuery)
                     .select('_id userName userEmail RoomId branchId serviceId price reservationDate createdAt')
-                    .sort({ createdAt: -1 })
-                    .skip(skip)
-                    .limit(limit)
                     .lean();
 
                 const roomQuery = { ...roomMatch };
@@ -262,17 +250,11 @@ export const bootstrap = async (app, express) => {
                 const roomsDataPromise = Room
                     .find(roomQuery)
                     .select('_id roomNumber isReserved selectedServide price priceAfterDiscount branchId createdAt')
-                    .sort({ createdAt: -1 })
-                    .skip(skip)
-                    .limit(limit)
                     .lean();
 
                 const staffsDataPromise = StaffModel
                     .find(staffMatch)
                     .select('_id name role branchId isFired phone createdAt')
-                    .sort({ createdAt: -1 })
-                    .skip(skip)
-                    .limit(limit)
                     .lean();
 
                 const [
