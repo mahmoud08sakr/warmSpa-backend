@@ -1,7 +1,7 @@
 import express from 'express';
 import { validation } from '../../utilts/validation.js';
 import { signupSchema, loginSchema, resetPasswordSchema, sendOTPSchema, verifyOTPSchema } from './user.validation.js';
-import { signup, login, resetpassword, sendOTP, verifyOTP, getAllUsers, getUserById } from './user.service.js';
+import { signup, login, resetpassword, sendOTP, verifyOTP, getAllUsers, getUserById, addStuff } from './user.service.js';
 import { auth } from '../../midlleware/auth.js';
 import { checkRole } from '../../midlleware/role.js';
 
