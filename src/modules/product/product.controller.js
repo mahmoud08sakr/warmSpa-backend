@@ -96,7 +96,7 @@ export const getProductsByBranchHandler = handleAsyncError(async (req, res) => {
 export const requestDiscout = handleAsyncError(async (req, res) => {
 
     let { branchId, requiestPrice, reson, products, reseptionist, roomId, customerName, customerPhone, gender, paymentMethod, currency } = req.body
-    console.log({ branchId, requiestPrice, reson, products, reseptionist, roomId, customerName, customerPhone, gender, paymentMethod, currency } , "fromtestttttttttttttttttttttttttttttttttttttttttttt");
+    console.log({ branchId, requiestPrice, reson, products, reseptionist, roomId, customerName, customerPhone, gender, paymentMethod, currency }, "fromtestttttttttttttttttttttttttttttttttttttttttttt");
 
     let productData = []
     for (let i = 0; i < products.length; i++) {
@@ -115,7 +115,11 @@ export const requestDiscout = handleAsyncError(async (req, res) => {
         reson,
         products: productData,
         paymentMethod,
-        reseptionist, roomId
+        reseptionist, roomId,
+        customerName,
+        customerPhone,
+        gender,
+        currency
     })
     let roomData = await Room.findById(roomId);
     if (!roomData) {
