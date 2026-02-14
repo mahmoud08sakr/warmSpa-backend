@@ -7,7 +7,7 @@ const router = Router();
 
 router.post('/add-tip', auth, handleAsyncError(async (req, res) => {
     let { tip, branchId } = req.body
-    let addedTip = await tipModel({ tip, branchId })
+    let addedTip = await tipModel.insertOne({ tip, branchId })
     if (addedTip) {
         return res.json({ message: "tip added" })
     }
