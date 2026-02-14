@@ -51,7 +51,7 @@ export const getAllExpenseHandler = handleAsyncError(async (req, res) => {
 export const getAllExpenceForBranch = handleAsyncError(async (req, res) => {
     const expenses = await expenseModel.find({ branch: req.params.id }).populate('branch', 'name');
     if (expenses) {
-        res.status(200).json({ message: "All Expenses", expenses });
+      return  res.status(200).json({ message: "All Expenses", expenses });
     }
     throw new AppError('Failed to get all expenses', 500);
 })
