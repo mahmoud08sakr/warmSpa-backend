@@ -154,7 +154,6 @@ export const approveDiscountHandler = handleAsyncError(async (req, res) => {
         })
     }
     requestDiscount.status = 'approved';
-    console.log(requestDiscount , "from test ");
 
     await requestDiscount.save();
     let addedReservation = await ReservationModel.create({

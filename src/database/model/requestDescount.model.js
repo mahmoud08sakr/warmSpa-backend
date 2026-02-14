@@ -21,6 +21,19 @@ let requiestDiscountSchema = new Schema({
             required: true
         }
     }],
+    customerName: {
+        type: String,
+        required: true
+    },
+    customerPhone: {
+        type: String,
+        required: true
+    },
+    gender: {
+        type: String,
+        enum: ["male", "female"],
+        required: true
+    },
     roomId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Room",
