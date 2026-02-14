@@ -48,7 +48,7 @@ router.delete('/delete-gym/:id', async (req, res) => {
 
 router.post('/add-reservation-gym', async (req, res) => {
     let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate, branchId } = req.body
-    let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate })
+    let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, paymentMethod, subscriptionEndDate })
 
 
     if (addedReservation) {
