@@ -96,6 +96,8 @@ export const getProductsByBranchHandler = handleAsyncError(async (req, res) => {
 export const requestDiscout = handleAsyncError(async (req, res) => {
 
     let { branchId, requiestPrice, reson, products, reseptionist, roomId, customerName, customerPhone, gender, paymentMethod, currency } = req.body
+    console.log({ branchId, requiestPrice, reson, products, reseptionist, roomId, customerName, customerPhone, gender, paymentMethod, currency } , "fromtestttttttttttttttttttttttttttttttttttttttttttt");
+
     let productData = []
     for (let i = 0; i < products.length; i++) {
         const product = await getProductById(products[i].productId);
@@ -138,7 +140,6 @@ export const requestDiscout = handleAsyncError(async (req, res) => {
 })
 
 export const approveDiscountHandler = handleAsyncError(async (req, res) => {
-    console.log(req.params);
 
     const requestDiscount = await RequestDiscountModel.findById(req.params.id);
     if (!requestDiscount) {
@@ -171,13 +172,8 @@ export const approveDiscountHandler = handleAsyncError(async (req, res) => {
         paymentMethod: requestDiscount.paymentMethod,
         captain: requestDiscount.captain
     })
-    console.log(addedReservation);
-
-    console.log(addedReservation, "from zeby");
 
     let updateRoomStatus = await Room.findOneAndUpdate({ _id: requestDiscount.roomId }, { isReserved: true }, { new: true });
-    console.log(updateRoomStatus, "update the product data");
-
     res.status(200).json({
         status: 'success',
         data: {
