@@ -1,8 +1,8 @@
-
 import { Router } from 'express';
 import { auth } from '../../midlleware/auth.js';
 import { tipModel } from '../../database/model/tip.model.js';
 import { handleAsyncError } from '../../errorHandling/handelAsyncError.js';
+import { checkRole } from '../../midlleware/role.js';
 const router = Router();
 
 router.post('/add-tip', auth, handleAsyncError(async (req, res) => {
@@ -14,8 +14,7 @@ router.post('/add-tip', auth, handleAsyncError(async (req, res) => {
     res.json({ message: "error" })
 }))
 
-
-router.get('/get-all-tips', auth, handleAsyncError(async (req, res) => {
+router.get('/get-all-tips', auth, checkRole("Admin"), handleAsyncError(async (req, res) => {
     let allTips = await tipModel.find()
     res.json({ message: "done", allTips })
 }))
