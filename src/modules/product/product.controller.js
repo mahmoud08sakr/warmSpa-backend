@@ -112,6 +112,7 @@ export const requestDiscout = handleAsyncError(async (req, res) => {
         requiestPrice,
         reson,
         products: productData,
+        paymentMethod,
         reseptionist, roomId
     })
     let roomData = await Room.findById(roomId);
@@ -167,6 +168,7 @@ export const approveDiscountHandler = handleAsyncError(async (req, res) => {
         responsiblePerson: requestDiscount.reseptionist,
         priceAfterDiscount: requestDiscount.requiestPrice,
         status: "Approved",
+        paymentMethod: requestDiscount.paymentMethod,
         captain: requestDiscount.captain
     })
 console.log(addedReservation);

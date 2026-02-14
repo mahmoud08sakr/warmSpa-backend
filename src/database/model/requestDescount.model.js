@@ -35,7 +35,9 @@ let requiestDiscountSchema = new Schema({
         type: String,
         enum: ["pending", "approved", "rejected"],
         default: "pending"
-    }
+    },
+    paymentMethod: { type: String, enum: ['cash', 'credit', 'instapay', "wallet"], default: 'cash' },
+
 }, {
     timestamps: true
 });
