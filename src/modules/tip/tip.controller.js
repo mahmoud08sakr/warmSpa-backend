@@ -22,7 +22,7 @@ router.get('/get-all-tips', auth, handleAsyncError(async (req, res) => {
 
 router.get('/get-tip-by-id/:branchId', auth, handleAsyncError(async (req, res) => {
     let { branchId } = req.params
-    let tipData = await tipModel.findOne({ branchId: id })
+    let tipData = await tipModel.find({ branchId: id })
     res.json({ message: "done", tipData })
 }))
 
