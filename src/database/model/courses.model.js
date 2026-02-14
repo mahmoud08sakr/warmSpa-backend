@@ -62,7 +62,9 @@ const courseSchema = new mongoose.Schema({
     },
     paymobOrderId: {
         type: String
-    }
+    },
+    paymentMethod: { type: String, enum: ['cash', 'credit', 'instapay', "wallet"], default: 'cash' },
+
 }, {
     timestamps: true
 });

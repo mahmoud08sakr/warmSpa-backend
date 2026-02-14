@@ -22,7 +22,8 @@ const gymReservationSchema = new mongoose.Schema({
     },
     subscriptionEndDate: {
         type: Date,
-    }
+    },
+    paymentMethod: { type: String, enum: ['cash', 'credit', 'instapay', "wallet"], default: 'cash' },
 }, { timestamps: true });
 
 

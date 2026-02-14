@@ -16,9 +16,10 @@ const gymSchema = new mongoose.Schema({
         ref: 'Branch'
     },
     price: {
-        type: [Number],
-        default: [500, 800, 1200, 1600, 2000],
-    }
+        type: Number,
+    },
+    paymentMethod: { type: String, enum: ['cash', 'credit', 'instapay', "wallet"], default: 'cash' },
+
 }, {
     timestamps: true
 });

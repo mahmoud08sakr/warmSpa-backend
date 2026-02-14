@@ -46,7 +46,7 @@ const calculateTotalPrice = (services) => {
 
 router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branch"), async (req, res) => {
     try {
-        const { service, branchId, userName, phone, email } = req.body;
+        const { service, branchId, userName, phone, email , paymentMethod } = req.body;
 
         if (!service || !Array.isArray(service) || service.length === 0) {
             return res.status(400).json({ message: "Service array is required and must contain at least one service" });
@@ -85,9 +85,9 @@ router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branc
             branchId,
             userName,
             phone,
-            email: email || undefined
+            email: email || undefined,
+            paymentStatus: paymentMethod,
         };
-
         const createCourses = await courseModel.create(courseData);
         const addReservationData = await ReservationModel.create({
             userName: userName,
@@ -96,6 +96,7 @@ router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branc
             branchId: branchId,
             price: priceCalculation.totalPrice,
             serviceFor: "course",
+            paymentMethod
         });
         res.status(201).json({
             message: "Course created successfully",

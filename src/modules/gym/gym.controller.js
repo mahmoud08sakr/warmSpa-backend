@@ -59,9 +59,7 @@ router.post('/add-reservation-gym', async (req, res) => {
 })
 
 router.post('/add-reservation', async (req, res) => {
-    let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate, branchId } = req.body
-console.log(reservationData);
-
+    let { gymId, date, reservationData, numberOfSessions, subscriptionEndDate, branchId, paymentMethod } = req.body
     const addReservationData = await ReservationModel.insertOne({
         userName: reservationData[0].userName,
         userEmail: reservationData[1].userEmail,
@@ -69,9 +67,10 @@ console.log(reservationData);
         branchId: branchId,
         price: reservationData[3].price,
         serviceFor: "gym",
+        paymentMethod
     });
     if (addReservationData) {
-        let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate })
+        let addedReservation = await gymReservationModel.insertMany({ gymId, date, reservationData, numberOfSessions, subscriptionEndDate, paymentMethod })
         console.log(reservationData);
         console.log("ana gowa");
         console.log(addReservationData);

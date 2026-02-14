@@ -35,7 +35,7 @@ export const createBranchHandler = handleAsyncError(async (req, res, next) => {
         let branch = await Product.findById(productsIds[i]);
         console.log();
         if (!branch) {
-            return next(new AppError(`No branch found with ID: ${productsIds[i]}`, 404));
+            return next(new AppError(`No branch found with ID: ${productsIds[i]} , ${i}`, 404));
         }
     }
     if (req.body.target !== undefined) {
