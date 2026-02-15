@@ -32,7 +32,7 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
     });
 }));
 
-router.post('/logout', auth, handleAsyncError(async (req, res, next) => {
+router.post('/logout', auth, upload.single('image'), uploadToCloudinary(true, "single"), handleAsyncError(async (req, res, next) => {
     const { fingerPrintId } = req.body;
     const userId = req.user.id;
     const user = await userModel.findById(userId);
@@ -40,7 +40,8 @@ router.post('/logout', auth, handleAsyncError(async (req, res, next) => {
         return next(new AppError("User not found", 404));
     }
     const fingerPrint = await fingerPrintModel.findByIdAndUpdate(fingerPrintId, {
-        logoutTime: Date.now()
+        logoutTime: Date.now(),
+        logoutImage: req.file.cloudinaryResult.secure_url,
     });
     res.status(201).json({
         success: true,
@@ -50,7 +51,7 @@ router.post('/logout', auth, handleAsyncError(async (req, res, next) => {
 
 router.get('/get-user-checkIn', auth, async (req, res) => {
     const id = req.user.id;
-    const userCheckIn = await fingerPrintModel.find({ }).populate("userId").populate("branchId");
+    const userCheckIn = await fingerPrintModel.find({}).populate("userId").populate("branchId");
     res.status(200).json({
         success: true,
         data: userCheckIn

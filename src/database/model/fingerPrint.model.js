@@ -17,14 +17,16 @@ const fingerPrintSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    logoutImage: {
+        type: String,
+        required: true
+    },
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch'
-    },
-    
-
+    }
 
 })
 
 
-    export default mongoose.model('FingerPrint', fingerPrintSchema);
+export default mongoose.model('FingerPrint', fingerPrintSchema);
