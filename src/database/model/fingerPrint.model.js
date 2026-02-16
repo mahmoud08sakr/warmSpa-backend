@@ -19,7 +19,6 @@ const fingerPrintSchema = new mongoose.Schema({
     },
     logoutImage: {
         type: String,
-        required: true
     },
     branchId: {
         type: mongoose.Schema.Types.ObjectId,
