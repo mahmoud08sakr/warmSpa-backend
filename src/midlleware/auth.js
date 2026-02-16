@@ -65,9 +65,8 @@ export const auth = async (req, res, next) => {
         });
 
         if (!user) {
-            return next(new AppError('Unauthorized: User not found', 401));
+            return res.status(200).json({ message: "user not found" })
         }
-
         req.user = user;
         next();
     } catch (error) {
