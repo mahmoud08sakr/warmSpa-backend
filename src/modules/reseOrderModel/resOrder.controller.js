@@ -10,7 +10,7 @@ const router = Router();
 
 
 
-router.get('/get-reservation-and-order', auth, checkRole("Admin", "SAdmin"), handleAsyncError(async (req, res) => {
+router.get('/get-reservation-and-order', auth, checkRole("Admin", "SAdmin", "Operation"), handleAsyncError(async (req, res) => {
     let data = await reservationOrderModel.find().populate('reservationId').populate('orderId');
     res.status(200).json({ data });
 }))

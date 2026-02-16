@@ -8,7 +8,7 @@ const router = Router();
 
 
 router.use(auth);
-router.use(checkRole('Admin', 'SAdmin', "Branch"));
+router.use(checkRole('Admin', 'SAdmin', "Branch", "Operation"));
 router.post('/create-staff', upload.fields([{ name: 'attachments', maxCount: 10 }]), uploadToCloudinary(false, "array"), async (req, res) => {
     let { name, branchId, role, phone, nationalId } = req.body;
 

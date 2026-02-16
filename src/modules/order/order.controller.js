@@ -12,7 +12,7 @@ router.get('/get-order-by-id/:id', auth, getOrder);
 router.get('/get-order-by-session/:sessionId', getOrderBySessionId);
 router.get('/get-order-by-payment-intent/:paymentIntentId', getOrderByPaymentIntent);
 router.get('/user/:userId', auth, getUserOrders);
-router.get('/get-all-orders-by-admin', auth, checkRole("Admin", "SAdmin", "Branch"), getAllOrderForAdmin);
+router.get('/get-all-orders-by-admin', auth, checkRole("Admin", "SAdmin", "Branch", "Operation"), getAllOrderForAdmin);
 router.post('/redeem-points', auth, redeemPoints);
 router.get('/get-order-by-branch/:branchId', auth, getOrdersByBranchId);
 

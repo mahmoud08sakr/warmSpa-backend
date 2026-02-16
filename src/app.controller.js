@@ -73,7 +73,7 @@ export const bootstrap = async (app, express) => {
             res.json('success ya rgola');
         });
 
-        app.get('/filter-data', auth, checkRole("Admin", "SAdmin", "Accountant"), async (req, res) => {
+        app.get('/filter-data', auth, checkRole("Admin", "SAdmin", "Accountant" , "Operation"), async (req, res) => {
             try {
                 const { serviceId, branchId } = req.query;
                 const isAll = (v) => !v || v === 'all' || v === 'undefined' || v === 'null';
