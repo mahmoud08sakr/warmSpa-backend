@@ -5,6 +5,7 @@ import { auth } from "../../midlleware/auth.js";
 import { checkRole } from "../../midlleware/role.js";
 import userModel from "../../database/model/user.model.js";
 import { upload, uploadToCloudinary } from "../../utilts/multer.js";
+import { AppError } from "../../errorHandling/AppError.js";
 
 const router = Router();
 
