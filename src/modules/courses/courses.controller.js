@@ -240,7 +240,7 @@ router.patch('/update-sessions/:id', auth, checkRole("Admin", "SAdmin", "Branch"
  * Search for courses by user information
  * Required role: Admin, SAdmin, Branch
  */
-router.get('/search-user-for-courses', auth, checkRole("Admin", "SAdmin", "Branch"), async (req, res) => {
+router.get('/search-user-for-courses', auth, checkRole("Admin", "SAdmin", "Branch", "Accountant"), async (req, res) => {
     try {
         const { userName, email, phone } = req.query;
 
@@ -282,7 +282,7 @@ router.get('/search-user-for-courses', auth, checkRole("Admin", "SAdmin", "Branc
  * Delete a course by ID
  * Required role: Admin, SAdmin
  */
-router.delete('/delete-course/:id', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
+router.delete('/delete-course/:id', auth, checkRole("Admin", "SAdmin" ,"Accountant"), async (req, res) => {
     try {
         const { id } = req.params;
 

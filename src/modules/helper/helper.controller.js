@@ -6,7 +6,7 @@ import Branch from "../../database/model/branch.model.js";
 const router = express.Router();
 
 
-router.post('/add-helper/:branchId', auth, checkRole("Admin", "User", "Branch", "reception"), async (req, res) => {
+router.post('/add-helper/:branchId', auth, checkRole("Admin", "User", "Branch", "reception" ,"Accountant"), async (req, res) => {
     try {
         let { branchId } = req.params;
         let { userId } = req.body;

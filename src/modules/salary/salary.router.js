@@ -5,7 +5,7 @@ import salaryModel from "../../database/model/salary.model.js";
 import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
 const router = express.Router();
 
-router.post('/create-salary', auth, checkRole("Admin", "SAdmin", "Operation"), handleAsyncError(async (req, res) => {
+router.post('/create-salary', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), handleAsyncError(async (req, res) => {
     let { branchId, userId, salary, staffId } = req.body
     let createSalary = await salaryModel.create({ userId, salary, branchId, staffId, date: new Date() }
     )
@@ -16,7 +16,7 @@ router.post('/create-salary', auth, checkRole("Admin", "SAdmin", "Operation"), h
     }
 }))
 
-router.get('/get-all-salary', auth, checkRole("Admin", "SAdmin", "Operation"), handleAsyncError(async (req, res) => {
+router.get('/get-all-salary', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), handleAsyncError(async (req, res) => {
     let allSalary = await salaryModel.find()
     if (allSalary.length > 0) {
         res.status(200).json({ message: "all salary", allSalary })
@@ -25,7 +25,7 @@ router.get('/get-all-salary', auth, checkRole("Admin", "SAdmin", "Operation"), h
     }
 }))
 
-router.get('/get-salary-by-id/:id', auth, checkRole("Admin", "SAdmin", "Operation"), handleAsyncError(async (req, res) => {
+router.get('/get-salary-by-id/:id', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), handleAsyncError(async (req, res) => {
     let { id } = req.params
     let salary = await salaryModel.findById(id)
     if (salary) {
@@ -35,9 +35,9 @@ router.get('/get-salary-by-id/:id', auth, checkRole("Admin", "SAdmin", "Operatio
     }
 }))
 
-router.patch("/add-deduction/:id" , auth, checkRole("Admin", "SAdmin", "Operation"), handleAsyncError(async (req, res) => {
+router.patch("/add-deduction/:id", auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), handleAsyncError(async (req, res) => {
     let { id } = req.params
-    let { deduction  } = req.body
+    let { deduction } = req.body
     let updateSalary = await salaryModel.findByIdAndUpdate(id, { $push: { deduction } }, { new: true })
     if (updateSalary) {
         res.status(200).json({ message: "deduction added successfully", updateSalary })
