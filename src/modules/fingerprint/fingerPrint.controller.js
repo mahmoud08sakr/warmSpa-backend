@@ -17,6 +17,10 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
     console.log(req.file);
 
     const user = await userModel.findById(userId)
+    let exsistFingerPrintToday = await fingerPrintModel.findOne({ userId, loginTime: { $gte: new Date().setHours(0, 0, 0, 0) } })
+    if (exsistFingerPrintToday) {
+        return next(new AppError("انت سجلت النهاردة بالفعل سجل خروج من الفرع الاول", 400));
+    }
     if (!user) {
         return next(new AppError("User not found", 404));
     }
@@ -39,8 +43,6 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
     if (!user) {
         return next(new AppError("User not found", 404));
     }
-    console.log(req.file);
-
     const fingerPrint = await fingerPrintModel.findByIdAndUpdate(fingerPrintId, {
         logoutTime: Date.now(),
         logoutImage: req.file.cloudinaryResult.secure_url,
@@ -59,6 +61,7 @@ router.get('/get-user-checkIn', auth, async (req, res) => {
         data: userCheckIn
     })
 })
+
 router.get('/get-checkId-by-id/:fingerPrintId', auth, async (req, res) => {
     const fingerPrintId = req.params.fingerPrintId;
     let id = req.user.id;
