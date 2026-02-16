@@ -6,7 +6,7 @@ import Room from '../../database/model/room.model.js';
 import Branch from '../../database/model/branch.model.js';
 
 
-export const getUserDetails = async (req, res, next) => {
+export const getUserDetails = handleAsyncError( async (req, res, next) => {
     let { id } = req.user
     console.log(id, 'from iddddddddddddddd');
 
@@ -16,13 +16,13 @@ export const getUserDetails = async (req, res, next) => {
         select: 'name price duration description'
     })
     if (!branchData) {
-        return next(new AppError(`No branch found with ID: ${userAccountId[i]}`, 404));
+        return next(new AppError(`No branch found with`, 404));
     }
     res.json({
         message: "branchData",
         branchData
     })
-}
+})
 
 export const createBranchHandler = handleAsyncError(async (req, res, next) => {
     let { services, roomNumber, branchAdminAccountId  } = req.body
