@@ -32,7 +32,7 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
     });
 }));
 
-router.post('/logout', auth, upload.single('image'), uploadToCloudinary(true, "single"), handleAsyncError(async (req, res, next) => {
+router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(true, "single"), handleAsyncError(async (req, res, next) => {
     const { fingerPrintId } = req.body;
     const userId = req.user.id;
     const user = await userModel.findById(userId);
