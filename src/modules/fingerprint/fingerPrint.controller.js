@@ -42,7 +42,16 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
     const userId = req.user.id;
     const user = await userModel.findById(userId);
     if (!user) {
-        return next(new AppError("User not found", 404));
+        return res.status(400).json({
+            success: false,
+            message: "User not found"
+        })
+    }
+    if (!req.file) {
+        return res.status(400).json({
+            success: false,
+            message: "Image not found"
+        })
     }
     const fingerPrint = await fingerPrintModel.findByIdAndUpdate(fingerPrintId, {
         logoutTime: Date.now(),
