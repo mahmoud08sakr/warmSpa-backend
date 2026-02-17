@@ -56,22 +56,24 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
     const fingerPrint = await fingerPrintModel.findByIdAndUpdate(fingerPrintId, {
         logoutTime: Date.now(),
         logoutImage: req.file.cloudinaryResult.secure_url,
-    });
+    }, { new: true });
 
-    let duration = (fingerPrint.logoutTime - fingerPrint.loginTime) / 1000;
-    // let hours = Math.floor(duration / 3600);
-    // console.log(hours, minutes);
+    let durationInSeconds = (fingerPrint.logoutTime - fingerPrint.loginTime) / 1000;
+    let durationInHours = durationInSeconds / 3600;
 
-    let sallaryDay = user.hourPrice * duration
-    let month = new Date().getMonth();
+    let sallaryDay = user.hourPrice * durationInHours;
+
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    let month = months[new Date().getMonth()];
+
     user.mounthlyPrice.push({
         month,
         salary: sallaryDay
     })
-    user.save()
-    console.log("sallary", sallaryDay, month, duration);
+    await user.save()
+    console.log("sallary", sallaryDay, month, durationInHours);
 
-    res.status(201).json({
+    res.status(200).json({
         success: true,
         data: fingerPrint
     });
