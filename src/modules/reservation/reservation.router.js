@@ -28,15 +28,10 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
     roomData.startTime = new Date();
     let updateOrderData = await Order.findByIdAndUpdate(orderId, { isReserverInBranch: true }, { new: true });
     console.log(updateOrderData, "from updated order");
-    let priceOfMarketingCompany = 0;
-    if (marketingCompany) {
-        let serviceData = await Product.findById(serviceId);
-        priceOfMarketingCompany = serviceData.price * 25 / 100;
-    }
     const addreservaion = await ReservationModel.create({
         orderId: orderId,
         userName: customerName,
-        marketingCompanyPercentage: priceOfMarketingCompany,
+        marketingCompanyPercentage,
         userEmail: customerPhone,
         RoomId: roomId,
         branchId: branchId,
