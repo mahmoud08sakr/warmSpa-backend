@@ -314,7 +314,7 @@ router.delete('/delete-course/:id', auth, checkRole("Admin", "SAdmin", "Operatio
 router.post('/payment/initiate', auth, initiatePaymobCoursePayment);
 
 /**
- * Handle Paymob webhook for course payments
+ * Handle Paymob webhook for course payments 
  */
 router.post('/payment/webhook', handlePaymobCourseWebhook);
 

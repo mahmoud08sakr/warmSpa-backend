@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["Admin", "User", "Branch", "Operation", "Accountant", "Maneger", "Moderator" , "Staff"],
+        enum: ["Admin", "User", "Branch", "Operation", "Accountant", "Maneger", "Moderator", "Staff"],
         default: "User"
     },
     OTP: {
@@ -60,7 +60,21 @@ const userSchema = new mongoose.Schema({
     totalPoints: {
         type: Number,
         default: 0
-    }
+    },
+    hourPrice: {
+        type: Number,
+        default: 0
+    },
+    mounthlyPrice: [{
+        month: {
+            type: String,
+            enum: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        },
+        salary: {
+            type: Number,
+            default: 0
+        }
+    }]
 }, {
     timestamps: true
 });

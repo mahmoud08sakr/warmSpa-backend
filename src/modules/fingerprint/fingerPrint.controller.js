@@ -57,6 +57,20 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
         logoutTime: Date.now(),
         logoutImage: req.file.cloudinaryResult.secure_url,
     });
+
+    let duration = (fingerPrint.logoutTime - fingerPrint.loginTime) / 1000;
+    // let hours = Math.floor(duration / 3600);
+    // console.log(hours, minutes);
+
+    let sallaryDay = user.hourPrice * duration
+    let month = new Date().getMonth();
+    user.mounthlyPrice.push({
+        month,
+        salary: sallaryDay
+    })
+    user.save()
+    console.log("sallary", sallaryDay, month, duration);
+
     res.status(201).json({
         success: true,
         data: fingerPrint
