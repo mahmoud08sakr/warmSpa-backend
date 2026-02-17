@@ -103,7 +103,7 @@ router.get('/get-staff-by-id/:staffId', async (req, res) => {
 })
 
 
-router.put('/update-staff/:staffId', auth, checkRole('Admin', 'SAdmin', 'Branch'), upload.fields([{ name: 'attachments', maxCount: 10 }]), uploadToCloudinary(false, "array"), async (req, res) => {
+router.put('/update-staff/:staffId', auth, checkRole('Admin', 'SAdmin', 'Branch', "Operation", "Maneger", "Accountant"), upload.fields([{ name: 'attachments', maxCount: 10 }]), uploadToCloudinary(false, "array"), async (req, res) => {
     let { staffId } = req.params;
     let { name, branchId, role, phone, nationalId } = req.body
     let staff = await StaffModel.findById(staffId);

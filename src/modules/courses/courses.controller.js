@@ -44,7 +44,7 @@ const calculateTotalPrice = (services) => {
     };
 };
 
-router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branch"), async (req, res) => {
+router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branch", "Operation", "Maneger", "Accountant"), async (req, res) => {
     try {
         const { service, branchId, userName, phone, email, paymentMethod } = req.body;
         console.log({ service, branchId, userName, phone, email, paymentMethod });
@@ -122,7 +122,7 @@ router.post('/create-course-for-user', auth, checkRole("Admin", "SAdmin", "Branc
  * Get all courses
  * Required role: Admin, SAdmin
  */
-router.get('/get-all-courses', auth, checkRole("Admin", "SAdmin"), async (req, res) => {
+router.get('/get-all-courses', auth, checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), async (req, res) => {
     try {
         const allCourses = await courseModel.find({}).populate('branchId', 'name');
 
@@ -167,7 +167,7 @@ router.get('/get-user-course-by-id/:id', auth, async (req, res) => {
  * Update remaining sessions for a specific service in a course
  * Required role: Admin, SAdmin, Branch
  */
-router.patch('/update-sessions/:id', auth, checkRole("Admin", "SAdmin", "Branch"), async (req, res) => {
+router.patch('/update-sessions/:id', auth, checkRole("Admin", "SAdmin", "Branch", "Operation", "Maneger", "Accountant"), async (req, res) => {
     try {
         const { id } = req.params;
         const { serviceId, sessionsUsed } = req.body;
@@ -240,7 +240,7 @@ router.patch('/update-sessions/:id', auth, checkRole("Admin", "SAdmin", "Branch"
  * Search for courses by user information
  * Required role: Admin, SAdmin, Branch
  */
-router.get('/search-user-for-courses', auth, checkRole("Admin", "SAdmin", "Branch", "Accountant"), async (req, res) => {
+router.get('/search-user-for-courses', auth, checkRole("Admin", "SAdmin", "Branch", "Operation", "Maneger", "Accountant"), async (req, res) => {
     try {
         const { userName, email, phone } = req.query;
 
@@ -282,7 +282,7 @@ router.get('/search-user-for-courses', auth, checkRole("Admin", "SAdmin", "Branc
  * Delete a course by ID
  * Required role: Admin, SAdmin
  */
-router.delete('/delete-course/:id', auth, checkRole("Admin", "SAdmin" ,"Accountant"), async (req, res) => {
+router.delete('/delete-course/:id', auth, checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), async (req, res) => {
     try {
         const { id } = req.params;
 

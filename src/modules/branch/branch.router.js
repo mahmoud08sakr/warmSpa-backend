@@ -28,6 +28,6 @@ router.get('/get-branches-by-Admin', checkRole("Admin", "SAdmin", "Maneger", "Ac
 router.post('/', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), createBranchHandler);
 router.patch('/add-service/:branchId', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), addService)
 router.patch('/:id', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), updateBranchHandler);
-router.delete('/:id', checkRole("Admin", "SAdmin"), deleteBranchHandler);
+router.delete('/:id', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), deleteBranchHandler);
 
 export default router;

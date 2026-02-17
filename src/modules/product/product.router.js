@@ -27,7 +27,7 @@ router.use(auth);
 router.post('/requestDiscount', requestDiscout);
 router.post('/make-order-after-approve/:id', makeTheOrderAfterApproveDiscountHandler);
 
-router.use(checkRole('Admin', 'SAdmin', "Operation"));
+router.use(checkRole('Admin', 'SAdmin',  "Operation", "Maneger", "Accountant"));
 router.post('/create-product', createProductHandler);
 router.get('/get-discount-requests', getDiscountRequestHandler);
 router.patch('/update-product/:id', updateProductHandler);
