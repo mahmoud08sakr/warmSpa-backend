@@ -132,7 +132,7 @@ export const login = handleAsyncError(async (req, res, next) => {
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            res.status(401).json({
+            return res.status(401).json({
                 status: 'error',
                 message: translations.login.invalidCredentials.en,
             })
