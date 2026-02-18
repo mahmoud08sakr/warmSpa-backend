@@ -18,9 +18,12 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
     console.log(req.file);
 
     const user = await userModel.findById(userId)
-    let exsistFingerPrintToday = await fingerPrintModel.findOne({ userId, loginTime: { $gte: new Date().setHours(0, 0, 0, 0) } })
-    if (!exsistFingerPrintToday.logoutImage) {
-        return next(new AppError("انت سجلت النهاردة بالفعل سجل خروج من الفرع الاول", 400));
+    let exsistFingerPrintToday = await fingerPrintModel.find({ userId, loginTime: { $gte: new Date().setHours(0, 0, 0, 0) } })
+    for (let i = 0; i < exsistFingerPrintToday.length; i++) {
+
+        if (!exsistFingerPrintToday[i].logoutImage) {
+            return next(new AppError("انت سجلت النهاردة بالفعل سجل خروج من الفرع الاول", 400));
+        }
     }
     if (!user) {
         return next(new AppError("User not found", 404));
