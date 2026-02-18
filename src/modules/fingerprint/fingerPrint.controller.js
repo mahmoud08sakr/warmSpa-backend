@@ -19,7 +19,7 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
 
     const user = await userModel.findById(userId)
     let exsistFingerPrintToday = await fingerPrintModel.findOne({ userId, loginTime: { $gte: new Date().setHours(0, 0, 0, 0) } })
-    if (exsistFingerPrintToday) {
+    if (!exsistFingerPrintToday.logoutImage) {
         return next(new AppError("انت سجلت النهاردة بالفعل سجل خروج من الفرع الاول", 400));
     }
     if (!user) {
