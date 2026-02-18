@@ -68,14 +68,14 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
 
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     let month = months[new Date().getMonth()];
+    let day = new Date().getDate();
 
     user.mounthlyPrice.push({
         month,
-        salary: sallaryDay
+        salary: sallaryDay,
+        day
     })
     await user.save()
-    console.log("sallary", sallaryDay, month, durationInHours);
-
     res.status(200).json({
         success: true,
         data: fingerPrint

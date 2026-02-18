@@ -3,11 +3,23 @@ import { auth } from "../../midlleware/auth.js";
 import { checkRole } from "../../midlleware/role.js";
 import salaryModel from "../../database/model/salary.model.js";
 import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
+import userModel from "../../database/model/user.model.js";
 const router = express.Router();
 
 router.post('/create-salary', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), handleAsyncError(async (req, res) => {
-    let { branchId, userId, salary, staffId } = req.body
-    let createSalary = await salaryModel.create({ userId, salary, branchId, staffId, date: new Date() }
+    let { branchId, userId, salary, staffId, month } = req.body
+    let userData = await userModel.findById(userId)
+    if (!userData) {
+        return res.status(400).json({ message: "user not found" });
+    }
+    letfilteredMounthlyPrice = userData.mounthlyPrice.filter((item) => item.month === month)
+    if (filteredMounthlyPrice.length > 0) {
+        let totalSallary = 0
+        for (let i = 0; i < filteredMounthlyPrice.length; i++) {
+            totalSallary += filteredMounthlyPrice[i].price
+        }
+    }
+    let createSalary = await salaryModel.create({ userId, salary: totalSallary, branchId, date: new Date() }
     )
     if (createSalary) {
         res.status(200).json({ message: "salary created successfully", createSalary })

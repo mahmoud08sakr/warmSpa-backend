@@ -66,11 +66,15 @@ const userSchema = new mongoose.Schema({
         default: 0
     },
     mounthlyPrice: [{
-        month: {
-            type: String,
-            enum: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        date: {
+            type: Date,
+            default: Date.now
         },
         salary: {
+            type: Number,
+            default: 0
+        },
+        day: {
             type: Number,
             default: 0
         }
