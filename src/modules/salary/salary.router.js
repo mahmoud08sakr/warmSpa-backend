@@ -29,7 +29,7 @@ router.post('/create-salary', auth, checkRole("Admin", "SAdmin", "Operation", "A
 }))
 
 router.get('/get-all-salary', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), handleAsyncError(async (req, res) => {
-    let allSalary = await salaryModel.find()
+    let allSalary = await salaryModel.find().populate("userId").populate("branchId")
     if (allSalary.length > 0) {
         res.status(200).json({ message: "all salary", allSalary })
     } else {
