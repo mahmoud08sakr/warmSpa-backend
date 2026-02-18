@@ -14,10 +14,10 @@ router.post('/add-tip', auth, handleAsyncError(async (req, res) => {
     res.json({ message: "error" })
 }))
 
-router.get('/get-all-tips', auth, checkRole("Admin"), handleAsyncError(async (req, res) => {
+router.get('/get-all-tips', auth, checkRole("Admin", "Operation", "Accountant"), handleAsyncError(async (req, res) => {
     let allTips = await tipModel.find()
     res.json({ message: "done", allTips })
-})) 
+}))
 
 router.get('/get-tip-by-id/:branchId', auth, handleAsyncError(async (req, res) => {
     let { branchId } = req.params

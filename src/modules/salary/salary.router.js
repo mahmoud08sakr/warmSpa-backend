@@ -7,7 +7,7 @@ import userModel from "../../database/model/user.model.js";
 const router = express.Router();
 
 router.post('/create-salary', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), handleAsyncError(async (req, res) => {
-    let { branchId, userId, salary, staffId, month } = req.body
+    let { branchId, userId, month } = req.body
     let userData = await userModel.findById(userId)
     if (!userData) {
         return res.status(400).json({ message: "user not found" });

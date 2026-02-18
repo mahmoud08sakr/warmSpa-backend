@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-
-
 const fingerPrintSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -24,8 +22,6 @@ const fingerPrintSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Branch'
     }
-
 })
-
 
 export default mongoose.model('FingerPrint', fingerPrintSchema);
