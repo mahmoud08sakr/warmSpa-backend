@@ -75,6 +75,7 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
         salary: sallaryDay,
         day
     })
+    
     await user.save()
     res.status(200).json({
         success: true,
