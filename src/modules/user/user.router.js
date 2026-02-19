@@ -16,13 +16,13 @@ router.post('/send-otp', validation({ body: sendOTPSchema }), sendOTP);
 router.post('/verify-otp', validation({ body: verifyOTPSchema }), verifyOTP);
 router.get('/get-all-users', auth, checkRole("Admin", "SAdmin", "Accountant", "Operation"), getAllUsers)
 router.get('/get-all-users-markting', auth, checkRole("Admin", "SAdmin", "Accountant", "Operation"), getUsersForAdmin)
-
-router.get('/get-user-data', auth, getUserById)
-
 router.post("/upgrade-user-role", async (req, res) => {
     const { userId, role } = req.body;
     const updatedUser = await userModel.findByIdAndUpdate(userId, { role }, { new: true });
     res.json(updatedUser);
 })
+
+router.get('/get-user-data', auth, getUserById)
+
 
 export default router;
