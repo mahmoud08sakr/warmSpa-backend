@@ -10,10 +10,20 @@ const reservationSchema = new mongoose.Schema({
     captain: { type: String },
     responsiblePerson: { type: String },
     price: {
+        type: Number,
+        required: true
+    },
+    payiedWith: {
         cash: {
             type: Number,
         },
         credit: {
+            type: Number,
+        },
+        instapay: {
+            type: Number,
+        },
+        wallet: {
             type: Number,
         }
     },
