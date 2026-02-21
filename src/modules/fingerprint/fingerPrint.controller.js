@@ -20,7 +20,6 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
     const user = await userModel.findById(userId)
     let exsistFingerPrintToday = await fingerPrintModel.find({ userId, loginTime: { $gte: new Date().setHours(0, 0, 0, 0) } })
     for (let i = 0; i < exsistFingerPrintToday.length; i++) {
-
         if (!exsistFingerPrintToday[i].logoutImage) {
             return next(new AppError("انت سجلت النهاردة بالفعل سجل خروج من الفرع الاول", 400));
         }
@@ -34,10 +33,14 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
         image: req.file.cloudinaryResult.secure_url,
         loginTime: Date.now()
     });
-    res.status(201).json({
-        success: true,
-        data: fingerPrint
-    });
+    if (fingerPrint) {
+        res.status(201).json({
+            success: true,
+            data: fingerPrint
+        });
+    }else {
+        return next(new AppError("حاول مرة اخرى", 404));
+    }
 }));
 
 router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(true, "single"), handleAsyncError(async (req, res, next) => {
@@ -75,7 +78,7 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
         salary: sallaryDay,
         day
     })
-    
+
     await user.save()
     res.status(200).json({
         success: true,
