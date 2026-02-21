@@ -106,7 +106,7 @@ router.get('/active/:branchId', auth, async (req, res) => {
 
 router.get('/reports-for-branch/:branchId', auth, async (req, res) => {
     let { branchId } = req.params;
-    let reservations = await ReservationModel.find({ branchId: branchId }).populate('RoomId').populate("serviceId").populate("branchId")
+    let reservations = await ReservationModel.find({ branchId: branchId }).populate('RoomId', "roomNumber").populate("serviceId", "name").populate("branchId", "name")
     res.status(200).json({ reservations });
 });
 
