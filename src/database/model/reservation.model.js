@@ -9,7 +9,14 @@ const reservationSchema = new mongoose.Schema({
     serviceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
     captain: { type: String },
     responsiblePerson: { type: String },
-    price: { type: Number },
+    price: {
+        cash: {
+            type: Number,
+        },
+        credit: {
+            type: Number,
+        }
+    },
     currency: { type: String, default: 'EGP' },
     paymentMethod: { type: String, enum: ['cash', 'credit', 'instapay', "wallet"], default: 'cash' },
     gender: { type: String, enum: ['Male', 'Female', 'Other'], default: 'Other' },
