@@ -10,7 +10,7 @@ const router = Router();
 
 router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res) => {
     let { branchId, roomId } = req.params;
-    let { customerName, customerPhone, gender, payiedWith, paymentMethod, marketingCompanyPercentage, currency, price, responsiblePerson, remainingPayments, orderId, captain, serviceId, priceAfterDiscount, marketingCompany } = req.body
+    let { customerName, customerPhone, gender, payedWith, paymentMethod, marketingCompanyPercentage, currency, price, responsiblePerson, remainingPayments, orderId, captain, serviceId, priceAfterDiscount, marketingCompany } = req.body
     let roomData = await Room.findOne({ _id: roomId, branchId: branchId });
     if (!roomData) {
         return res.status(404).json({ message: "Room not found in the specified branch" });
@@ -46,7 +46,7 @@ router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res
         serviceId,
         priceAfterDiscount,
         remainingPayments,
-        payiedWith
+        payedWith
     });
     let addReservartioOrder = await reservationOrderModel.create({ reservationId: addreservaion._id, date: new Date() });
     if (addReservartioOrder && addreservaion) {
@@ -107,7 +107,7 @@ router.get('/active/:branchId', auth, async (req, res) => {
 
 router.get('/reports-for-branch/:branchId', auth, async (req, res) => {
     let { branchId } = req.params;
-    let reservations = await ReservationModel.find({ branchId: branchId }).populate('RoomId', "roomNumber").populate("serviceId", "name").populate("branchId", "name")
+    let reservations = await ReservationModel.find({ branchId: branchId }).populate('RoomId', " _id roomNumber").populate("serviceId", "name").populate("branchId", "name")
     res.status(200).json({ reservations });
 });
 

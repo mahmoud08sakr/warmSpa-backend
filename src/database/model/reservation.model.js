@@ -13,7 +13,7 @@ const reservationSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    payiedWith: {
+    payedWith: {
         cash: {
             type: Number,
         },
