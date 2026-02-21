@@ -100,9 +100,9 @@ productSchema.index({ price: 1 });
 productSchema.index({ duration: 1 });
 
 // Virtual for formatted price
-productSchema.virtual('formattedPrice').get(function () {
-    return `$${this.price.toFixed(2)}`;
-});
+// productSchema.virtual('formattedPrice').get(function () {
+//     return `$${this.price.toFixed(2)}`;
+// });
 
 // Virtual for formatted duration
 productSchema.virtual('formattedDuration').get(function () {
