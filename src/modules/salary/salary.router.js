@@ -13,8 +13,8 @@ router.post('/create-salary', auth, checkRole("Admin", "SAdmin", "Operation", "A
         return res.status(400).json({ message: "user not found" });
     }
     let filteredMounthlyPrice = userData.mounthlyPrice.filter((item) => item.month === month)
+    let totalSallary = 0
     if (filteredMounthlyPrice.length > 0) {
-        let totalSallary = 0
         for (let i = 0; i < filteredMounthlyPrice.length; i++) {
             totalSallary += filteredMounthlyPrice[i].price
         }
