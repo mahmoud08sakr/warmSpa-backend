@@ -6,6 +6,7 @@ import { checkRole } from "../../midlleware/role.js";
 import userModel from "../../database/model/user.model.js";
 import { upload, uploadToCloudinary } from "../../utilts/multer.js";
 import { AppError } from "../../errorHandling/AppError.js";
+import salaryModel from "../../database/model/salary.model.js";
 
 const router = Router();
 
@@ -38,7 +39,7 @@ router.post('/login', auth, upload.single('image'), uploadToCloudinary(true, "si
             success: true,
             data: fingerPrint
         });
-    }else {
+    } else {
         return next(new AppError("حاول مرة اخرى", 404));
     }
 }));
@@ -67,18 +68,46 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
     let durationInSeconds = (fingerPrint.logoutTime - fingerPrint.loginTime) / 1000;
     let durationInHours = durationInSeconds / 3600;
 
-    let sallaryDay = user.hourPrice * durationInHours;
+    // Calculate regular hours (max 8 hours) and overtime
+    let regularHours = Math.min(durationInHours, 8);
+    let overtimeHours = Math.max(durationInHours - 8, 0);
+    
+    // Calculate salary with overtime (1.5x for overtime)
+    let regularSalary = user.hourPrice * regularHours;
+    let overtimeSalary = user.hourPrice * overtimeHours * 1.5;
+    let totalDailySalary = regularSalary + overtimeSalary;
 
-    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    let month = months[new Date().getMonth()];
-    let day = new Date().getDate();
+    // Check if salary already exists for this user today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const existingSalary = await salaryModel.findOne({
+        userId,
+        date: {
+            $gte: today,
+            $lt: tomorrow
+        }
+    });
 
-    user.mounthlyPrice.push({
-        month,
-        salary: sallaryDay,
-        day
-    })
-
+    if (existingSalary) {
+        // Update existing salary record
+        existingSalary.DailySalary = totalDailySalary;
+        existingSalary.workHours = durationInHours;
+        existingSalary.overtimeHours = overtimeHours;
+        await existingSalary.save();
+    } else {
+        // Create new salary record
+        await salaryModel.create({
+            userId,
+            DailySalary: totalDailySalary,
+            branchId: fingerPrint.branchId,
+            date: new Date(),
+            workHours: durationInHours,
+            overtimeHours: overtimeHours
+        });
+    }
     await user.save()
     res.status(200).json({
         success: true,
