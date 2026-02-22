@@ -44,7 +44,7 @@ expenseSchema.index({ status: 1, date: -1 }); // Find pending/approved expenses 
 expenseSchema.index({ date: -1 }); // Sort by date (newest first)
 expenseSchema.index({ createdAt: -1 }); // Track when expenses were created
 
-export const expenseAdminModel = mongoose.model('Expense', expenseSchema);
+export const expenseAdminModel = mongoose.model('ExpenseAdmin', expenseSchema);
 export default expenseAdminModel;
 
 
