@@ -5,7 +5,6 @@ import ReservationModel from "../../database/model/reservation.model.js";
 import { reservationOrderModel } from "../../database/model/reservationOrder.model.js";
 import { handleAsyncError } from "../../errorHandling/handelAsyncError.js";
 import Order from "../../database/model/order.model.js";
-import Product from "../../database/model/product.model.js";
 const router = Router();
 
 router.post('/reserve/:branchId/:roomId', auth, handleAsyncError(async (req, res) => {

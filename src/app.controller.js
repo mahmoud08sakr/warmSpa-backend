@@ -32,6 +32,7 @@ import Product from "./database/model/product.model.js";
 import gymReservationRouter from "./modules/gym/gym.controller.js";
 import fingerPrintRouter from "./modules/fingerprint/fingerPrint.controller.js";
 import tipRouter from "./modules/tip/tip.controller.js";
+import expenceAccountantRouter from "./modules/expenseAdmin/expense.controller.js";
 
 dotenv.config();
 
@@ -73,7 +74,7 @@ export const bootstrap = async (app, express) => {
             res.json('success ya rgola');
         });
 
-        app.get('/filter-data', auth, checkRole("Admin", "SAdmin", "Accountant" , "Operation"), async (req, res) => {
+        app.get('/filter-data', auth, checkRole("Admin", "SAdmin", "Accountant", "Operation"), async (req, res) => {
             try {
                 const { serviceId, branchId } = req.query;
                 const isAll = (v) => !v || v === 'all' || v === 'undefined' || v === 'null';
@@ -328,6 +329,7 @@ export const bootstrap = async (app, express) => {
         app.use('/api/v1/fingerprint', fingerPrintRouter);
         app.use('/api/v1/gym-reservation', gymReservationRouter);
         app.use('/api/v1/tips', tipRouter);
+        app.use('/api/v1/expense-admin', expenceAccountantRouter);
         app.use(globalErrorHandling);
 
         console.log("✅ API routes configured successfully");
