@@ -78,9 +78,6 @@ router.post('/add-deduction/:userId', auth, checkRole("Admin"), handleAsyncError
     if (salary) {
         // Check if deduction exceeds daily salary
         let totalDeductions = salary.deduction.reduce((sum, d) => sum + d.quantity, 0) + deduction.quantity
-        if (totalDeductions > salary.DailySalary) {
-            return res.status(400).json({ message: "Total deductions cannot exceed daily salary" })
-        }
 
         let addedDeduction = await salaryModel.updateOne({ userId }, {
             $push: {
