@@ -33,6 +33,7 @@ import gymReservationRouter from "./modules/gym/gym.controller.js";
 import fingerPrintRouter from "./modules/fingerprint/fingerPrint.controller.js";
 import tipRouter from "./modules/tip/tip.controller.js";
 import expenceAccountantRouter from "./modules/expenseAdmin/expense.controller.js";
+import morgan from "morgan";
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ export const bootstrap = async (app, express) => {
             handleStripeWebhook
         );
         app.use(express.json());
+        app.use(morgan('dev'));
         app.post("/paymob-webhook", handlePaymobWebhook);
         app.get("/health", (req, res) => {
             const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
