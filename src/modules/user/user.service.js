@@ -6,6 +6,8 @@ import { sendEmail } from '../../utilts/sendEmail.js';
 import { resetpasswordTemplate } from '../../template/template.js';
 import translations from '../../utilts/translations.js';
 import { handleAsyncError } from '../../errorHandling/handelAsyncError.js';
+import { StaffModel } from '../../database/model/staff.model.js';
+import Branch from '../../database/model/branch.model.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret';
 
@@ -296,6 +298,18 @@ export const getUserById = handleAsyncError(async (req, res) => {
 
 export const getAllStaff = handleAsyncError(async (req, res) => {
     try {
+        let userData = await userModel.findById(req.user.id)
+        if (userData.role == "Maneger") {
+            let branchId = await Branch.findOne({ manegedBy: req.user.id })
+            const users = await StaffModel.find({ role: "Staff", branchId: branchId._id }).select('-password -OTP -__v');
+            res.status(200).json({
+                status: 'success',
+                results: users.length,
+                data: {
+                    users: users || []
+                }
+            });
+        }
         const users = await userModel.find({ role: "Staff" }).select('-password -OTP -__v');
         res.status(200).json({
             status: 'success',
