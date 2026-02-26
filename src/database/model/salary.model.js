@@ -37,6 +37,13 @@ const salarySchema = new mongoose.Schema({
         default: 0,
         min: 0
     },
+    isPaid: {
+        type: Boolean,
+        default: false
+    },
+    paidDate: {
+        type: Date
+    },
     deduction: [
         {
             quantity: {
@@ -60,20 +67,20 @@ const salarySchema = new mongoose.Schema({
             }
         }
     ]
-}, { 
+}, {
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
 
 // Virtual for net salary
-salarySchema.virtual('netSalary').get(function() {
+salarySchema.virtual('netSalary').get(function () {
     const totalDeduction = this.deduction.reduce((sum, d) => sum + d.quantity, 0);
     return this.DailySalary - totalDeduction;
 });
 
 // Virtual for total deductions
-salarySchema.virtual('totalDeductions').get(function() {
+salarySchema.virtual('totalDeductions').get(function () {
     return this.deduction.reduce((sum, d) => sum + d.quantity, 0);
 });
 
