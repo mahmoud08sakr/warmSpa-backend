@@ -28,7 +28,7 @@ router.get('/get-branch-details-by-userId', checkRole("Admin", "Branch"), getUse
 router.get('/get-branches-by-Admin', checkRole("Admin", "SAdmin", "Maneger", "Accountant", "Operation"), getAllBranchesByAdminHandler)
 router.post('/', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), createBranchHandler);
 router.patch('/add-service/:branchId', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), addService)
-router.patch('/:id', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), updateBranchHandler);
-router.delete('/:id', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), deleteBranchHandler);
+router.patch('/:id', checkRole("Admin", "SAdmin", "Operation", "Accountant"), updateBranchHandler);
+router.delete('/:id', checkRole("Admin", "SAdmin", "Operation", "Accountant"), deleteBranchHandler);
 router.get("/get-branches-by-mangerId/:id", checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), getAllBranchesByManagerHandler)
 export default router;
