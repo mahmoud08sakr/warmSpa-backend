@@ -303,7 +303,7 @@ export const getAllStaff = handleAsyncError(async (req, res) => {
             let branchId = await Branch.findOne({ manegedBy: req.user.id })
             console.log(branchId);
             
-            const users = await StaffModel.find({ role: "Staff", branchId: branchId._id }).select('-password -OTP -__v');
+            const users = await StaffModel.find({ branchId: branchId._id }).select('-password -OTP -__v');
             return res.status(200).json({
                 status: 'success',
                 results: users.length,
