@@ -175,7 +175,6 @@ router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncErr
         },
         isPaid: false
     }).populate("branchId", "name location");
-
     if (salaries.length === 0) {
         return res.status(404).json({
             success: false,

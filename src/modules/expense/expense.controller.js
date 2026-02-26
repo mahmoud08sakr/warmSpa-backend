@@ -6,8 +6,8 @@ import { approveRequest, cancelRequest, createExpenseHandler, getAllExpenceForBr
 const router = Router()
 
 router.post('/create-expense', auth, checkRole("Admin", "SAdmin", "reception", "Accountant", "Branch", "Operation"), createExpenseHandler)
-router.get('/get-all-expense-for-admin', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), getAllExpenseHandler)
-router.get('/get-all-expense-for-reception/:id', auth, checkRole("reception", "Admin", "Branch", "Operation"), getAllExpenceForBranch)
+router.get('/get-all-expense-for-admin', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant" , "Maneger"), getAllExpenseHandler)
+router.get('/get-all-expense-for-reception/:id', auth, checkRole("reception", "Admin", "Branch", "Operation","Maneger"), getAllExpenceForBranch)
 router.get('/get-all-expense-request-for-admin', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), getExpenceRequist)
 router.get('/get-all-expense-request-for-reception/:id', auth, checkRole("reception", "Admin", "Branch", "Operation"), getExpenceRequistForBranch)
 router.put('/approve-expense-request/:id', auth, checkRole("Admin", "SAdmin", "Operation", "Accountant"), approveRequest)

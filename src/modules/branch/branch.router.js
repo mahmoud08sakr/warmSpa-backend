@@ -11,7 +11,8 @@ import {
     addService,
     getUserDetails,
     getAllBranchesCityHandler,
-    getAllBranchesByAdminHandler
+    getAllBranchesByAdminHandler,
+    getAllBranchesByManagerHandler
 } from './branch.controller.js';
 import { getAllBranchesByCity } from './branch.service.js';
 
@@ -29,5 +30,5 @@ router.post('/', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountan
 router.patch('/add-service/:branchId', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), addService)
 router.patch('/:id', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), updateBranchHandler);
 router.delete('/:id', checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), deleteBranchHandler);
-
+router.get("/get-branches-by-mangerId/:id", checkRole("Admin", "SAdmin", "Operation", "Maneger", "Accountant"), getAllBranchesByManagerHandler)
 export default router;

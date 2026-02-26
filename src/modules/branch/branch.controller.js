@@ -6,7 +6,7 @@ import Room from '../../database/model/room.model.js';
 import Branch from '../../database/model/branch.model.js';
 
 
-export const getUserDetails = handleAsyncError( async (req, res, next) => {
+export const getUserDetails = handleAsyncError(async (req, res, next) => {
     let { id } = req.user
     console.log(id, 'from iddddddddddddddd');
 
@@ -25,7 +25,7 @@ export const getUserDetails = handleAsyncError( async (req, res, next) => {
 })
 
 export const createBranchHandler = handleAsyncError(async (req, res, next) => {
-    let { services, roomNumber, branchAdminAccountId  } = req.body
+    let { services, roomNumber, branchAdminAccountId } = req.body
     req.body.spaRooms = roomNumber
     let productsIds = []
     if (services && services.length > 0) {
@@ -201,7 +201,7 @@ export const updateBranchHandler = handleAsyncError(async (req, res) => {
         }
         req.body.target = t;
     }
-    const branch = await updateBranch(req.params.id, req.body ,req.user);
+    const branch = await updateBranch(req.params.id, req.body, req.user);
     res.status(200).json({
         status: 'success',
         data: {
@@ -220,6 +220,28 @@ export const deleteBranchHandler = handleAsyncError(async (req, res) => {
     });
 });
 
+export const getAllBranchesByManagerHandler = handleAsyncError(async (req, res) => {
+    try {
+        const branches = await Branch.find({ manegedBy: req.params.id })
+        res.status(200).json({
+            status: 'success',
+            results: branches ? branches.length : 0,
+            data: {
+                branches: branches || []
+            }
+        });
+    } catch (error) {
+        console.error('Error in getAllBranchesByManagerHandler:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to fetch branches',
+            error: {
+                en: 'Failed to fetch branches. Please try again later.',
+                ar: 'فشل في جلب الفروع. يرجى المحاولة مرة أخرى لاحقًا.'
+            }
+        });
+    }
+})
 
 export const getBranchesWithinHandler = handleAsyncError(async (req, res) => {
     const { distance, latlng, unit = 'mi' } = req.query;
