@@ -71,7 +71,7 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
     // Calculate regular hours (max 8 hours) and overtime
     let regularHours = Math.min(durationInHours, 8);
     let overtimeHours = Math.max(durationInHours - 8, 0);
-    
+
     // Calculate salary with overtime (1.5x for overtime)
     let regularSalary = user.hourPrice * regularHours;
     let overtimeSalary = user.hourPrice * overtimeHours * 1.5;
@@ -82,7 +82,7 @@ router.post('/logout', auth, upload.single('logoutImage'), uploadToCloudinary(tr
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    
+
     const existingSalary = await salaryModel.findOne({
         userId,
         date: {
@@ -148,7 +148,7 @@ router.get('/get-all-finger-print', auth, checkRole("Admin"), async (req, res) =
 router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncError(async (req, res) => {
     const { userId } = req.params;
     const { month, year } = req.query; // Expect month (1-12) and year from query params
-    
+
     const user = await userModel.findById(userId);
     if (!user) {
         return res.status(400).json({
@@ -161,9 +161,10 @@ router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncErr
     const currentDate = new Date();
     const targetMonth = month ? parseInt(month) - 1 : currentDate.getMonth(); // JS months are 0-based
     const targetYear = year ? parseInt(year) : currentDate.getFullYear();
-    
+
     const startDate = new Date(targetYear, targetMonth, 1);
     const endDate = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59, 999); // Last day of month
+    console.log(startDate, endDate);
 
     // Find all unpaid salaries for the user in the specified month
     const salaries = await salaryModel.find({
@@ -215,8 +216,8 @@ router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncErr
     );
 
     // Update user's monthly price record
-    const existingMonthlyRecord = user.mounthlyPrice.find(record => 
-        record.date.getMonth() === targetMonth && 
+    const existingMonthlyRecord = user.mounthlyPrice.find(record =>
+        record.date.getMonth() === targetMonth &&
         record.date.getFullYear() === targetYear
     );
 
