@@ -1,7 +1,7 @@
 import express from 'express';
 import { validation } from '../../utilts/validation.js';
 import { signupSchema, loginSchema, resetPasswordSchema, sendOTPSchema, verifyOTPSchema } from './user.validation.js';
-import { signup, login, resetpassword, sendOTP, verifyOTP, getAllUsers, getUserById, addStuff, getUsersForAdmin } from './user.service.js';
+import { signup, login, resetpassword, sendOTP, verifyOTP, getAllUsers, getUserById, addStuff, getUsersForAdmin, getAllStaff } from './user.service.js';
 import { auth } from '../../midlleware/auth.js';
 import { checkRole } from '../../midlleware/role.js';
 import userModel from '../../database/model/user.model.js';
@@ -17,6 +17,7 @@ router.post('/verify-otp', validation({ body: verifyOTPSchema }), verifyOTP);
 router.get('/get-all-users', auth, checkRole("Admin", "SAdmin", "Accountant", "Operation"), getAllUsers)
 router.get('/get-all-users', auth, checkRole("Admin", "SAdmin", "Accountant", "Operation"), getAllUsers)
 
+router.get('/get-all-staff-for-admin', auth, checkRole("Admin", "SAdmin", "Accountant", "Operation"), getAllStaff)
 router.get('/get-all-users-markting', auth, checkRole("Admin", "SAdmin", "Accountant", "Operation"), getUsersForAdmin)
 router.post("/upgrade-user-role", async (req, res) => {
     const { userId, role } = req.body;
