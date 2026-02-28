@@ -7,6 +7,8 @@ import userModel from "../../database/model/user.model.js";
 import { upload, uploadToCloudinary } from "../../utilts/multer.js";
 import { AppError } from "../../errorHandling/AppError.js";
 import salaryModel from "../../database/model/salary.model.js";
+import ReservationModel from "../../database/model/reservation.model.js";
+import Branch from "../../database/model/branch.model.js";
 
 const router = Router();
 
@@ -148,6 +150,7 @@ router.get('/get-all-finger-print', auth, checkRole("Admin"), async (req, res) =
 router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncError(async (req, res) => {
     const { userId } = req.params;
     const { month, year } = req.query; // Expect month (1-12) and year from query params
+    const { incentivePercentage, bonus, branchId } = req.body; // Optional incentives and bonuses from request body
 
     const user = await userModel.findById(userId);
     if (!user) {
@@ -164,7 +167,6 @@ router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncErr
 
     const startDate = new Date(targetYear, targetMonth, 1);
     const endDate = new Date(targetYear, targetMonth + 1, 0, 23, 59, 59, 999); // Last day of month
-    console.log(startDate, endDate);
 
     // Find all unpaid salaries for the user in the specified month
     const salaries = await salaryModel.find({
@@ -175,6 +177,7 @@ router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncErr
         },
         isPaid: false
     }).populate("branchId", "name location");
+
     if (salaries.length === 0) {
         return res.status(404).json({
             success: false,
@@ -197,6 +200,69 @@ router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncErr
         totalOvertimeHours += salary.overtimeHours || 0;
     });
 
+    // Calculate branch profit and incentives
+    let totalBranchProfit = 0;
+    let totalIncentiveAmount = 0;
+    let totalBonusAmount = 0;
+    let branchProfitDetails = [];
+
+    // Get unique branch IDs from salaries
+    const uniqueBranchIds = [...new Set(salaries.map(s => s.branchId._id.toString()))];
+
+    for (const branchId of uniqueBranchIds) {
+        // Calculate branch profit for the month
+        const reservations = await ReservationModel.find({
+            branchId,
+            reservationDate: {
+                $gte: startDate,
+                $lte: endDate
+            },
+            status: 'Approved'
+        });
+
+        const branchProfit = reservations.reduce((total, reservation) => {
+            const finalPrice = reservation.priceAfterDiscount || reservation.price;
+            // Subtract marketing company percentage if applicable
+            const marketingDeduction = reservation.marketingCompanyPercentage 
+                ? (finalPrice * reservation.marketingCompanyPercentage) / 100 
+                : 0;
+            return total + (finalPrice - marketingDeduction);
+        }, 0);
+
+        // Use provided incentive percentage or user's default
+        const effectiveIncentivePercentage = incentivePercentage || user.incentivePercentage || 0;
+        const effectiveBonusAmount = bonus || user.bonusAmount || 0;
+
+        // Check if user is eligible for incentive (branch manager or eligible role)
+        const branch = await Branch.findById(branchId);
+        const isEligible = user.isEligibleForIncentive || 
+                          (branch && (branch.manegedBy?.toString() === userId || 
+                                     branch.branchAdminAccountId?.includes(userId)));
+
+        let incentiveAmount = 0;
+        if (isEligible && effectiveIncentivePercentage > 0) {
+            incentiveAmount = (branchProfit * effectiveIncentivePercentage) / 100;
+        }
+
+        totalBranchProfit += branchProfit;
+        totalIncentiveAmount += incentiveAmount;
+        totalBonusAmount += effectiveBonusAmount;
+
+        branchProfitDetails.push({
+            branchId,
+            branchName: branch?.name || 'Unknown',
+            branchProfit: Math.round(branchProfit * 100) / 100,
+            incentivePercentage: effectiveIncentivePercentage,
+            incentiveAmount: Math.round(incentiveAmount * 100) / 100,
+            bonusAmount: effectiveBonusAmount,
+            isEligibleForIncentive: isEligible,
+            reservationCount: reservations.length
+        });
+    }
+
+    // Calculate final total with incentives and bonuses
+    const finalTotalSalary = totalNetSalary + totalIncentiveAmount + totalBonusAmount;
+
     // Mark all salaries as paid
     const paidDate = new Date();
     await salaryModel.updateMany(
@@ -214,20 +280,20 @@ router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncErr
         }
     );
 
-    // Update user's monthly price record
-    const existingMonthlyRecord = user.mounthlyPrice.find(record =>
-        record.date.getMonth() === targetMonth &&
+    // Update user's monthly price record with incentives and bonuses
+    const existingMonthlyRecord = user.mounthlyPrice.find(record => 
+        record.date.getMonth() === targetMonth && 
         record.date.getFullYear() === targetYear
     );
 
     if (existingMonthlyRecord) {
-        existingMonthlyRecord.salary = totalNetSalary;
+        existingMonthlyRecord.salary = finalTotalSalary;
         existingMonthlyRecord.day = salaries.length;
         existingMonthlyRecord.date = new Date();
     } else {
         user.mounthlyPrice.push({
             date: new Date(targetYear, targetMonth, 1),
-            salary: totalNetSalary,
+            salary: finalTotalSalary,
             day: salaries.length
         });
     }
@@ -241,15 +307,21 @@ router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncErr
             userId,
             month: targetMonth + 1,
             year: targetYear,
-            summary: {
+            salaryBreakdown: {
                 totalDays: salaries.length,
                 totalGrossSalary,
                 totalNetSalary,
                 totalDeductions,
                 totalWorkHours: Math.round(totalWorkHours * 100) / 100,
                 totalOvertimeHours: Math.round(totalOvertimeHours * 100) / 100,
-                averageDailySalary: Math.round((totalNetSalary / salaries.length) * 100) / 100,
-                paidDate
+                averageDailySalary: Math.round((totalNetSalary / salaries.length) * 100) / 100
+            },
+            incentivesAndBonuses: {
+                totalBranchProfit: Math.round(totalBranchProfit * 100) / 100,
+                totalIncentiveAmount: Math.round(totalIncentiveAmount * 100) / 100,
+                totalBonusAmount: Math.round(totalBonusAmount * 100) / 100,
+                finalTotalSalary: Math.round(finalTotalSalary * 100) / 100,
+                branchDetails: branchProfitDetails
             },
             salaryDetails: salaries.map(salary => ({
                 date: salary.date,
@@ -259,7 +331,8 @@ router.get('/calculate-salary/:userId', auth, checkRole("Admin"), handleAsyncErr
                 overtimeHours: salary.overtimeHours,
                 branchName: salary.branchId?.name,
                 deductions: salary.deduction
-            }))
+            })),
+            paidDate
         }
     })
 }));

@@ -78,7 +78,22 @@ const userSchema = new mongoose.Schema({
             type: Number,
             default: 0
         }
-    }]
+    }],
+    incentivePercentage: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    },
+    bonusAmount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    isEligibleForIncentive: {
+        type: Boolean,
+        default: false
+    }
 }, {
     timestamps: true
 });
